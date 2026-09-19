@@ -25,6 +25,68 @@ node server.mjs --dry    # mod selamat: semua "terbit" jadi pura-pura
 npm test                 # 21 ujian
 ```
 
+## Cara akses
+
+Kod ni duduk dalam repo — tiada server awam, tiada langganan. Kau yang hidupkan.
+
+```bash
+git clone https://github.com/darkstaarx/sprite-studio.git
+cd sprite-studio
+git checkout claude/viral-kaya-minimalist-nwaw71
+node server.mjs            # buka http://localhost:8787
+```
+
+Perlu Node 20 ke atas (`node -v` untuk semak; kalau tiada, pasang dari nodejs.org atau `brew install node`).
+Tiada `npm install` — memang tiada dependency.
+
+**Dari telefon, wifi yang sama:**
+
+```bash
+HOST=0.0.0.0 VIRALCOOL_TOKEN=kunci-panjang-kau node server.mjs
+```
+
+Cari IP mesin kau (`ipconfig getifaddr en0` di Mac, `hostname -I` di Linux, `ipconfig` di Windows),
+lepas tu buka `http://192.168.x.x:8787` di telefon. Kali pertama ia tanya kunci — tampal nilai
+`VIRALCOOL_TOKEN` tadi, ia diingat dalam browser telefon. Butang kunci di atas kanan untuk tukar.
+Jangan buka port ni ke internet tanpa token.
+
+**Nak ia jalan 24/7:** scheduler dan autopilot hanya hidup selagi proses ni hidup. Laptop tidur =
+tiada post keluar. Pilih satu mesin yang memang sentiasa hidup:
+
+| Pilihan | Nota |
+|---|---|
+| Raspberry Pi / mini PC di rumah | paling murah jangka panjang, kau pegang semua data |
+| VPS kecil (Hetzner, DigitalOcean, Contabo) | ~RM10-25 sebulan, 1GB RAM dah lebih dari cukup |
+| Mesin kerja yang tak pernah tidur | cukup untuk mula |
+
+Jadikan servis supaya ia hidup balik selepas reboot — contoh systemd:
+
+```ini
+# /etc/systemd/system/viralcool.service
+[Service]
+WorkingDirectory=/home/kau/sprite-studio
+ExecStart=/usr/bin/node server.mjs
+Environment=TZ=Asia/Kuala_Lumpur
+Restart=always
+User=kau
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl enable --now viralcool
+```
+
+`TZ=Asia/Kuala_Lumpur` penting: slot autopilot (`12:30`, `21:00`) dikira ikut jam mesin.
+
+**Akses dari luar rumah, dan untuk OAuth:** Meta perlu URL awam untuk redirect callback. Guna
+Cloudflare Tunnel (`cloudflared tunnel --url http://localhost:8787`) atau Tailscale, lepas tu set
+`PUBLIC_URL` dalam `.env` ke URL tu. Kalau kau guna token manual dalam tab Akaun, kau tak perlu ni langsung.
+
+**Kenapa bukan Vercel/Netlify:** kedua-duanya serverless — proses tak kekal hidup, jadi loop 30 saat
+dan autopilot takkan jalan. Kalau kau memang nak guna, kau kena tambah endpoint `tick` dan panggil
+ia dari cron luar; belum ada dalam repo ni.
+
 ## Tab dalam UI
 
 | Tab | Guna |
