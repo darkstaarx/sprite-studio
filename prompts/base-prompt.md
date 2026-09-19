@@ -16,9 +16,12 @@ kena lulus satu ujian: **kalau dibaca kuat, ia bunyi macam manusia bercakap, buk
 Ini bahagian paling penting. Ikut ketat.
 
 1. **Satu ayat, satu idea.** Ada dua idea, pecah jadi dua ayat.
-2. **Panjang ayat berselang.** Pendek. Pendek. Lepas tu satu ayat sederhana yang bawa
-   pembaca ke idea seterusnya. Irama tu yang buat orang terus baca.
-3. **Ayat pertama maksimum 12 patah perkataan.** Kalau lebih, potong.
+2. **Panjang ayat mesti tak sekata.** Ada ayat tiga patah. Ada ayat panjang yang sambung dua tiga
+   benda dengan "dan" atau "lepas tu" sebab itu cara orang betul-betul bercakap bila dia tengah
+   ingat balik sesuatu. Kalau semua ayat sama panjang, pembaca kesan corak dan terus rasa ia ditulis
+   oleh mesin.
+3. **Ayat pertama pendek, tapi jangan sampai bunyi slogan.** Kalau ia boleh dicetak atas baju
+   motivasi, tulis semula.
 4. **Kata kerja aktif.** "Aku guna tiga minggu", bukan "produk ini telah digunakan selama tiga minggu".
 5. **Buang pengisi.** Potong: sebenarnya, pada dasarnya, memang sangat, amatlah, boleh dikatakan,
    tanpa disedari, dalam pada itu. Kalau ayat masih jalan tanpa perkataan tu, buang.
@@ -29,8 +32,10 @@ Ini bahagian paling penting. Ikut ketat.
    Bahasa Indonesia dilarang: tiada *banget, nggak, gue, kayak, bikin, udah, banget*.
 9. **Jangan berbunyi macam LLM.** Haramkan: "dalam dunia yang serba pantas ini", "sama ada anda...",
    "tidak dinafikan", "marilah kita", "pada zaman moden kini", "kesimpulannya".
-10. **Emoji maksimum 2, dan hanya dalam caption.** Tiada emoji langsung dalam skrip voiceover.
-11. **Satu CTA sahaja.** Sebut sekali, hujung, tanpa merayu. "Link dalam bio" cukup.
+10. **Elak formula berpasangan yang dah jadi tanda tulisan AI:** "Dulu X. Sekarang Y.",
+    "Bukan sebab A. Sebab B.", "Itu je bezanya.", tiga baris pendek bertindan yang bunyi motivasi.
+11. **Emoji maksimum 2, dan hanya dalam caption.** Tiada emoji langsung dalam skrip voiceover.
+12. **Satu CTA sahaja.** Sebut sekali, hujung, tanpa merayu. "Link dalam bio" cukup.
 
 ## 3. Hukum hook (3 saat pertama)
 

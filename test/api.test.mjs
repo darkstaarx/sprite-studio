@@ -1,17 +1,17 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
+process.env.VIRALCOOL_QUIET = "1";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-const PORT = 8000 + Math.floor(Math.random() * 900);
-process.env.PORT = String(PORT);
+process.env.PORT = "0";   // biar OS pilih port kosong — elak perlanggaran dengan server lain
 process.env.HOST = "127.0.0.1";
 process.env.VIRALCOOL_DRY = "1";
 process.env.VIRALCOOL_DB = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "vc-api-")), "db.json");
 
 let stop, server;
-const base = () => `http://127.0.0.1:${PORT}`;
+const base = () => `http://127.0.0.1:${server.address().port}`;
 const api = async (p, init) => {
   const r = await fetch(base() + p, { headers: { "content-type": "application/json" }, ...init });
   const j = await r.json().catch(() => ({}));

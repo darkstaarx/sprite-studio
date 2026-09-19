@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+process.env.VIRALCOOL_QUIET = "1";
 import { parsePosts, generate, buildBrief } from "../lib/llm.mjs";
 import { Store } from "../lib/store.mjs";
 import { nextSlots, tick } from "../lib/scheduler.mjs";
@@ -111,4 +112,22 @@ test("rangka local gugurkan bentuk harga bila harga tiada", async () => {
   const dengan = await generate({ settings: { llm: { provider: "local" } },
     brief: { nama: "Jump Starter", harga: "RM159", kelebihan: ["6000mAh"] }, platforms: ["threads"], count: 4 });
   assert.ok(dengan.posts.some(p => p.caption.includes("RM159")), "harga dipakai bila ada");
+});
+
+test("playbook haramkan formula yang bunyi AI", async () => {
+  const { readPlaybook } = await import("../lib/llm.mjs");
+  const pb = readPlaybook("threads");
+  assert.match(pb, /Dulu X\. Sekarang Y\./);
+  assert.match(pb, /Bukan sebab A\. Sebab B\./);
+  assert.match(pb, /Cerita sebenar/);
+  assert.match(pb, /Jangan simetri/);
+});
+
+test("brief bawa cerita sebenar, atau larang reka cerita", () => {
+  const dengan = buildBrief({ nama: "X", cerita: "Petang Jumaat, parking B2, pakcik security cakap..." }, ["threads"], 3);
+  assert.match(dengan, /Cerita sebenar untuk dipakai/);
+  assert.match(dengan, /parking B2/);
+
+  const tanpa = buildBrief({ nama: "X" }, ["threads"], 3);
+  assert.match(tanpa, /jangan reka pengalaman peribadi/);
 });

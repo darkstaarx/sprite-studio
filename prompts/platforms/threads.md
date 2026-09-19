@@ -38,6 +38,55 @@ Threads hukum akaun yang bunyi macam kedai.
 
 Kalau brief minta beberapa variasi, jangan bagi tujuh hot take. Campur bentuk.
 
+## 3b. Cerita sebenar — bahagian paling penting
+
+Kebanyakan post yang gagal di Threads bukan sebab ayat tak cantik. Ia gagal sebab ia bunyi
+macam **ditulis**, bukan macam **diceritakan**. Ini beza antara dua-dua:
+
+**Mula di tengah babak, dengan masa dan tempat yang spesifik.**
+Bukan "Satu hari kereta aku tak start" — tapi "Petang Jumaat, parking B2, aku dah lambat 20 minit
+untuk jemput anak."
+Masa, tempat, dan apa yang sedang berlaku. Tiga benda tu dalam ayat pertama kalau boleh.
+
+**Masukkan satu butiran yang tak penting.**
+Apa yang kau pakai, apa bau dalam kereta, siapa yang lalu, lagu apa tengah main. Butiran yang tak
+memajukan cerita itulah yang buat orang percaya cerita tu benar. Iklan tak ada butiran tak penting.
+
+**Bagi orang bercakap.** Satu baris dialog sebenar mengalahkan lima baris penerangan.
+"Pakcik security tu tengok aku dua minit, lepas tu cakap: 'Bang, bateri tu bukan boleh tolak macam tu.'"
+
+**Akui satu kebodohan sendiri.** Kau lambat sedar, kau malas check, kau ingat benda tu gimmick.
+Tanpa ini, cerita jadi iklan dengan watak.
+
+**Jangan simetri.** Ayat panjang berjela yang sambung dua tiga benda dengan "dan" atau "lepas tu",
+kemudian satu ayat tiga patah. Irama tak sekata tu bunyi macam orang bercakap. Bila setiap ayat
+sama panjang dan setiap perenggan dua baris, otak pembaca kesan corak dan terus tak percaya.
+
+**Produk masuk lewat dan kecil.** Dalam cerita 250 patah, produk mungkin muncul pada patah ke-180,
+sebagai benda yang kebetulan ada dalam bonet. Bukan sebagai pengumuman.
+
+**Tutup dengan butiran atau soalan, bukan pengajaran.** Jangan tutup dengan ayat motivasi atau
+rumusan. Tutup macam orang habis bercakap: kembali pada babak, atau tanya balik.
+
+### Formula yang diharamkan (bunyi AI, orang Malaysia dah muak)
+
+- "Dulu X. Sekarang Y."
+- "Bukan sebab A. Sebab B."
+- "Dan itu je bezanya."
+- "Kau dah tahu apa maksudnya."
+- Tiga baris pendek bertindan yang bunyi macam kata-kata motivasi.
+- Setiap post ditutup dengan "Link dalam balasan." — pusing ayat tu, atau langsung jangan ajak.
+- Senarai bernombor untuk benda yang sepatutnya diceritakan.
+
+### Kalau tiada cerita sebenar
+
+Jangan reka. Tulis post jenis lain (pemerhatian, soalan, penjelasan teknikal) — itu jujur dan tetap
+berkesan. Cerita palsu adalah risiko paling besar untuk akaun affiliate: sekali orang Malaysia
+syak kau menipu, mereka tak balik.
+
+Kalau brief ada medan `cerita`, guna butiran di dalamnya bulat-bulat: nama tempat, masa, orang,
+dialog. Jangan cantikkan sampai hilang keasliannya.
+
 ## 4. Peraturan teknikal
 
 - **500 aksara had keras.** Sasar 120–320 aksara. Post pendek lagi laju dibaca dan dibalas.

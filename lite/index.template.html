@@ -91,6 +91,8 @@
       <div class="full"><label>Kelebihan sebenar — satu per baris</label><textarea id="b_kelebihan"></textarea></div>
       <div class="full"><label>Masalah yang ia selesaikan</label><textarea id="b_masalah"></textarea></div>
       <div class="full"><label>Pengalaman peribadi kau</label><textarea id="b_bukti"></textarea></div>
+      <div class="full"><label>Cerita sebenar — bila, kat mana, siapa ada, apa orang cakap</label>
+        <textarea id="b_cerita" style="min-height:100px" placeholder="Petang Jumaat, parking B2, aku lambat jemput anak. Enjin buat bunyi klik. Pakcik security cakap 'bang, bateri tu bukan boleh tolak macam tu'."></textarea></div>
       <div><label>Audience</label><input id="b_audience" placeholder="Mak ayah bekerja, anak Darjah 1-6"></div>
       <div><label>Berapa post</label><select id="b_count"><option>3</option><option selected>5</option><option>7</option><option>10</option></select></div>
       <div class="full"><label>Angle (pilih 3-5)</label><div class="chips" id="angleChips"></div></div>
@@ -199,7 +201,7 @@ const brainText = n => db.brain?.[n] ?? (n==="base"?BASE_PROMPT_DEFAULT:THREADS_
 function briefForm(){
   return { id: db.current || rid(), name:$("#b_name").value, mode:$("#b_mode").value, nama:$("#b_nama").value,
     harga:$("#b_harga").value, link:$("#b_link").value,
-    kelebihan:$("#b_kelebihan").value.split("\n").map(s=>s.trim()).filter(Boolean),
+    kelebihan:$("#b_kelebihan").value.split("\n").map(s=>s.trim()).filter(Boolean), cerita:$("#b_cerita").value,
     masalah:$("#b_masalah").value, bukti:$("#b_bukti").value, audience:$("#b_audience").value,
     count:Number($("#b_count").value), angles:$$('#angleChips input:checked').map(i=>i.value) };
 }
@@ -207,7 +209,7 @@ function fillBrief(b){
   db.current = b?.id || null;
   $("#b_name").value=b?.name||""; $("#b_mode").value=b?.mode||"bisnes"; $("#b_nama").value=b?.nama||"";
   $("#b_harga").value=b?.harga||""; $("#b_link").value=b?.link||"";
-  $("#b_kelebihan").value=(b?.kelebihan||[]).join("\n"); $("#b_masalah").value=b?.masalah||"";
+  $("#b_kelebihan").value=(b?.kelebihan||[]).join("\n"); $("#b_masalah").value=b?.masalah||""; $("#b_cerita").value=b?.cerita||"";
   $("#b_bukti").value=b?.bukti||""; $("#b_audience").value=b?.audience||""; $("#b_count").value=b?.count||5;
   $$('#angleChips input').forEach(i=>{ i.checked=(b?.angles||[]).includes(i.value); i.closest(".chip").classList.toggle("on",i.checked); });
 }
@@ -232,6 +234,8 @@ function buildPrompt(){
   if(b.link) L.push("Link: " + b.link);
   if(b.kelebihan.length) L.push("Kelebihan sebenar:\n" + b.kelebihan.map(k=>"- "+k).join("\n"));
   if(b.masalah) L.push("Masalah audience: " + b.masalah);
+  if(b.cerita) L.push('Cerita sebenar untuk dipakai (guna butirannya bulat-bulat — masa, tempat, orang, dialog):\n"""'+b.cerita+'"""');
+  else L.push("Tiada cerita sebenar diberi: jangan reka pengalaman peribadi.");
   if(b.bukti) L.push("Pengalaman peribadi aku: " + b.bukti);
   if(b.audience) L.push("Audience: " + b.audience);
   const ang = b.angles.filter(a=>ANGLES[a]);
