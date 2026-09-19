@@ -2,224 +2,244 @@
 <html lang="ms">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1013">
 <title>ViralCool</title>
 <style>
-  :root{--bg:#0e1013;--panel:#16191f;--panel-2:#1c2028;--line:#272c36;--ink:#e7eaf0;--dim:#98a1b0;
-        --accent:#ffd166;--accent-ink:#2a2000;--ok:#5dd39e;--bad:#ff8f7a;--r:14px}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-  .wrap{max-width:720px;margin:0 auto;padding:24px 16px 90px}
-  header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
-  h1{font-size:21px;margin:0;letter-spacing:.2px}h1 span{color:var(--accent)}
-  .acct{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--dim)}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--bad)}
+  :root{
+    --bg:#0e1013; --card:#15181d; --line:#232831; --ink:#e9ecf2; --dim:#8d96a5;
+    --accent:#ffd166; --accent-ink:#241c00; --ok:#5dd39e; --bad:#ff8f7a;
+    --pad:16px; --r:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:560px;margin:0 auto;padding:14px var(--pad) 120px}
+
+  /* ---- kepala ---- */
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 0 14px}
+  .brand{font-size:17px;font-weight:700;letter-spacing:.2px}
+  .brand span{color:var(--accent)}
+  .acct{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--dim);
+    background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 11px;cursor:pointer}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--bad);flex:none}
   .dot.on{background:var(--ok)}
-  .modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
-  .mode{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;text-align:left}
-  .mode[aria-pressed=true]{border-color:var(--accent);background:var(--panel-2)}
-  .mode b{display:block;font-size:15px;margin-bottom:3px}
-  .mode span{color:var(--dim);font-size:13px}
-  .step{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px}
-  .step h2{display:flex;align-items:center;gap:10px;font-size:15.5px;margin:0 0 12px}
-  .step h2 i{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);
-    display:grid;place-items:center;font-size:14px;font-style:normal;font-weight:700}
-  input,textarea,select{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
-    padding:12px 13px;color:var(--ink);font:inherit;font-size:16px}
-  input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);border-color:var(--accent)}
-  .styles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px}
-  .sty{background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;cursor:pointer;text-align:left}
-  .sty[aria-pressed=true]{border-color:var(--accent)}
-  .sty b{display:block;font-size:14.5px}
-  .sty span{color:var(--dim);font-size:12.5px}
-  .times{display:flex;gap:9px;flex-wrap:wrap}
-  .time{background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:9px 15px;cursor:pointer;font-size:14.5px;color:var(--dim)}
-  .time[aria-pressed=true]{border-color:var(--accent);color:var(--ink)}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .small{width:auto;min-width:120px}
-  label{display:block;font-size:13px;color:var(--dim);margin-bottom:6px}
-  .btn{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:11px 16px;color:var(--ink);font:inherit;cursor:pointer}
-  .btn:hover{border-color:var(--accent)}
-  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700;font-size:16px;padding:14px 20px;width:100%}
-  .btn.sm{padding:7px 12px;font-size:13.5px}
-  .btn.ghost{background:none}
-  .msg{font-size:14px;margin-top:10px;color:var(--dim)}
+
+  /* ---- kad & langkah ---- */
+  .card{background:var(--card);border-radius:var(--r);padding:var(--pad);margin-bottom:10px}
+  .head{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+  .n{flex:none;width:22px;height:22px;border-radius:50%;background:#222833;color:var(--dim);
+    display:grid;place-items:center;font-size:12px;font-weight:700}
+  .card.filled .n{background:var(--accent);color:var(--accent-ink)}
+  .title{font-size:14.5px;font-weight:600;flex:1}
+  .i{flex:none;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:none;
+    color:var(--dim);font:italic 600 12px/1 serif;cursor:pointer}
+  .i[aria-expanded=true]{border-color:var(--accent);color:var(--accent)}
+  .note{display:none;font-size:13px;line-height:1.65;color:var(--dim);
+    border-left:2px solid var(--line);padding:2px 0 2px 12px;margin:0 0 12px}
+  .note[data-open]{display:block}
+  .note b{color:var(--ink);font-weight:600}
+  .note ol{margin:6px 0;padding-left:18px}
+  .note li{margin-bottom:5px}
+  .note code{background:#1d222b;padding:1px 5px;border-radius:5px;font-size:12px;word-break:break-all}
+
+  /* ---- input ---- */
+  input,textarea,select{width:100%;background:#1b2028;border:1px solid var(--line);border-radius:11px;
+    padding:13px 13px;color:var(--ink);font:inherit;font-size:16px}
+  input::placeholder,textarea::placeholder{color:#5e6775}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+  label{display:block;font-size:12.5px;color:var(--dim);margin:0 0 6px}
+  .pair{display:flex;gap:9px}.pair>*{flex:1;min-width:0}
+
+  /* ---- pilihan ---- */
+  .scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin:0 calc(var(--pad)*-1);
+    padding-left:var(--pad);padding-right:var(--pad);scrollbar-width:none}
+  .scroll::-webkit-scrollbar{display:none}
+  .pick{flex:none;background:#1b2028;border:1px solid var(--line);border-radius:999px;
+    padding:10px 15px;color:var(--dim);font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
+  .pick[aria-pressed=true]{border-color:var(--accent);color:var(--ink);background:#22262e}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+  /* ---- butang ---- */
+  .btn{background:#1b2028;border:1px solid var(--line);border-radius:11px;padding:12px 16px;
+    color:var(--ink);font:inherit;font-size:14.5px;cursor:pointer}
+  .btn:active{transform:scale(.99)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+  .btn.wide{width:100%}
+  .btn.sm{padding:8px 12px;font-size:13px}
+  .btn.link{background:none;border:none;color:var(--dim);padding:6px 0;text-decoration:underline}
+  .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+
+  /* ---- bar bawah ---- */
+  .bar{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to top,var(--bg) 72%,transparent);
+    padding:12px var(--pad) calc(12px + env(safe-area-inset-bottom));z-index:9}
+  .bar .inner{max-width:560px;margin:0 auto}
+  .msg{font-size:13px;color:var(--dim);margin:8px 0 0}
   .ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--accent)}
-  .card{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:10px}
-  .card .meta{display:flex;gap:9px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--dim);margin-bottom:8px}
-  .tag{border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:11.5px}
-  .card textarea{min-height:130px;font-size:15px}
-  .prod{display:flex;gap:11px;align-items:flex-start}
-  .prod img{width:54px;height:54px;object-fit:cover;border-radius:9px;border:1px solid var(--line);flex:none}
-  .prod b{font-size:14.5px}
-  .prod .why{color:var(--dim);font-size:13px}
-  .hint{color:var(--dim);font-size:13px}
-  footer{margin-top:26px;border-top:1px solid var(--line);padding-top:14px;font-size:13px;color:var(--dim);
-    display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  a{color:var(--accent)}
+
+  /* ---- hasil ---- */
+  .post{background:#1b2028;border-radius:12px;padding:13px;margin-bottom:9px}
+  .post .meta{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--dim);margin-bottom:8px}
+  .chip{border:1px solid var(--line);border-radius:999px;padding:2px 8px;font-size:11px}
+  .post textarea{min-height:120px;font-size:15px;background:#161a21;border-color:#262c36}
+  .sub{font-size:12.5px;color:var(--dim);margin:8px 0 0;word-break:break-word}
+  .prod{display:flex;gap:11px;align-items:center}
+  .prod img{width:44px;height:44px;border-radius:9px;object-fit:cover;flex:none;background:#222}
+  .prod .nm{font-size:14px;font-weight:600;line-height:1.3}
+  .empty{color:var(--dim);font-size:13.5px;text-align:center;padding:18px 0}
   [hidden]{display:none!important}
+  @media(min-width:600px){ .wrap{padding-bottom:40px} .bar{position:static;background:none;padding:0} }
 </style>
 </head>
 <body>
 <div class="wrap">
-<header>
-  <h1>Viral<span>Cool</span></h1>
-  <div class="acct"><span class="dot" id="dot"></span><span id="acctText">menyemak…</span>
-    <button class="btn sm" id="connect" hidden>Sambung Threads</button></div>
-</header>
 
-<!-- ============ SETUP THREADS ============ -->
+<div class="top">
+  <div class="brand">Viral<span>Cool</span></div>
+  <button class="acct" id="acct"><span class="dot" id="dot"></span><span id="acctText">…</span></button>
+</div>
+
+<!-- ================= SETUP ================= -->
 <div id="setup" hidden>
-  <div class="step">
-    <h2><i>A</i> Buat app Threads di Meta (sekali sahaja)</h2>
-    <p class="hint" style="margin-top:0">Buka <a href="https://developers.facebook.com/apps" target="_blank" rel="noopener">developers.facebook.com/apps</a> → <b>Create app</b> → pilih use case <b>“Access the Threads API”</b>. Dalam app tu:</p>
-    <ol class="hint" style="margin:8px 0 0;padding-left:20px;line-height:1.8">
-      <li>Tambah kebenaran <code>threads_basic</code> dan <code>threads_content_publish</code></li>
-      <li>Dalam dashboard Meta: <b>App roles → Roles → Add People → Threads Tester</b>, taip username Threads kau (tanpa @)</li>
-      <li>Dalam <b>app Threads</b>: ikon ☰ → <b>Settings</b> → <b>More settings</b> (paling bawah) → <b>Website permissions</b> → tab <b>Invites</b> → <b>Accept</b>.
-        <span class="warn">Akaun Threads kau mesti public — akaun private tak boleh terima jemputan.</span></li>
-      <li>Dalam use case Threads → <b>Settings</b>, isi <b>Redirect Callback URLs</b> dengan alamat di bawah.
-        <span class="warn">Threads tak terima localhost</span> — sebab tu alamat ni guna domain yang memang tak wujud. Ia tak perlu wujud; kita cuma perlukan kod dalam bar alamat.</li>
-      <li>Bila kau taip dalam medan tu, satu <b>cadangan muncul di bawah medan — kau mesti klik cadangan tu</b>, kalau tidak ia nampak macam dah masuk tapi sebenarnya tak tersimpan.</li>
-      <li>Isi <b>ketiga-tiga</b> medan dengan alamat yang <b>sama</b>, lepas tu tekan <b>Save</b> (butang biru bawah kanan):
-        <br>• <b>Redirect Callback URLs</b> &nbsp;• <b>Uninstall Callback URL</b> &nbsp;• <b>Delete Callback URL</b>
-        <br>Dua medan terakhir tu wajib walaupun kau tak guna — Meta tak benarkan save kalau ia kosong.</li>
-      <li>Muat semula halaman Meta tu (F5). Kalau alamat masih ada dalam medan, barulah ia betul-betul tersimpan.</li>
-    </ol>
-    <div style="margin-top:12px"><label>Redirect URI (salin ke Meta)</label><input id="t_redirect"></div>
-    <div class="row" style="margin-top:11px">
-      <div style="flex:1;min-width:180px"><label>App ID</label><input id="t_appid" inputmode="numeric"></div>
-      <div style="flex:1;min-width:180px"><label>App Secret</label><input id="t_secret" type="password"></div>
+  <div class="card">
+    <div class="head"><span class="n">A</span><span class="title">App Threads di Meta</span>
+      <button class="i" data-note="nA" aria-expanded="false">i</button></div>
+    <div class="note" id="nA">
+      <ol>
+        <li>Buka <a href="https://developers.facebook.com/apps" target="_blank" rel="noopener">developers.facebook.com/apps</a> → Create app → use case <b>Access the Threads API</b></li>
+        <li>Tambah kebenaran <code>threads_basic</code> dan <code>threads_content_publish</code></li>
+        <li><b>App roles → Add People → Threads Tester</b>, taip username kau tanpa @</li>
+        <li>Dalam app Threads: ☰ → Settings → <b>More settings</b> → <b>Website permissions</b> → tab <b>Invites</b> → Accept. Akaun kena <b>public</b></li>
+        <li>Use case Threads → Settings: isi <b>ketiga-tiga</b> medan (Redirect Callback URLs, Uninstall, Delete) dengan alamat di bawah, klik cadangan yang muncul, Save, lepas tu F5 untuk sahkan ia tersimpan</li>
+      </ol>
     </div>
-    <div class="row" style="margin-top:12px"><button class="btn" id="t_save">Simpan &amp; sediakan pautan</button><span class="msg" id="t_saveMsg"></span></div>
-  </div>
-
-  <div class="step">
-    <h2><i>B</i> Bagi kebenaran</h2>
-    <p class="hint" style="margin-top:0">Tekan butang ni, log masuk Threads, tekan approve. Lepas tu browser akan cuba buka satu halaman yang <b>tak wujud</b> — itu normal.</p>
-    <a class="btn" id="t_open" target="_blank" rel="noopener" href="#" aria-disabled="true">Buka halaman kebenaran Threads</a>
-    <p class="hint" style="margin-top:11px"><b>Dapat “URL Blocked”?</b> Maknanya alamat tu belum tersimpan di Meta.
-    Muat semula halaman settings Meta dan pastikan alamat tu masih ada dalam medan — kalau hilang, ia tak pernah save.
-    Kalau dashboard enggan terima <code>.invalid</code>, cuba <code>https://example.com/callback</code> dan tukar
-    medan di langkah A supaya sama. Kau boleh tampal URL error tu terus dalam kotak di bawah — app akan terangkan apa maknanya.</p>
-  </div>
-
-  <div class="step">
-    <h2><i>C</i> Salin URL dari bar alamat</h2>
-    <p class="hint" style="margin-top:0">Walaupun halaman tu error (“site can’t be reached” — memang dijangka, domain tu tak wujud), <b>URL dalam bar alamat</b> ada kod kebenaran kau. Klik bar alamat → pilih semua → salin → tampal di sini.</p>
-    <p class="hint">Ia nampak macam ini: <code>https://viralcool.invalid/callback?code=AQBxxxx…#_</code><br>
-    Kod ni luput dalam beberapa minit dan hanya boleh guna sekali — kalau gagal, ulang langkah B untuk dapat kod baru.</p>
-    <input id="t_url" placeholder="https://localhost:8787/oauth/threads/callback?code=AQB...">
-    <div class="row" style="margin-top:12px"><button class="btn primary" id="t_connect" style="width:auto">Sambung Threads</button><span class="msg" id="t_connectMsg"></span></div>
-  </div>
-
-  <div class="row" style="margin-bottom:20px"><button class="btn ghost" id="t_close">← Balik ke muka utama</button></div>
-</div>
-
-<div id="mainFlow">
-<div class="modes">
-  <button class="mode" id="modeProduk" aria-pressed="true"><b>Ada produk</b><span>Tampal link, dapat post</span></button>
-  <button class="mode" id="modeMasalah" aria-pressed="false"><b>Ada masalah</b><span>Cari produk yang tolong</span></button>
-</div>
-
-<!-- ============ MOD A ============ -->
-<div id="flowProduk">
-  <div class="step">
-    <h2><i>1</i> Link produk</h2>
-    <input id="url" placeholder="https://s.shopee.com.my/…" inputmode="url">
-    <p class="msg" id="urlMsg">Link affiliate kau dikekalkan dan dipakai dalam balasan pertama.</p>
-  </div>
-</div>
-
-<!-- ============ MOD B ============ -->
-<div id="flowMasalah" hidden>
-  <div class="step">
-    <h2><i>1</i> Apa masalahnya</h2>
-    <input id="masalah" placeholder="contoh: anak sekolah, dapur panas, kereta selalu rosak">
-    <div class="row" style="margin-top:11px">
-      <button class="btn" id="cari">Cari produk yang tolong</button>
-      <span class="msg" id="cariMsg"></span>
+    <label>Redirect URI — salin ke Meta</label>
+    <input id="t_redirect">
+    <div class="pair" style="margin-top:10px">
+      <div><label>App ID</label><input id="t_appid" inputmode="numeric"></div>
+      <div><label>App Secret</label><input id="t_secret" type="password"></div>
     </div>
-    <div id="matches" style="margin-top:12px"></div>
-    <details style="margin-top:12px">
-      <summary class="hint">Pustaka produk kau (<span id="libCount">0</span>)</summary>
-      <div class="row" style="margin:12px 0">
-        <input id="libUrl" placeholder="tampal link produk untuk simpan" style="flex:1;min-width:220px">
-        <button class="btn sm" id="libAdd">Tambah</button>
+    <button class="btn wide" id="t_save" style="margin-top:12px">Simpan</button>
+    <p class="msg" id="t_saveMsg"></p>
+  </div>
+
+  <div class="card">
+    <div class="head"><span class="n">B</span><span class="title">Approve</span>
+      <button class="i" data-note="nB" aria-expanded="false">i</button></div>
+    <div class="note" id="nB">Lepas approve, browser akan papar <b>“site can’t be reached”</b>. Itu betul — domain tu sengaja tak wujud. Yang kita perlukan cuma URL dalam bar alamat.</div>
+    <a class="btn wide" id="t_open" target="_blank" rel="noopener" href="#" style="display:block;text-align:center;text-decoration:none">Buka halaman kebenaran</a>
+  </div>
+
+  <div class="card">
+    <div class="head"><span class="n">C</span><span class="title">Tampal URL dari bar alamat</span>
+      <button class="i" data-note="nC" aria-expanded="false">i</button></div>
+    <div class="note" id="nC">Klik bar alamat → Ctrl+A → Ctrl+C. Bentuknya <code>https://…/callback?code=AQB…</code>. Kod luput dalam beberapa minit dan sekali guna — kalau gagal, ulang langkah B.</div>
+    <input id="t_url" placeholder="tampal URL di sini">
+    <button class="btn primary wide" id="t_connect" style="margin-top:12px">Sambung Threads</button>
+    <p class="msg" id="t_connectMsg"></p>
+  </div>
+  <button class="btn link" id="t_close">← Balik</button>
+</div>
+
+<!-- ================= UTAMA ================= -->
+<div id="main">
+  <div class="grid2" style="margin-bottom:10px">
+    <button class="pick" id="mProduk" aria-pressed="true" style="width:100%">Ada produk</button>
+    <button class="pick" id="mMasalah" aria-pressed="false" style="width:100%">Ada masalah</button>
+  </div>
+
+  <!-- 1 -->
+  <div class="card" id="c1">
+    <div class="head"><span class="n">1</span><span class="title" id="t1">Link produk</span>
+      <button class="i" data-note="n1" aria-expanded="false">i</button></div>
+    <div class="note" id="n1">Link affiliate kau dikekalkan bulat-bulat dan dipakai dalam balasan pertama. Sistem buka link pendek dan kesan nama, harga dan gambar sendiri.</div>
+    <div id="boxProduk">
+      <input id="url" inputmode="url" placeholder="https://s.shopee.com.my/…">
+    </div>
+    <div id="boxMasalah" hidden>
+      <input id="masalah" placeholder="cth: anak sekolah">
+      <button class="btn wide" id="cari" style="margin-top:10px">Cari produk</button>
+      <p class="msg" id="cariMsg"></p>
+      <div id="matches" style="margin-top:10px"></div>
+      <button class="btn link" id="libToggle">Pustaka produk (<span id="libCount">0</span>) ▾</button>
+      <div id="libBox" hidden>
+        <div class="row" style="margin-bottom:9px">
+          <input id="libUrl" placeholder="tampal link untuk simpan" style="flex:1">
+        </div>
+        <button class="btn sm" id="libAdd">Tambah ke pustaka</button>
+        <p class="msg" id="libMsg"></p>
+        <div id="lib" style="margin-top:9px"></div>
       </div>
-      <p class="msg" id="libMsg"></p>
-      <div id="lib"></div>
-    </details>
-  </div>
-</div>
-
-<!-- ============ LANGKAH BERSAMA ============ -->
-<div class="step">
-  <h2><i>2</i> Gaya tulisan</h2>
-  <div class="styles" id="styles"></div>
-</div>
-
-<div class="step">
-  <h2><i>3</i> Bila nak keluar</h2>
-  <div class="times" id="times"></div>
-  <div class="row" style="margin-top:13px">
-    <div><label>Mula</label><input id="startDate" type="date" class="small"></div>
-    <div><label>Berapa post</label><select id="count" class="small"><option>1</option><option selected>3</option><option>5</option><option>7</option></select></div>
-  </div>
-  <p class="hint" style="margin-top:10px">7 pagi, 1 tengah hari, 7 malam — waktu orang Malaysia scroll.</p>
-</div>
-
-<div class="step" id="brainCard">
-  <h2><i>AI</i> Enjin ayat</h2>
-  <p class="msg" id="llmNow"></p>
-  <div class="row">
-    <button class="btn sm" data-preset="nousportal">Nous Portal</button>
-    <button class="btn sm" data-preset="hermes405">Hermes 4 405B (OpenRouter)</button>
-    <button class="btn sm" data-preset="hermes70">Hermes 4 70B (murah)</button>
-    <button class="btn sm" data-preset="openrouter">OpenRouter (lain)</button>
-    <button class="btn sm" data-preset="anthropic">Anthropic</button>
-    <button class="btn sm" data-preset="ollama">Ollama (tempatan)</button>
-    <button class="btn sm ghost" data-preset="local">Tiada AI (rangka sahaja)</button>
-  </div>
-  <div class="row" style="margin-top:11px">
-    <div style="flex:1;min-width:200px"><label>Base URL</label><input id="llm_base"></div>
-    <div style="flex:1;min-width:180px"><label>Model</label><input id="llm_model" placeholder="cth: anthropic/claude-sonnet-4.5"></div>
-  </div>
-  <div class="row" style="margin-top:11px">
-    <div style="flex:1;min-width:220px"><label>API key</label><input id="llm_key" type="password" placeholder="sk-…"></div>
-    <div style="align-self:end"><button class="btn" id="llm_save">Simpan enjin</button></div>
-    <span class="msg" id="llm_msg"></span>
-  </div>
-</div>
-
-<div class="step">
-  <h2><i>4</i> Tulis &amp; jadualkan</h2>
-  <button class="btn primary" id="go">Tulis &amp; jadualkan</button>
-  <p class="msg" id="goMsg"></p>
-  <div id="out" style="margin-top:14px"></div>
-  <details id="manualBox" style="margin-top:14px">
-    <summary class="hint">Tiada API key? Guna AI yang kau dah ada (Hermes Agent, ChatGPT, Claude)</summary>
-    <p class="hint" style="margin-top:10px">Tekan copy, jalankan arahan tu dalam AI kau, lepas tu tampal jawapan penuh dia di bawah. Hasilnya sama macam kalau key dipasang.</p>
-    <div class="row">
-      <button class="btn" id="copyPrompt">Copy arahan</button>
-      <span class="msg" id="promptMsg"></span>
     </div>
-    <textarea id="pasteBox" style="min-height:120px;margin-top:11px" placeholder="Tampal SEMUA jawapan AI di sini (termasuk bahagian { &quot;posts&quot;: [ … ] })"></textarea>
-    <div class="row" style="margin-top:10px"><button class="btn primary" id="importBtn" style="width:auto">Masukkan ke barisan</button><span class="msg" id="importMsg"></span></div>
-  </details>
-
-  <div class="row" id="outActions" hidden>
-    <button class="btn primary" id="approveAll" style="width:auto">Sahkan semua &amp; jadual</button>
-    <span class="msg" id="approveMsg"></span>
   </div>
+
+  <!-- 2 -->
+  <div class="card" id="c2">
+    <div class="head"><span class="n">2</span><span class="title">Gaya tulisan</span>
+      <button class="i" data-note="n2" aria-expanded="false">i</button></div>
+    <div class="note" id="n2">Setiap gaya ada struktur sendiri. <b>Cerita sebenar</b> paling kuat, tapi ia perlukan butiran betul — bila, kat mana, siapa cakap apa. Kalau tiada, AI diarah jangan reka; dia akan tulis pemerhatian.</div>
+    <div class="scroll" id="styles"></div>
+  </div>
+
+  <!-- 3 -->
+  <div class="card" id="c3">
+    <div class="head"><span class="n">3</span><span class="title">Bila keluar</span>
+      <button class="i" data-note="n3" aria-expanded="false">i</button></div>
+    <div class="note" id="n3">Waktu orang Malaysia scroll: <b>9–11 malam</b> paling kuat, <b>12:30–2 petang</b> kedua, pagi sebelum kerja ketiga. Post berjadual hanya keluar kalau komputer ni hidup.</div>
+    <div class="scroll" id="times"></div>
+    <div class="pair" style="margin-top:12px">
+      <div><label>Mula</label><input id="startDate" type="date"></div>
+      <div><label>Berapa post</label><select id="count"><option>1</option><option selected>3</option><option>5</option><option>7</option></select></div>
+    </div>
+  </div>
+
+  <!-- enjin -->
+  <div class="card" id="cEngine">
+    <div class="head"><span class="n">AI</span><span class="title" id="engineNow">Enjin ayat</span>
+      <button class="i" data-note="nE" aria-expanded="false">i</button></div>
+    <div class="note" id="nE">Tanpa AI, yang keluar cuma rangka ayat. Ada tiga jalan: pasang key (Nous Portal / OpenRouter), guna Ollama tempatan, atau <b>tanpa key langsung</b> — copy arahan, jalankan dalam Hermes Agent atau ChatGPT, tampal jawapan balik.</div>
+    <button class="btn sm" id="engineToggle">Tukar enjin</button>
+    <div id="engineBox" hidden style="margin-top:12px">
+      <div class="scroll" id="presets"></div>
+      <div class="pair" style="margin-top:10px">
+        <div><label>Base URL</label><input id="llm_base"></div>
+        <div><label>Model</label><input id="llm_model"></div>
+      </div>
+      <label style="margin-top:10px">API key</label><input id="llm_key" type="password" placeholder="sk-…">
+      <button class="btn wide" id="llm_save" style="margin-top:10px">Simpan enjin</button>
+      <p class="msg" id="llm_msg"></p>
+    </div>
+  </div>
+
+  <!-- hasil -->
+  <div class="card" id="cOut" hidden>
+    <div class="head"><span class="n">✓</span><span class="title" id="outTitle">Hasil</span></div>
+    <div id="out"></div>
+    <button class="btn primary wide" id="approveAll">Sahkan &amp; jadualkan semua</button>
+    <p class="msg" id="approveMsg"></p>
+  </div>
+
+  <!-- tanpa key -->
+  <div class="card">
+    <div class="head"><span class="n">↔</span><span class="title">Tanpa API key</span>
+      <button class="i" data-note="nM" aria-expanded="false">i</button></div>
+    <div class="note" id="nM">Copy arahan penuh, jalankan dalam AI kau sendiri (Hermes Agent, ChatGPT, Claude), lepas tu tampal jawapan dia balik. Hasilnya sama macam kalau key dipasang.</div>
+    <div class="row"><button class="btn sm" id="copyPrompt">Copy arahan</button><span class="msg" id="promptMsg" style="margin:0"></span></div>
+    <textarea id="pasteBox" style="margin-top:10px;min-height:90px" placeholder="tampal jawapan AI di sini"></textarea>
+    <button class="btn wide" id="importBtn" style="margin-top:10px">Masukkan ke barisan</button>
+    <p class="msg" id="importMsg"></p>
+  </div>
+
+  <p class="msg" id="queueLine" style="text-align:center"></p>
+  <p style="text-align:center"><a class="btn link" href="/studio.html">Studio lanjutan →</a></p>
+</div>
 </div>
 
-</div>
-
-<footer>
-  <span id="queueLine">—</span>
-  <a href="/studio.html">Studio lanjutan →</a>
-</footer>
+<div class="bar" id="bar">
+  <div class="inner">
+    <button class="btn primary wide" id="go">Tulis &amp; jadualkan</button>
+    <p class="msg" id="goMsg" style="text-align:center"></p>
+  </div>
 </div>
 
 <script>
@@ -227,223 +247,225 @@
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 let TOKEN=localStorage.getItem("viralcool.token")||"";
-let S={products:[],posts:[],accounts:[],styles:{}}, style="cerita", times=["07:00","13:00","19:00"], picked=[], made=[];
+let S={products:[],posts:[],accounts:[],styles:{},settings:{llm:{}}};
+let style="cerita", times=["07:00","13:00","19:00"], picked=[], made=[], llmProvider=null;
 
 async function api(path,opts={},retry=true){
   const r=await fetch("/api"+path,{...opts,headers:{"content-type":"application/json",...(TOKEN?{"x-viralcool-token":TOKEN}:{}),...(opts.headers||{})}});
   const j=await r.json().catch(()=>({}));
-  if(r.status===401&&retry){ const t=prompt("Kunci server (VIRALCOOL_TOKEN):",TOKEN||""); if(t!==null){ TOKEN=t.trim(); localStorage.setItem("viralcool.token",TOKEN); return api(path,opts,false);} }
+  if(r.status===401&&retry){ const t=prompt("Kunci server:",TOKEN||""); if(t!==null){ TOKEN=t.trim(); localStorage.setItem("viralcool.token",TOKEN); return api(path,opts,false);} }
   if(!r.ok) throw new Error(j.error||("ralat "+r.status));
   return j;
 }
-const fmt=ts=>ts?new Date(ts).toLocaleString("ms-MY",{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):"tiada masa";
+const fmt=ts=>ts?new Date(ts).toLocaleString("ms-MY",{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):"—";
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); }
+  catch(_){ const a=document.createElement("textarea"); a.value=t; document.body.append(a); a.select(); document.execCommand("copy"); a.remove(); }
+}
 
+/* ---- (i) ---- */
+$$(".i").forEach(b=>b.onclick=()=>{
+  const n=$("#"+b.dataset.note), open=n.hasAttribute("data-open");
+  if(open) n.removeAttribute("data-open"); else n.setAttribute("data-open","");
+  b.setAttribute("aria-expanded",String(!open));
+});
+
+/* ---- render ---- */
 async function load(){
   S=await api("/state");
   const acc=S.accounts.find(a=>a.platform==="threads");
   $("#dot").classList.toggle("on",!!acc);
-  $("#acctText").textContent=acc?`Threads: ${acc.label}`:"Threads belum bersambung";
-  $("#connect").hidden=!!acc;
-  $("#connect").onclick=()=>showSetup(true);
-  $("#t_redirect").value=S.settings?.threads?.redirectUri||"https://localhost:8787/oauth/threads/callback";
+  $("#acctText").textContent=acc?acc.label:"Sambung Threads";
+  $("#t_redirect").value=S.settings?.threads?.redirectUri||"";
   $("#t_appid").value=S.settings?.threads?.appId||"";
-  $("#t_secret").placeholder=S.settings?.threads?.appSecret==="__SET__"?"tersimpan — isi untuk tukar":"";
-  renderStyles(); renderLib();
+  $("#t_secret").placeholder=S.settings?.threads?.appSecret==="__SET__"?"tersimpan":"";
+
   const prov=S.settings?.llm?.provider||"local";
-  $("#llmNow").innerHTML = prov==="local"
-    ? '<span class="bad">Sekarang: tiada AI.</span> Post yang keluar cuma <b>rangka ayat</b> — bukan cerita. Pilih satu di bawah dan isi key.'
-    : `<span class="ok">Sekarang: ${esc(prov)} · ${esc(S.settings.llm.model||"(model belum diisi)")}</span>`;
+  $("#engineNow").innerHTML=prov==="local"
+    ? 'Enjin ayat: <span class="bad">tiada AI</span>'
+    : `Enjin ayat: <span class="ok">${esc(S.settings.llm.model||prov)}</span>`;
   if(!$("#llm_base").value){ $("#llm_base").value=S.settings?.llm?.baseUrl||""; $("#llm_model").value=S.settings?.llm?.model||""; }
-  $("#llm_key").placeholder=S.settings?.llm?.apiKey==="__SET__"?"key tersimpan — isi untuk tukar":"sk-…";
-  const tunggu=S.posts.filter(p=>p.status==="review").length, jadual=S.posts.filter(p=>p.status==="scheduled").length;
-  $("#queueLine").textContent=`${tunggu} tunggu sahkan · ${jadual} berjadual · ${S.posts.filter(p=>p.status==="published").length} dah keluar`;
-}
-function renderStyles(){
-  $("#styles").innerHTML=Object.entries(S.styles||{}).map(([k,v])=>
-    `<button class="sty" data-style="${k}" aria-pressed="${k===style}"><b>${esc(v.label)}</b><span>${esc(v.nota)}</span></button>`).join("");
-  $$(".sty").forEach(b=>b.onclick=()=>{ style=b.dataset.style; $$(".sty").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); });
+  $("#llm_key").placeholder=S.settings?.llm?.apiKey==="__SET__"?"tersimpan":"sk-…";
+
+  if(!$("#styles").children.length){
+    $("#styles").innerHTML=Object.entries(S.styles||{}).map(([k,v])=>
+      `<button class="pick" data-style="${k}" aria-pressed="${k===style}">${esc(v.label)}</button>`).join("");
+    $$("[data-style]").forEach(b=>b.onclick=()=>{ style=b.dataset.style; $$("[data-style]").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); });
+  }
+  renderLib();
+  const tunggu=S.posts.filter(p=>p.status==="review").length, jad=S.posts.filter(p=>p.status==="scheduled").length;
+  $("#queueLine").textContent=`${tunggu} tunggu · ${jad} berjadual · ${S.posts.filter(p=>p.status==="published").length} keluar`;
+  $$(".card").forEach(c=>c.classList.remove("filled"));
+  if($("#url").value.trim()||picked.length) $("#c1").classList.add("filled");
+  $("#c2").classList.add("filled"); $("#c3").classList.add("filled");
+  if(prov!=="local") $("#cEngine").classList.add("filled");
 }
 function renderTimes(){
-  const opts=[["07:00","7 pagi"],["13:00","1 tengah hari"],["19:00","7 malam"],["21:00","9 malam"]];
-  $("#times").innerHTML=opts.map(([v,l])=>`<button class="time" data-t="${v}" aria-pressed="${times.includes(v)}">${l}</button>`).join("");
-  $$(".time").forEach(b=>b.onclick=()=>{
+  const opts=[["07:00","7 pagi"],["13:00","1 tgh"],["19:00","7 mlm"],["21:00","9 mlm"]];
+  $("#times").innerHTML=opts.map(([v,l])=>`<button class="pick" data-t="${v}" aria-pressed="${times.includes(v)}">${l}</button>`).join("");
+  $$("[data-t]").forEach(b=>b.onclick=()=>{
     const t=b.dataset.t;
-    times = times.includes(t) ? times.filter(x=>x!==t) : [...times,t].sort();
+    times = times.includes(t)?times.filter(x=>x!==t):[...times,t].sort();
     if(!times.length) times=[t];
     renderTimes();
   });
 }
-function renderLib(){
-  $("#libCount").textContent=S.products.length;
-  $("#lib").innerHTML=S.products.length?S.products.map(p=>`
-    <div class="card"><div class="prod">
-      ${p.image?`<img src="${esc(p.image)}" alt="">`:""}
-      <div style="flex:1"><b>${esc(p.name)}</b>${p.price?` <span class="tag">${esc(p.price)}</span>`:""}
-        <div class="why">${esc(p.marketplace||"")}</div></div>
-      <button class="btn sm ghost" data-del="${p.id}">✕</button>
-    </div></div>`).join(""):'<p class="hint">Kosong. Tampal beberapa link produk supaya sistem ada benda nak cari.</p>';
-  $$("[data-del]").forEach(b=>b.onclick=async()=>{ await api("/products/"+b.dataset.del,{method:"DELETE"}); load(); });
-}
-function postCard(p,i){
-  return `<div class="card" data-id="${p.id}">
-    <div class="meta"><span class="tag">${esc(p.script?.angle||"")}</span><span>${fmt(p.scheduledAt)}</span>
-      <span>${p.text.length} aksara${p.text.length>500?' <span class="bad">— lebih had</span>':""}</span></div>
-    <textarea data-text="${p.id}">${esc(p.text)}</textarea>
-    ${p.script?.reply?`<p class="hint">Balasan pertama (link): ${esc(p.script.reply)}</p>`:""}
-    ${p.script?.visual?`<p class="hint">Visual: ${esc(p.script.visual)}</p>`:""}
-  </div>`;
-}
-async function go(){
-  const mode=$("#flowMasalah").hidden?"produk":"masalah";
-  $("#goMsg").textContent="menulis…"; $("#out").innerHTML=""; $("#outActions").hidden=true;
-  try{
-    const common={style,times,startDate:$("#startDate").value,count:Number($("#count").value)};
-    let res=[];
-    if(mode==="produk"){
-      const url=$("#url").value.trim();
-      if(!url){ $("#goMsg").innerHTML='<span class="bad">Tampal link produk dulu.</span>'; return; }
-      res=[await api("/compose",{method:"POST",body:JSON.stringify({url,...common})})];
-    } else {
-      if(!picked.length){ $("#goMsg").innerHTML='<span class="bad">Pilih sekurang-kurangnya satu produk.</span>'; return; }
-      const perProduk=Math.max(1,Math.round(common.count/picked.length));
-      res=[];
-      for(const id of picked) res.push(await api("/compose",{method:"POST",body:JSON.stringify({productId:id,masalah:$("#masalah").value.trim(),...common,count:perProduk})}));
-    }
-    made=res.flatMap(r=>r.posts);
-    const notes=[...new Set(res.flatMap(r=>r.notes||[]))];
-    $("#goMsg").innerHTML=`<span class="ok">${made.length} post siap.</span>`
-      + (notes.length?` <span class="warn">${notes.map(esc).join(" · ")}</span>`:" Semak, edit kalau perlu, lepas tu sahkan.");
-    $("#out").innerHTML=made.map(postCard).join("");
-    $$("[data-text]").forEach(t=>t.onchange=()=>api(`/posts/${t.dataset.text}`,{method:"PATCH",body:JSON.stringify({text:t.value})}));
-    $("#outActions").hidden=false;
-    load();
-  }catch(e){ $("#goMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+function renderPresets(){
+  const P={nousportal:"Nous Portal",hermes405:"Hermes 405B",hermes70:"Hermes 70B",openrouter:"OpenRouter",anthropic:"Anthropic",ollama:"Ollama",local:"Tiada AI"};
+  $("#presets").innerHTML=Object.entries(P).map(([k,l])=>`<button class="pick" data-preset="${k}">${l}</button>`).join("");
+  $$("[data-preset]").forEach(b=>b.onclick=()=>{
+    const p=PRESET[b.dataset.preset];
+    llmProvider=p.provider; $("#llm_base").value=p.baseUrl; $("#llm_model").value=p.model;
+    $$("[data-preset]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+  });
 }
 const PRESET={
   nousportal:{provider:"openai",baseUrl:"https://inference-api.nousresearch.com/v1",model:"Hermes-4-405B"},
   hermes405:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:"nousresearch/hermes-4-405b"},
   hermes70:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:"nousresearch/hermes-4-70b"},
-  openrouter:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:"anthropic/claude-sonnet-4.5"},
+  openrouter:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:""},
   anthropic:{provider:"anthropic",baseUrl:"https://api.anthropic.com",model:"claude-sonnet-4-5"},
   ollama:{provider:"openai",baseUrl:"http://localhost:11434/v1",model:"llama3.1:8b"},
   local:{provider:"local",baseUrl:"",model:""},
 };
-let llmProvider=null;
-$$("[data-preset]").forEach(b=>b.onclick=()=>{
-  const p=PRESET[b.dataset.preset];
-  llmProvider=p.provider; $("#llm_base").value=p.baseUrl; $("#llm_model").value=p.model;
-  $("#llm_msg").innerHTML=b.dataset.preset==="local"?'<span class="hint">Tekan simpan untuk kembali ke rangka sahaja.</span>':'<span class="hint">Isi API key, lepas tu simpan.</span>';
-});
-$("#llm_save").onclick=async()=>{
-  $("#llm_msg").textContent="menyimpan…";
-  const body={llm:{provider:llmProvider||S.settings?.llm?.provider||"local",baseUrl:$("#llm_base").value.trim(),model:$("#llm_model").value.trim()}};
-  if($("#llm_key").value.trim()) body.llm.apiKey=$("#llm_key").value.trim();
-  try{
-    await api("/settings",{method:"POST",body:JSON.stringify(body)});
-    $("#llm_key").value=""; $("#llm_msg").innerHTML='<span class="ok">Disimpan. Cuba jana sekali lagi.</span>'; load();
-  }catch(e){ $("#llm_msg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
-};
-function briefBody(){
-  const mode=$("#flowMasalah").hidden?"produk":"masalah";
-  const base={style,times,startDate:$("#startDate").value,count:Number($("#count").value)};
-  if(mode==="produk") return {...base,url:$("#url").value.trim()};
-  return {...base,productId:picked[0],masalah:$("#masalah").value.trim()};
+function renderLib(){
+  $("#libCount").textContent=S.products.length;
+  $("#lib").innerHTML=S.products.length?S.products.map(p=>`
+    <div class="post"><div class="prod">
+      ${p.image?`<img src="${esc(p.image)}" alt="">`:""}
+      <div style="flex:1"><div class="nm">${esc(p.name)}</div><div class="sub" style="margin:2px 0 0">${esc(p.price||"")}</div></div>
+      <button class="btn sm" data-del="${p.id}">✕</button></div></div>`).join("")
+    :'<p class="empty">Kosong</p>';
+  $$("[data-del]").forEach(b=>b.onclick=async()=>{ await api("/products/"+b.dataset.del,{method:"DELETE"}); load(); });
 }
-$("#copyPrompt").onclick=async e=>{
-  $("#promptMsg").textContent="menyediakan…";
+function postCard(p){
+  return `<div class="post" data-id="${p.id}">
+    <div class="meta"><span class="chip">${esc(p.script?.angle||"")}</span><span>${fmt(p.scheduledAt)}</span>
+      <span style="margin-left:auto">${p.text.length}${p.text.length>500?' <span class="bad">&gt;500</span>':""}</span></div>
+    <textarea data-text="${p.id}">${esc(p.text)}</textarea>
+    ${p.script?.reply?`<p class="sub">↳ ${esc(p.script.reply)}</p>`:""}
+    ${p.script?.visual?`<p class="sub">📷 ${esc(p.script.visual)}</p>`:""}
+  </div>`;
+}
+function showOut(posts,notes){
+  made=posts;
+  $("#cOut").hidden=!posts.length;
+  $("#outTitle").textContent=`${posts.length} post siap`;
+  $("#out").innerHTML=posts.map(postCard).join("");
+  $$("[data-text]").forEach(t=>t.onchange=()=>api(`/posts/${t.dataset.text}`,{method:"PATCH",body:JSON.stringify({text:t.value})}));
+  $("#goMsg").innerHTML=notes?.length?`<span class="warn">${notes.map(esc).join(" · ")}</span>`:"";
+  $("#cOut").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+/* ---- tindakan ---- */
+function body(){
+  const masalahMode=!$("#boxMasalah").hidden;
+  const base={style,times,startDate:$("#startDate").value,count:Number($("#count").value)};
+  return masalahMode?{...base,productId:picked[0],masalah:$("#masalah").value.trim()}:{...base,url:$("#url").value.trim()};
+}
+$("#go").onclick=async()=>{
+  const masalahMode=!$("#boxMasalah").hidden;
+  if(!masalahMode && !$("#url").value.trim()) return $("#goMsg").innerHTML='<span class="bad">Tampal link dulu.</span>';
+  if(masalahMode && !picked.length) return $("#goMsg").innerHTML='<span class="bad">Pilih produk dulu.</span>';
+  $("#goMsg").textContent="menulis…";
   try{
-    const r=await api("/compose/prompt",{method:"POST",body:JSON.stringify(briefBody())});
-    try{ await navigator.clipboard.writeText(r.prompt); }
-    catch(_){ const t=document.createElement("textarea"); t.value=r.prompt; document.body.append(t); t.select(); document.execCommand("copy"); t.remove(); }
-    e.target.textContent="✓ dah copy";
-    setTimeout(()=>e.target.textContent="Copy arahan",1500);
-    $("#promptMsg").innerHTML=`<span class="ok">${r.prompt.length.toLocaleString()} aksara arahan untuk ${esc(r.product.name)} — paste dalam AI kau.</span>`;
+    const ids=masalahMode?picked:[null];
+    const per=Math.max(1,Math.round(Number($("#count").value)/ids.length));
+    const res=[];
+    for(const id of ids) res.push(await api("/compose",{method:"POST",body:JSON.stringify({...body(),productId:id||undefined,count:per})}));
+    showOut(res.flatMap(r=>r.posts),[...new Set(res.flatMap(r=>r.notes||[]))]);
+    load();
+  }catch(e){ $("#goMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+};
+$("#approveAll").onclick=async()=>{
+  $("#approveMsg").textContent="menjadualkan…";
+  for(const p of made) await api(`/posts/${p.id}`,{method:"PATCH",body:JSON.stringify({status:"scheduled"})});
+  const acc=S.accounts.find(a=>a.platform==="threads");
+  $("#approveMsg").innerHTML=acc?'<span class="ok">Berjadual.</span>':'<span class="warn">Berjadual — Threads belum sambung, post sendiri buat masa ni.</span>';
+  load();
+};
+$("#copyPrompt").onclick=async e=>{
+  $("#promptMsg").textContent="…";
+  try{
+    const r=await api("/compose/prompt",{method:"POST",body:JSON.stringify(body())});
+    await copyText(r.prompt);
+    e.target.textContent="✓ copied"; setTimeout(()=>e.target.textContent="Copy arahan",1500);
+    $("#promptMsg").innerHTML=`<span class="ok">${r.prompt.length.toLocaleString()} aksara</span>`;
   }catch(err){ $("#promptMsg").innerHTML=`<span class="bad">${esc(err.message)}</span>`; }
 };
 $("#importBtn").onclick=async()=>{
   $("#importMsg").textContent="membaca…";
   try{
     const r=await api("/compose/import",{method:"POST",body:JSON.stringify({text:$("#pasteBox").value,times,startDate:$("#startDate").value})});
-    made=r.posts; $("#pasteBox").value="";
-    $("#importMsg").innerHTML=`<span class="ok">${r.posts.length} post masuk barisan.</span>`;
-    $("#out").innerHTML=made.map(postCard).join("");
-    $$("[data-text]").forEach(t=>t.onchange=()=>api(`/posts/${t.dataset.text}`,{method:"PATCH",body:JSON.stringify({text:t.value})}));
-    $("#outActions").hidden=false;
-    load();
+    $("#pasteBox").value=""; $("#importMsg").innerHTML=`<span class="ok">${r.posts.length} post masuk.</span>`;
+    showOut(r.posts); load();
   }catch(e){ $("#importMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 };
-$("#go").onclick=go;
-$("#approveAll").onclick=async()=>{
-  $("#approveMsg").textContent="menjadualkan…";
-  for(const p of made) await api(`/posts/${p.id}`,{method:"PATCH",body:JSON.stringify({status:"scheduled"})});
-  const acc=S.accounts.find(a=>a.platform==="threads");
-  $("#approveMsg").innerHTML=acc
-    ? '<span class="ok">Berjadual. Enjin akan hantar sendiri bila sampai masa.</span>'
-    : '<span class="warn">Berjadual — tapi Threads belum bersambung, jadi kau kena post sendiri buat masa ni.</span>';
-  load();
-};
 $("#cari").onclick=async()=>{
-  const masalah=$("#masalah").value.trim();
-  if(!masalah){ $("#cariMsg").innerHTML='<span class="bad">Tulis masalah dulu.</span>'; return; }
+  const m=$("#masalah").value.trim();
+  if(!m) return $("#cariMsg").innerHTML='<span class="bad">Tulis masalah dulu.</span>';
   $("#cariMsg").textContent="mencari…"; $("#matches").innerHTML="";
   try{
-    const r=await api("/match",{method:"POST",body:JSON.stringify({masalah,count:5})});
-    picked=r.matches.map(m=>m.product.id);
-    $("#cariMsg").innerHTML=`<span class="ok">${r.matches.length} produk dicadangkan.</span>`;
-    $("#matches").innerHTML=r.matches.map(m=>`
-      <div class="card"><div class="prod">
-        <input type="checkbox" data-pick="${m.product.id}" checked style="width:auto;margin-top:4px">
-        ${m.product.image?`<img src="${esc(m.product.image)}" alt="">`:""}
-        <div><b>${esc(m.product.name)}</b>${m.product.price?` <span class="tag">${esc(m.product.price)}</span>`:""}
-          <div class="why">${esc(m.kenapa)}</div></div>
+    const r=await api("/match",{method:"POST",body:JSON.stringify({masalah:m,count:5})});
+    picked=r.matches.map(x=>x.product.id);
+    $("#cariMsg").innerHTML=`<span class="ok">${r.matches.length} produk</span>`;
+    $("#matches").innerHTML=r.matches.map(x=>`
+      <div class="post"><div class="prod">
+        <input type="checkbox" data-pick="${x.product.id}" checked style="width:20px;height:20px;flex:none">
+        ${x.product.image?`<img src="${esc(x.product.image)}" alt="">`:""}
+        <div style="flex:1"><div class="nm">${esc(x.product.name)}</div><div class="sub" style="margin:2px 0 0">${esc(x.kenapa)}</div></div>
       </div></div>`).join("");
-    $$("[data-pick]").forEach(c=>c.onchange=()=>{
-      picked=$$("[data-pick]").filter(x=>x.checked).map(x=>x.dataset.pick);
-    });
+    $$("[data-pick]").forEach(c=>c.onchange=()=>{ picked=$$("[data-pick]").filter(x=>x.checked).map(x=>x.dataset.pick); });
+    load();
   }catch(e){ $("#cariMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 };
+$("#libToggle").onclick=()=>{ const b=$("#libBox"); b.hidden=!b.hidden; };
 $("#libAdd").onclick=async()=>{
-  const url=$("#libUrl").value.trim();
-  if(!url) return;
+  const u=$("#libUrl").value.trim(); if(!u) return;
   $("#libMsg").textContent="mengesan…";
-  try{
-    const r=await api("/products",{method:"POST",body:JSON.stringify({url})});
-    $("#libUrl").value=""; $("#libMsg").innerHTML=`<span class="ok">${esc(r.product.name)} disimpan.</span>`; load();
+  try{ const r=await api("/products",{method:"POST",body:JSON.stringify({url:u})});
+    $("#libUrl").value=""; $("#libMsg").innerHTML=`<span class="ok">${esc(r.product.name)}</span>`; load();
   }catch(e){ $("#libMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 };
-$("#modeProduk").onclick=()=>setMode("produk");
-$("#modeMasalah").onclick=()=>setMode("masalah");
-function setMode(m){
-  $("#modeProduk").setAttribute("aria-pressed",String(m==="produk"));
-  $("#modeMasalah").setAttribute("aria-pressed",String(m==="masalah"));
-  $("#flowProduk").hidden=m!=="produk";
-  $("#flowMasalah").hidden=m==="produk";
+$("#engineToggle").onclick=()=>{ const b=$("#engineBox"); b.hidden=!b.hidden; if(!b.hidden) renderPresets(); };
+$("#llm_save").onclick=async()=>{
+  $("#llm_msg").textContent="menyimpan…";
+  const b={llm:{provider:llmProvider||S.settings?.llm?.provider||"local",baseUrl:$("#llm_base").value.trim(),model:$("#llm_model").value.trim()}};
+  if($("#llm_key").value.trim()) b.llm.apiKey=$("#llm_key").value.trim();
+  try{ await api("/settings",{method:"POST",body:JSON.stringify(b)});
+    $("#llm_key").value=""; $("#llm_msg").innerHTML='<span class="ok">Disimpan.</span>'; $("#engineBox").hidden=true; load();
+  }catch(e){ $("#llm_msg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+};
+function mode(m){
+  $("#mProduk").setAttribute("aria-pressed",String(m==="produk"));
+  $("#mMasalah").setAttribute("aria-pressed",String(m==="masalah"));
+  $("#boxProduk").hidden=m!=="produk"; $("#boxMasalah").hidden=m==="produk";
+  $("#t1").textContent=m==="produk"?"Link produk":"Apa masalahnya";
 }
-function showSetup(on){ $("#setup").hidden=!on; $("#mainFlow").hidden=on; window.scrollTo({top:0,behavior:"smooth"}); }
-$("#t_close").onclick=()=>showSetup(false);
+$("#mProduk").onclick=()=>mode("produk");
+$("#mMasalah").onclick=()=>mode("masalah");
+function setup(on){ $("#setup").hidden=!on; $("#main").hidden=on; $("#bar").hidden=on; window.scrollTo(0,0); }
+$("#acct").onclick=()=>setup(true);
+$("#t_close").onclick=()=>setup(false);
 $("#t_save").onclick=async()=>{
-  $("#t_saveMsg").textContent="menyimpan…";
+  $("#t_saveMsg").textContent="…";
   try{
-    const r=await api("/threads/setup",{method:"POST",body:JSON.stringify({
-      appId:$("#t_appid").value.trim(), appSecret:$("#t_secret").value.trim(), redirectUri:$("#t_redirect").value.trim()})});
-    $("#t_open").href=r.authorizeUrl; $("#t_open").removeAttribute("aria-disabled");
-    $("#t_saveMsg").innerHTML='<span class="ok">Siap. Pergi langkah B.</span>';
-    $("#t_secret").value="";
+    const r=await api("/threads/setup",{method:"POST",body:JSON.stringify({appId:$("#t_appid").value.trim(),appSecret:$("#t_secret").value.trim(),redirectUri:$("#t_redirect").value.trim()})});
+    $("#t_open").href=r.authorizeUrl; $("#t_secret").value="";
+    $("#t_saveMsg").innerHTML='<span class="ok">Siap — pergi B.</span>';
   }catch(e){ $("#t_saveMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 };
 $("#t_connect").onclick=async()=>{
   $("#t_connectMsg").textContent="menyambung…";
   try{
     const r=await api("/threads/connect",{method:"POST",body:JSON.stringify({redirectUrl:$("#t_url").value.trim()})});
-    $("#t_connectMsg").innerHTML=`<span class="ok">Bersambung sebagai ${esc(r.account.label)}.</span>`
-      + (r.shortLived?' <span class="warn">Token pendek sahaja (1 jam) — cuba lagi kalau ia luput.</span>':"");
-    $("#t_url").value="";
-    await load(); setTimeout(()=>showSetup(false),1200);
+    $("#t_connectMsg").innerHTML=`<span class="ok">Bersambung ${esc(r.account.label)}</span>`;
+    $("#t_url").value=""; await load(); setTimeout(()=>setup(false),1000);
   }catch(e){ $("#t_connectMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 };
 $("#startDate").value=new Date().toISOString().slice(0,10);
-renderTimes();
-load().catch(e=>{ $("#acctText").textContent="tak dapat sambung server"; console.error(e); });
+renderTimes(); mode("produk");
+load().catch(e=>{ $("#acctText").textContent="server tak hidup"; });
 </script>
 </body>
 </html>
