@@ -229,3 +229,43 @@ test("match menolak pustaka kosong dengan sebab yang jelas", async () => {
   assert.equal(r.status, 422);
   assert.match(r.body.error, /Pustaka produk kosong/);
 });
+
+test("laluan tanpa key: ambil arahan, tampal jawapan AI luar, masuk barisan", async () => {
+  const http = await import("node:http");
+  const shop = http.createServer((req, res) => {
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end(`<html><head><meta property="og:title" content="Sabun Pods Laundry 5D">
+      <meta property="product:price:amount" content="19.90">
+      <meta property="product:price:currency" content="MYR"></head><body></body></html>`);
+  });
+  await new Promise(r => shop.listen(0, "127.0.0.1", r));
+  const link = `http://127.0.0.1:${shop.address().port}/sabun-i.1.2`;
+
+  try {
+    const p = await api("/api/compose/prompt", { method: "POST", body: JSON.stringify({ url: link, style: "cerita", count: 2 }) });
+    assert.equal(p.status, 200);
+    assert.equal(p.body.product.name, "Sabun Pods Laundry 5D");
+    assert.match(p.body.prompt, /Playbook Threads/, "playbook disertakan");
+    assert.match(p.body.prompt, /Sabun Pods Laundry 5D/, "butiran produk disertakan");
+    assert.match(p.body.prompt, /RM19\.90/);
+    assert.ok(p.body.prompt.length > 8000, "arahan penuh, bukan potongan");
+
+    // Jawapan gaya Hermes: ada jejak fikiran, lepas tu JSON.
+    const jawapan = `<think>Saya kena tulis dua post. {kurungan} dalam fikiran.</think>
+{"posts":[
+ {"platform":"threads","angle":"Cerita","caption":"Petang Jumaat, basuh baju anak lagi.","reply":"Link: x #ad","visual":"mesin basuh"},
+ {"platform":"threads","angle":"Soalan","caption":"Korang guna pods atau serbuk?","reply":"Aku nak tahu."}]}`;
+    const imp = await api("/api/compose/import", { method: "POST", body: JSON.stringify({ text: jawapan, times: ["07:00", "19:00"] }) });
+    assert.equal(imp.status, 200);
+    assert.equal(imp.body.posts.length, 2);
+    assert.equal(imp.body.posts[0].script.angle, "Cerita");
+    assert.equal(imp.body.posts[0].script.reply, "Link: x #ad");
+    assert.ok(imp.body.posts.every(x => [7, 19].includes(new Date(x.scheduledAt).getHours())));
+
+    const kosong = await api("/api/compose/import", { method: "POST", body: JSON.stringify({ text: "entah apa-apa" }) });
+    assert.equal(kosong.status, 422);
+    assert.match(kosong.body.error, /Tak jumpa post/);
+
+    for (const x of imp.body.posts) await api(`/api/posts/${x.id}`, { method: "DELETE" });
+  } finally { shop.close(); }
+});

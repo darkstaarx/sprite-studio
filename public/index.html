@@ -173,7 +173,8 @@
   <h2><i>AI</i> Enjin ayat</h2>
   <p class="msg" id="llmNow"></p>
   <div class="row">
-    <button class="btn sm" data-preset="hermes405">Hermes 4 405B</button>
+    <button class="btn sm" data-preset="nousportal">Nous Portal</button>
+    <button class="btn sm" data-preset="hermes405">Hermes 4 405B (OpenRouter)</button>
     <button class="btn sm" data-preset="hermes70">Hermes 4 70B (murah)</button>
     <button class="btn sm" data-preset="openrouter">OpenRouter (lain)</button>
     <button class="btn sm" data-preset="anthropic">Anthropic</button>
@@ -196,6 +197,17 @@
   <button class="btn primary" id="go">Tulis &amp; jadualkan</button>
   <p class="msg" id="goMsg"></p>
   <div id="out" style="margin-top:14px"></div>
+  <details id="manualBox" style="margin-top:14px">
+    <summary class="hint">Tiada API key? Guna AI yang kau dah ada (Hermes Agent, ChatGPT, Claude)</summary>
+    <p class="hint" style="margin-top:10px">Tekan copy, jalankan arahan tu dalam AI kau, lepas tu tampal jawapan penuh dia di bawah. Hasilnya sama macam kalau key dipasang.</p>
+    <div class="row">
+      <button class="btn" id="copyPrompt">Copy arahan</button>
+      <span class="msg" id="promptMsg"></span>
+    </div>
+    <textarea id="pasteBox" style="min-height:120px;margin-top:11px" placeholder="Tampal SEMUA jawapan AI di sini (termasuk bahagian { &quot;posts&quot;: [ … ] })"></textarea>
+    <div class="row" style="margin-top:10px"><button class="btn primary" id="importBtn" style="width:auto">Masukkan ke barisan</button><span class="msg" id="importMsg"></span></div>
+  </details>
+
   <div class="row" id="outActions" hidden>
     <button class="btn primary" id="approveAll" style="width:auto">Sahkan semua &amp; jadual</button>
     <span class="msg" id="approveMsg"></span>
@@ -308,6 +320,7 @@ async function go(){
   }catch(e){ $("#goMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 }
 const PRESET={
+  nousportal:{provider:"openai",baseUrl:"https://inference-api.nousresearch.com/v1",model:"Hermes-4-405B"},
   hermes405:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:"nousresearch/hermes-4-405b"},
   hermes70:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:"nousresearch/hermes-4-70b"},
   openrouter:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:"anthropic/claude-sonnet-4.5"},
@@ -329,6 +342,35 @@ $("#llm_save").onclick=async()=>{
     await api("/settings",{method:"POST",body:JSON.stringify(body)});
     $("#llm_key").value=""; $("#llm_msg").innerHTML='<span class="ok">Disimpan. Cuba jana sekali lagi.</span>'; load();
   }catch(e){ $("#llm_msg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+};
+function briefBody(){
+  const mode=$("#flowMasalah").hidden?"produk":"masalah";
+  const base={style,times,startDate:$("#startDate").value,count:Number($("#count").value)};
+  if(mode==="produk") return {...base,url:$("#url").value.trim()};
+  return {...base,productId:picked[0],masalah:$("#masalah").value.trim()};
+}
+$("#copyPrompt").onclick=async e=>{
+  $("#promptMsg").textContent="menyediakan…";
+  try{
+    const r=await api("/compose/prompt",{method:"POST",body:JSON.stringify(briefBody())});
+    try{ await navigator.clipboard.writeText(r.prompt); }
+    catch(_){ const t=document.createElement("textarea"); t.value=r.prompt; document.body.append(t); t.select(); document.execCommand("copy"); t.remove(); }
+    e.target.textContent="✓ dah copy";
+    setTimeout(()=>e.target.textContent="Copy arahan",1500);
+    $("#promptMsg").innerHTML=`<span class="ok">${r.prompt.length.toLocaleString()} aksara arahan untuk ${esc(r.product.name)} — paste dalam AI kau.</span>`;
+  }catch(err){ $("#promptMsg").innerHTML=`<span class="bad">${esc(err.message)}</span>`; }
+};
+$("#importBtn").onclick=async()=>{
+  $("#importMsg").textContent="membaca…";
+  try{
+    const r=await api("/compose/import",{method:"POST",body:JSON.stringify({text:$("#pasteBox").value,times,startDate:$("#startDate").value})});
+    made=r.posts; $("#pasteBox").value="";
+    $("#importMsg").innerHTML=`<span class="ok">${r.posts.length} post masuk barisan.</span>`;
+    $("#out").innerHTML=made.map(postCard).join("");
+    $$("[data-text]").forEach(t=>t.onchange=()=>api(`/posts/${t.dataset.text}`,{method:"PATCH",body:JSON.stringify({text:t.value})}));
+    $("#outActions").hidden=false;
+    load();
+  }catch(e){ $("#importMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 };
 $("#go").onclick=go;
 $("#approveAll").onclick=async()=>{

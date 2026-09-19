@@ -54,6 +54,16 @@ App tukar kod itu kepada token 60 hari, baca nama akaun kau, dan simpan.
 
 App Secret disimpan dalam `data/db.json` pada mesin kau dan tidak pernah dihantar balik ke UI.
 
+## Tiada API key? Guna AI yang kau dah ada
+
+Di bawah butang **Tulis & jadualkan** ada laluan tanpa key: **Copy arahan** memberi kau prompt penuh
+(base prompt + playbook + butiran produk yang dikesan, lebih 12,000 aksara), kau jalankan dalam
+apa-apa AI yang kau dah ada — Hermes Agent, ChatGPT, Claude — kemudian tampal jawapannya kembali
+dan tekan **Masukkan ke barisan**. Hasilnya sama seperti kalau key dipasang: post masuk barisan
+dengan slot masa, balasan pertama dan cadangan visual.
+
+Jejak penaakulan `<think>` dibuang automatik, jadi jawapan Hermes boleh ditampal bulat-bulat.
+
 ## Muka depan — empat langkah
 
 `http://localhost:8787/` ialah satu muka sahaja:
@@ -363,8 +373,8 @@ butang Sambung dalam tab Akaun. Token Threads ditukar jadi long-lived (~60 hari)
 | `openai` | `http://localhost:11434/v1` | `hermes3`, `llama3.1:8b` |
 | `anthropic` | `https://api.anthropic.com` | `claude-sonnet-5` |
 
-Muka depan ada kad **Enjin ayat** dengan preset Hermes 4 405B, Hermes 4 70B, OpenRouter, Anthropic
-dan Ollama — pilih satu, tampal key, simpan. Model penaakulan yang mengeluarkan jejak `<think>`
+Muka depan ada kad **Enjin ayat** dengan preset Nous Portal, Hermes 4 405B, Hermes 4 70B,
+OpenRouter, Anthropic dan Ollama — pilih satu, tampal key, simpan. Model penaakulan yang mengeluarkan jejak `<think>`
 (Hermes 4 antaranya) dikendalikan: jejak itu dibuang sebelum JSON dibaca.
 
 Panggilan dibuat dari **server**, bukan browser — jadi tiada masalah CORS, dan key tak pernah

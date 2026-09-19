@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Store, rid } from "./lib/store.mjs";
 import { PLATFORMS } from "./lib/platforms.mjs";
-import { ANGLES, generate, listPrompts, readPrompt, writePrompt, matchProducts } from "./lib/llm.mjs";
+import { ANGLES, generate, listPrompts, readPrompt, writePrompt, matchProducts, buildPromptFor, parsePosts } from "./lib/llm.mjs";
 import * as sched from "./lib/scheduler.mjs";
 import { verify } from "./lib/publishers.mjs";
 import { detect } from "./lib/detect.mjs";
@@ -76,6 +76,32 @@ const STYLES = {
   soalan:  { label: "Soalan jujur",    angle: "soalan",       nota: "buka perbualan, tiada link" },
   harga:   { label: "Kiraan harga",    angle: "harga-shock",  nota: "perlu harga" },
 };
+
+/** Bina brief dari link atau produk dalam pustaka. Dikongsi oleh /compose dan /compose/prompt. */
+async function briefDariBody(body) {
+  const style = STYLES[body.style] ? body.style : "cerita";
+  let product = body.productId ? store.data.products.find(p => p.id === body.productId) : null;
+  let found = null;
+  if (!product) {
+    if (!body.url) return { error: "Bagi link produk atau pilih dari pustaka.", code: 400 };
+    try { found = await detect(String(body.url)); }
+    catch (e) { return { error: e.message, code: 502 }; }
+    if (!found.hasName && !body.nama) {
+      return { error: "Produk tak dapat dikesan. Isi nama sendiri.", code: 422, detected: found };
+    }
+    product = { url: found.affiliateUrl, name: body.nama || found.name, price: body.harga || found.price, image: found.image, marketplace: found.marketplace };
+  }
+  const brief = {
+    id: rid(), name: product.name, mode: body.mode || "affiliate", nama: product.name,
+    harga: product.price || body.harga || "", link: product.url, niche: product.marketplace || "",
+    keterangan: found?.descriptionQuality === "produk" ? found.description : "",
+    kelebihan: body.kelebihan || [], masalah: body.masalah || product.masalah || "",
+    cerita: body.cerita || "", audience: body.audience || "pengguna media sosial Malaysia, 25-40",
+    bahasa: "bm-santai", tone: "Santai & jujur", cta: "Link dalam balasan pertama",
+    angles: [STYLES[style].angle], image: product.image, lastUsedAt: Date.now(),
+  };
+  return { brief, product, detected: found, style };
+}
 
 const ROUTES = [
   ["GET", /^\/api\/state$/, async () => [200, publicState()]],
@@ -343,6 +369,32 @@ const ROUTES = [
     }
     store.log("info", `Compose: ${made.length} post gaya ${style} untuk ${product.name}`);
     return [200, { product, style, posts: made, detected: found, notes }];
+  }],
+
+  // --- Tiada API key? Ambil arahan, jalankan dalam AI kau sendiri, tampal hasil balik.
+  ["POST", /^\/api\/compose\/prompt$/, async (_m, body) => {
+    const r = await briefDariBody(body);
+    if (r.error) return [r.code, { error: r.error, detected: r.detected }];
+    return [200, { prompt: buildPromptFor(r.brief, ["threads"], body.count || 3), product: r.product }];
+  }],
+  ["POST", /^\/api\/compose\/import$/, async (_m, body) => {
+    const posts = parsePosts(String(body.text || ""));
+    if (!posts.length) {
+      return [422, { error: "Tak jumpa post dalam teks tu. Pastikan kau salin SEMUA jawapan AI, termasuk bahagian { \"posts\": [ ... ] }." }];
+    }
+    const slots = sched.customSlots(store, posts.length, body.times, body.startDate);
+    const made = posts.map((p, i) => store.addPost({
+      platform: "threads",
+      accountId: store.accountFor("threads")?.id || null,
+      text: p.caption,
+      status: "review",
+      scheduledAt: slots[i] ?? null,
+      source: "ai",
+      briefId: body.briefId || null,
+      script: { angle: p.angle, hook: p.hook, body: p.body, cta: p.cta, reply: p.reply, visual: p.visual },
+    }));
+    store.log("info", `Import: ${made.length} post ditampal dari AI luar`);
+    return [200, { posts: made }];
   }],
 
   ["POST", /^\/api\/slots$/, async (_m, body) =>
