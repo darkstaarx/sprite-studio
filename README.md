@@ -38,8 +38,10 @@ tujuannya) ke dalam **Redirect Callback URLs**. Tiga perangkap di medan ini:
 
 1. Selepas menaip, satu cadangan muncul di bawah medan — **kau mesti klik cadangan itu**, kalau
    tidak nilainya nampak masuk tetapi tidak tersimpan.
-2. **Deauthorize callback URL** dan **Data deletion request URL** wajib diisi sebelum butang save
-   berfungsi — tampal alamat yang sama.
+2. Ketiga-tiga medan pada halaman itu — **Redirect Callback URLs**, **Uninstall Callback URL** dan
+   **Delete Callback URL** — mesti diisi dengan alamat yang sama sebelum butang **Save** berfungsi.
+   Dua yang terakhir wajib walaupun tidak digunakan. Muat semula halaman selepas save untuk
+   mengesahkan nilainya kekal.
 3. `localhost` dan `127.0.0.1` akan ditolak dengan ralat "URL Blocked" (kod 1349168).
 
 Kemudian isi App ID dan App Secret dalam ViralCool.
