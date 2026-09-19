@@ -20,6 +20,9 @@ test("extractCode terima apa cara pun pengguna salin", () => {
   assert.equal(extractCode(`localhost:8787/cb?code=${kod}&state=x`), kod, "URL tanpa skema, ada parameter lain");
   assert.equal(extractCode(`${kod}#__`), kod, "buang ekor # yang Meta tambah");
   assert.throws(() => extractCode("https://localhost:8787/cb?error=access_denied&error_description=Pengguna+tolak"), /Pengguna tolak/);
+  assert.throws(
+    () => extractCode("https://www.threads.com/oauth/authorize/error.json?error_message=URL+Blocked%3A+This+redirect+failed+because+the+redirect+URI+is+not+whitelisted&error_code=1349168"),
+    /belum didaftarkan/, "terangkan URL Blocked, bukan sekadar ulang mesej Meta");
   assert.throws(() => extractCode("https://localhost:8787/cb"), /Tak jumpa kod/);
   assert.throws(() => extractCode("AQB123"), /terlalu pendek/);
   assert.throws(() => extractCode(""), /Tampal kod atau URL/);
