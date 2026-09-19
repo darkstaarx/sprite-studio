@@ -173,7 +173,9 @@
   <h2><i>AI</i> Enjin ayat</h2>
   <p class="msg" id="llmNow"></p>
   <div class="row">
-    <button class="btn sm" data-preset="openrouter">OpenRouter</button>
+    <button class="btn sm" data-preset="hermes405">Hermes 4 405B</button>
+    <button class="btn sm" data-preset="hermes70">Hermes 4 70B (murah)</button>
+    <button class="btn sm" data-preset="openrouter">OpenRouter (lain)</button>
     <button class="btn sm" data-preset="anthropic">Anthropic</button>
     <button class="btn sm" data-preset="ollama">Ollama (tempatan)</button>
     <button class="btn sm ghost" data-preset="local">Tiada AI (rangka sahaja)</button>
@@ -306,6 +308,8 @@ async function go(){
   }catch(e){ $("#goMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 }
 const PRESET={
+  hermes405:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:"nousresearch/hermes-4-405b"},
+  hermes70:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:"nousresearch/hermes-4-70b"},
   openrouter:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:"anthropic/claude-sonnet-4.5"},
   anthropic:{provider:"anthropic",baseUrl:"https://api.anthropic.com",model:"claude-sonnet-4-5"},
   ollama:{provider:"openai",baseUrl:"http://localhost:11434/v1",model:"llama3.1:8b"},

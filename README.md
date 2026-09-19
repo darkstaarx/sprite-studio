@@ -359,9 +359,13 @@ butang Sambung dalam tab Akaun. Token Threads ditukar jadi long-lived (~60 hari)
 | Provider | Base URL | Model contoh |
 |---|---|---|
 | `local` | — | tiada; templat dalam `lib/llm.mjs` |
-| `openai` | `https://openrouter.ai/api/v1` | `nousresearch/hermes-4-405b` |
+| `openai` | `https://openrouter.ai/api/v1` | `nousresearch/hermes-4-405b` atau `nousresearch/hermes-4-70b` |
 | `openai` | `http://localhost:11434/v1` | `hermes3`, `llama3.1:8b` |
 | `anthropic` | `https://api.anthropic.com` | `claude-sonnet-5` |
+
+Muka depan ada kad **Enjin ayat** dengan preset Hermes 4 405B, Hermes 4 70B, OpenRouter, Anthropic
+dan Ollama — pilih satu, tampal key, simpan. Model penaakulan yang mengeluarkan jejak `<think>`
+(Hermes 4 antaranya) dikendalikan: jejak itu dibuang sebelum JSON dibaca.
 
 Panggilan dibuat dari **server**, bukan browser — jadi tiada masalah CORS, dan key tak pernah
 dihantar ke UI (state API balas `__SET__` sahaja).

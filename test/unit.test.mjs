@@ -132,3 +132,18 @@ test("brief bawa cerita sebenar, atau larang reka cerita", () => {
   const tanpa = buildBrief({ nama: "X" }, ["threads"], 3);
   assert.match(tanpa, /jangan reka pengalaman peribadi/);
 });
+
+test("parsePosts abaikan jejak fikiran model penaakulan", () => {
+  const hermes = `<think>
+Pengguna mahu 2 post. Saya perlu ikut kontrak {"posts":[...]} dan pastikan bawah 500 aksara.
+Mungkin guna angle {cerita} dulu. } { kurungan dalam fikiran ni sepatutnya tak memecahkan parser.
+</think>
+{"posts":[{"platform":"threads","angle":"Cerita","caption":"Petang Jumaat, parking B2.","reply":"Link: x"}]}`;
+  const out = parsePosts(hermes);
+  assert.equal(out.length, 1);
+  assert.equal(out[0].angle, "Cerita");
+  assert.equal(out[0].reply, "Link: x");
+
+  const tanpaPenutup = `Baiklah, saya fikir dulu... </think>\n{"posts":[{"platform":"threads","caption":"Dua ayat."}]}`;
+  assert.equal(parsePosts(tanpaPenutup).length, 1);
+});
