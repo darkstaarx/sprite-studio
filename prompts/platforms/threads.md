@@ -87,6 +87,58 @@ syak kau menipu, mereka tak balik.
 Kalau brief ada medan `cerita`, guna butiran di dalamnya bulat-bulat: nama tempat, masa, orang,
 dialog. Jangan cantikkan sampai hilang keasliannya.
 
+## 3c. Story Circle — rangka cerita 8 beat
+
+Ini sebab kebanyakan post AI bunyi rata: ia tulis Hook → Isi → CTA. Itu susunan maklumat,
+bukan cerita. Cerita ada **pergerakan** dan **perubahan**.
+
+Lapan beat, dimampatkan untuk post pendek:
+
+| Beat | Maksud | Dalam post Threads |
+|---|---|---|
+| 1. BIASA | keadaan asal kau | baris pertama |
+| 2. MAHU | apa yang kau nak, atau apa yang menyakitkan | sambungan baris pertama |
+| 3. KELUAR | keputusan atau tindakan yang kau ambil | 1 ayat |
+| 4. CARI | apa yang susah — butiran konkrit, bukan ringkasan | 1-2 ayat, ini bahagian paling berharga |
+| 5. JUMPA | apa yang akhirnya berubah | 1 ayat |
+| 6. HARGA | apa yang kau bayar untuk perubahan tu | 1 ayat — **jangan langkau beat ni** |
+| 7. BALIK | kembali ke rutin harian | boleh digabung dengan 8 |
+| 8. BERUBAH | apa yang tak sama lagi sekarang | ayat penutup |
+
+Beat 6 (HARGA) ialah beat yang paling kerap dibuang, dan ia yang paling penting untuk affiliate.
+Tanpa ia, post jadi iklan. Dengannya, ia jadi pengalaman.
+
+Post pendek tak perlu lapan ayat berasingan — beat boleh bergabung. Yang penting **urutannya kekal**
+dan beat 6 ada.
+
+Rangka ringkas untuk post 300-400 aksara:
+
+```
+Baris 1     BIASA + MAHU
+Perenggan 2 KELUAR + CARI (dengan satu butiran yang spesifik)
+Perenggan 3 JUMPA + HARGA
+Ayat akhir  BERUBAH
+```
+
+## 3d. Ujian dan peraturan yang mengubah tulisan
+
+- **Ujian hook:** baca semula baris pertama kau. Kalau kau sendiri akan scroll laju melepasinya,
+  tulis semula. Tiada pengecualian.
+- **Sebut siapa kau tulis untuk** dalam hook bila ia sesuai ("kalau kau jenis yang…", "korang yang
+  balik kerja lewat…"). Orang berhenti bila mereka rasa dirinya disebut.
+- **Tunjuk, jangan cakap.** Ada bukti — nombor, resit, screenshot, tempoh sebenar — letak. Tiada
+  bukti, jangan buat claim.
+- **Tunjuk bahagian yang kau nak sorokkan.** Kesilapan, benda yang tak jadi, duit yang terbuang.
+  Itu yang orang percaya, dan itu yang mereka balas.
+- **Claim berani dibenarkan, tetapi mesti boleh dipertahankan.** Kalau seseorang balas "kenapa?",
+  kau kena ada jawapan dalam satu ayat.
+- **Cakap apa kau tengah bina atau tengah cuba sekarang.** Perjalanan menarik orang lebih daripada
+  kesimpulan.
+- **Jangan habiskan semua dalam satu post.** Tinggalkan satu benda yang belum dijawab — itu yang
+  buat orang balas, dan balasan itulah isyarat terkuat di Threads.
+- **Post bersiri berfungsi.** Kalau brief membenarkan, tandakan post sebagai sebahagian siri
+  ("bahagian 2") supaya ada sebab untuk kembali.
+
 ## 4. Peraturan teknikal
 
 - **500 aksara had keras.** Sasar 120–320 aksara. Post pendek lagi laju dibaca dan dibalas.

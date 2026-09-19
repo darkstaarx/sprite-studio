@@ -231,6 +231,20 @@
     <p class="msg" id="approveMsg"></p>
   </div>
 
+  <!-- selepas jadual -->
+  <div class="card" id="cAfter" hidden>
+    <div class="head"><span class="n">→</span><span class="title">Bila post keluar nanti</span>
+      <button class="i" data-note="nAfter" aria-expanded="false">i</button></div>
+    <div class="note" id="nAfter">Threads kira <b>balasan</b>, bukan like. Lima belas minit selepas post ialah tetingkap paling penting — kalau kau hilang, post tu mati walaupun ayatnya bagus.</div>
+    <ul style="margin:0;padding-left:18px;font-size:14px;line-height:1.9;color:var(--dim)">
+      <li>15 minit <b>sebelum</b>: like dan balas dalam niche kau</li>
+      <li>Lepas post, duduk 15 minit — balas semua yang masuk</li>
+      <li>Balas <b>setiap</b> komen, walaupun lambat</li>
+      <li>Komen berisi di post orang lain — bukan “nice post”</li>
+      <li>Letak link dalam balasan pertama, bukan dalam post</li>
+    </ul>
+  </div>
+
   <!-- tanpa key -->
   <p style="text-align:center" id="manualLink" hidden><button class="btn link" id="manualShow">Tiada API key? Guna AI lain →</button></p>
   <div class="card" id="cManual">
@@ -412,6 +426,7 @@ $("#approveAll").onclick=async()=>{
   for(const p of made) await api(`/posts/${p.id}`,{method:"PATCH",body:JSON.stringify({status:"scheduled"})});
   const acc=S.accounts.find(a=>a.platform==="threads");
   $("#approveMsg").innerHTML=acc?'<span class="ok">Berjadual.</span>':'<span class="warn">Berjadual — Threads belum sambung, post sendiri buat masa ni.</span>';
+  $("#cAfter").hidden=false;
   load();
 };
 $("#copyPrompt").onclick=async e=>{

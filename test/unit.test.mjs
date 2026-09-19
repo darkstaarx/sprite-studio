@@ -147,3 +147,18 @@ Mungkin guna angle {cerita} dulu. } { kurungan dalam fikiran ni sepatutnya tak m
   const tanpaPenutup = `Baiklah, saya fikir dulu... </think>\n{"posts":[{"platform":"threads","caption":"Dua ayat."}]}`;
   assert.equal(parsePosts(tanpaPenutup).length, 1);
 });
+
+test("playbook ada rangka cerita 8 beat dan ujian hook", async () => {
+  const { readPlaybook, ANGLES } = await import("../lib/llm.mjs");
+  const pb = readPlaybook("threads");
+  assert.match(pb, /Story Circle/);
+  assert.match(pb, /HARGA/, "beat harga wajib disebut");
+  assert.match(pb, /jangan langkau beat ni/i);
+  assert.match(pb, /Ujian hook/);
+  assert.match(pb, /Jangan habiskan semua dalam satu post/);
+  for (const a of ["circle", "hottake", "bina"]) {
+    assert.ok(ANGLES[a], `angle ${a} wujud`);
+    assert.ok(ANGLES[a].shape.length > 30, `angle ${a} ada struktur`);
+  }
+  assert.match(ANGLES.circle.shape, /HARGA/);
+});

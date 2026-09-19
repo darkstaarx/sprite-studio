@@ -72,6 +72,9 @@ function publicState() {
 // Gaya tulisan yang pengguna pilih di muka depan -> angle dalam enjin.
 const STYLES = {
   cerita:  { label: "Cerita sebenar",  angle: "cerita",       nota: "babak, dialog, butiran kecil" },
+  circle:  { label: "Story circle",    angle: "circle",       nota: "8 beat: biasa → mahu → harga → berubah" },
+  hottake: { label: "Hot take",        angle: "hottake",      nota: "claim berani yang kau boleh pertahan" },
+  bina:    { label: "Bina dalam terang", angle: "bina",       nota: "apa kau tengah cuba sekarang" },
   jujur:   { label: "Review jujur",    angle: "review-jujur", nota: "termasuk satu kelemahan" },
   mitos:   { label: "Pecah mitos",     angle: "myth",         nota: "betulkan salah faham" },
   senarai: { label: "Senarai pendek",  angle: "listicle",     nota: "3-4 perkara laju" },

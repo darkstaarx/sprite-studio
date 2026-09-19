@@ -269,3 +269,25 @@ test("laluan tanpa key: ambil arahan, tampal jawapan AI luar, masuk barisan", as
     for (const x of imp.body.posts) await api(`/api/posts/${x.id}`, { method: "DELETE" });
   } finally { shop.close(); }
 });
+
+test("gaya baharu sampai ke UI dan boleh dipakai", async () => {
+  const st = await api("/api/state");
+  for (const k of ["cerita", "circle", "hottake", "bina", "soalan"]) {
+    assert.ok(st.body.styles[k], `gaya ${k} ada dalam senarai`);
+  }
+  assert.match(st.body.styles.circle.nota, /8 beat|biasa/i);
+
+  const http = await import("node:http");
+  const shop = http.createServer((req, res) => {
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end('<html><head><meta property="og:title" content="Squishy Butter Toy"><meta property="product:price:amount" content="12.90"><meta property="product:price:currency" content="MYR"></head><body></body></html>');
+  });
+  await new Promise(r => shop.listen(0, "127.0.0.1", r));
+  try {
+    const p = await api("/api/compose/prompt", { method: "POST", body: JSON.stringify({
+      url: `http://127.0.0.1:${shop.address().port}/toy-i.1.2`, style: "circle", count: 2 }) });
+    assert.equal(p.status, 200);
+    assert.match(p.body.prompt, /Story circle/i, "angle story circle masuk dalam arahan");
+    assert.match(p.body.prompt, /HARGA/, "beat harga diminta");
+  } finally { shop.close(); }
+});
