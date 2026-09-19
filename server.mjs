@@ -181,7 +181,10 @@ const ROUTES = [
       bahasa: body.bahasa || "bm-santai",
       tone: body.tone || "Santai & jujur",
       cta: body.cta || "Link dalam balasan pertama",
-      angles: body.angles?.length ? body.angles : ["review-jujur", "masalah-selesai", "harga-shock", "objection", "soalan"],
+      // Tanpa harga, angle kiraan harga akan memaksa model mereka nombor — jadi ia digugurkan.
+      angles: body.angles?.length ? body.angles
+        : ["review-jujur", "masalah-selesai", "harga-shock", "objection", "soalan"]
+            .filter(a => a !== "harga-shock" || Boolean(body.harga || found.price)),
       image: found.image,
       lastUsedAt: Date.now(),
     };
@@ -204,8 +207,11 @@ const ROUTES = [
       briefId: brief.id,
       script: { angle: p.angle, hook: p.hook, body: p.body, cta: p.cta, broll: p.broll, reply: p.reply, visual: p.visual },
     }));
+    const notes = [];
+    if (!brief.harga) notes.push("Harga tak dikesan — angle kiraan harga digugurkan. Isi harga dalam brief kalau kau nak angle tu.");
+    if (found.descriptionQuality === "generik") notes.push("Keterangan halaman tiada fakta produk — tambah kelebihan sebenar dalam brief untuk ayat yang lebih tajam.");
     store.log("info", `Quick: ${made.length} post dari ${found.marketplace} — ${brief.nama}`);
-    return [200, { detected: found, briefId: brief.id, posts: made }];
+    return [200, { detected: found, briefId: brief.id, posts: made, notes }];
   }],
 
   ["POST", /^\/api\/slots$/, async (_m, body) =>

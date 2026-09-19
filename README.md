@@ -32,7 +32,9 @@ Apa yang berlaku dalam satu tekan:
    dipakai semula dalam balasan pertama setiap post.
 2. **Kesan produk.** Nama, harga, gambar dan keterangan diambil dari JSON-LD halaman produk,
    atau dari tag Open Graph (tag yang sama yang buat link kau ada thumbnail dalam WhatsApp),
-   atau paling akhir dari slug URL.
+   atau paling akhir dari slug URL. Marketplace kerap tolak "browser" tetapi tetap hidangkan
+   tag pratonton kepada pembaca pautan, jadi app cuba ejen pratonton dahulu sebelum browser biasa,
+   dan berhenti sebaik metadata dijumpai.
 3. **Tulis ayat.** Butiran yang dikesan masuk terus ke dalam brief, digabung dengan base prompt
    dan playbook Threads, dan dihantar ke LLM kau.
 4. **Jadualkan.** Setiap post dapat slot waktu puncak Malaysia dan duduk dalam barisan sebagai
@@ -41,6 +43,13 @@ Apa yang berlaku dalam satu tekan:
 Butang **Uji link sahaja** di sebelahnya cuma mengesan tanpa jana apa-apa, dan membuka laporan
 teknikal (rantaian redirect, status HTTP, tag yang dijumpai, petikan halaman) dengan butang
 **Copy laporan** — berguna bila sesuatu marketplace block bacaan dan kau nak tunjuk buktinya.
+
+Dua perkara yang app buat supaya ayat tak jadi reka-reka:
+
+- Keterangan yang cuma ayat sambutan kedai ("Welcome to the Official … Store") dibuang, bukan
+  disuap sebagai fakta produk.
+- Bila harga tak dikesan, angle kiraan harga digugurkan automatik — kalau tidak model terpaksa
+  mereka nombor. Isi harga dalam brief untuk dapatkan angle tu semula.
 
 Setiap pengesanan datang dengan tahap keyakinan:
 
@@ -137,7 +146,7 @@ kau tekan post sendiri. Itu pilihan paling selamat dan ia default atas sebab tu.
 ```bash
 node server.mjs          # buka http://localhost:8787
 node server.mjs --dry    # mod selamat: semua "terbit" jadi pura-pura
-npm test                 # 32 ujian
+npm test                 # 34 ujian
 ```
 
 ## Cara akses
@@ -311,7 +320,7 @@ lib/oauth.mjs           OAuth Threads dan Meta (optional)
 prompts/base-prompt.md  otak gaya penulisan (semua platform)
 prompts/platforms/      playbook khusus platform — threads.md siap, tambah sendiri yang lain
 public/index.html       UI satu fail
-test/                   32 ujian (unit + API hidup, mod dry)
+test/                   34 ujian (unit + API hidup, mod dry)
 ```
 
 ## Batasan jujur

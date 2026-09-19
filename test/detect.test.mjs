@@ -102,7 +102,8 @@ test("detect tolak link tak sah tanpa melempar", async () => {
 
 test("mod debug pulangkan bukti, bukan tekaan", async () => {
   const r = await detect(`${base}/hop/xyz`, { debug: true });
-  assert.equal(r.debug.hops, 2, "dua redirect diikut");
+  assert.match(r.debug.finalUrl, /Air-Fryer-5L-Digital-Rangup-i\.123\.456$/, "alamat akhir selepas redirect");
+  assert.equal(r.debug.manualResolve, false, "fetch sendiri dah ikut redirect");
   assert.equal(r.debug.status, 200);
   assert.ok(r.debug.htmlBytes > 100);
   assert.ok(r.debug.metaKeys.includes("og:title"));
@@ -115,4 +116,40 @@ test("mod debug pulangkan bukti, bukan tekaan", async () => {
   assert.equal(blocked.debug.looksBlocked, true);
   assert.equal(blocked.debug.hasJsonLd, false);
   assert.ok(blocked.debug.snippet.length <= 300);
+});
+
+// Kedai yang hanya bagi tag Open Graph kepada pembaca pratonton pautan (macam Shopee).
+test("guna ejen pratonton bila browser biasa diblock", async () => {
+  const shop = http.createServer((req, res) => {
+    const ua = req.headers["user-agent"] || "";
+    if (/facebookexternalhit|WhatsApp/i.test(ua)) {
+      res.writeHead(200, { "content-type": "text/html" });
+      return res.end(`<html><head>
+        <meta property="og:title" content="VTOMAN V3 Jump Starter For Car 6000mAh">
+        <meta property="og:description" content="Welcome to the Official Votman Store">
+        <meta property="og:image" content="https://cf.shopee.com.my/file/abc"></head><body></body></html>`);
+    }
+    res.writeHead(403, { "content-type": "text/html" });
+    res.end(`<html><body>Please verify you are human</body></html>`);
+  });
+  await new Promise(r => shop.listen(0, "127.0.0.1", r));
+  const url = `http://127.0.0.1:${shop.address().port}/80CmYQ0Ka5`;
+
+  const r = await detect(url, { debug: true });
+  assert.equal(r.ok, true, "berjaya walaupun UA browser kena 403");
+  assert.equal(r.name, "VTOMAN V3 Jump Starter For Car 6000mAh");
+  assert.equal(r.image, "https://cf.shopee.com.my/file/abc");
+  assert.equal(r.source, "og-tags");
+  assert.equal(r.confidence, "sederhana");
+  assert.equal(r.debug.agentUsed, "facebook", "ejen pertama yang berjaya");
+  assert.equal(r.debug.agentAttempts.length, 1, "berhenti sebaik dapat metadata");
+
+  // ayat sambutan kedai bukan fakta produk
+  assert.equal(r.descriptionQuality, "generik");
+  assert.equal(r.description, "");
+  assert.ok(r.warnings.some(w => /ayat sambutan kedai/.test(w)));
+  // harga memang tiada dalam pratonton
+  assert.equal(r.price, "");
+  assert.ok(r.warnings.some(w => /Harga tak dapat dikesan/.test(w)));
+  shop.close();
 });

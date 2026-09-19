@@ -102,3 +102,13 @@ test("writePrompt tolak nama tak sah", async () => {
   const { writePrompt } = await import("../lib/llm.mjs");
   assert.throws(() => writePrompt("../base-prompt", "x".repeat(50)), /tak sah/);
 });
+
+test("rangka local gugurkan bentuk harga bila harga tiada", async () => {
+  const tanpa = await generate({ settings: { llm: { provider: "local" } },
+    brief: { nama: "Jump Starter", kelebihan: ["6000mAh"] }, platforms: ["threads"], count: 4 });
+  assert.ok(tanpa.posts.every(p => !/\[HARGA\]/.test(p.caption)), "tiada placeholder harga bogel");
+
+  const dengan = await generate({ settings: { llm: { provider: "local" } },
+    brief: { nama: "Jump Starter", harga: "RM159", kelebihan: ["6000mAh"] }, platforms: ["threads"], count: 4 });
+  assert.ok(dengan.posts.some(p => p.caption.includes("RM159")), "harga dipakai bila ada");
+});

@@ -413,7 +413,8 @@ async function quickRun(extra){
   try{
     const r=await api("/quick",{method:"POST",body:JSON.stringify({url,count:Number($("#q_count").value),platforms:["threads"],...extra})});
     const d=r.detected;
-    $("#q_state").innerHTML=`<span class="ok">${r.posts.length} post siap dan berjadual.</span>`;
+    $("#q_state").innerHTML=`<span class="ok">${r.posts.length} post siap dan berjadual.</span>`
+      + (r.notes?.length?` <span class="warn">${r.notes.map(esc).join(" · ")}</span>`:"");
     $("#q_found").innerHTML=foundCard(d);
     await load(); showTab("barisan");
   }catch(e){
