@@ -138,6 +138,7 @@
       <button class="i" data-note="nB" aria-expanded="false">i</button></div>
     <div class="note" id="nB">Lepas approve, browser akan papar <b>“site can’t be reached”</b>. Itu betul — domain tu sengaja tak wujud. Yang kita perlukan cuma URL dalam bar alamat.<br><br><b>Untuk akaun kedua:</b> buka pautan ni dalam tetingkap <b>Incognito</b> (Ctrl+Shift+N), log masuk sebagai akaun kedua, baru approve. Kalau tidak, Meta akan sambung akaun yang sama semula.</div>
     <a class="btn wide" id="t_open" target="_blank" rel="noopener" href="#" style="display:block;text-align:center;text-decoration:none">Buka halaman kebenaran</a>
+    <p class="sub" id="t_url_show" hidden></p>
   </div>
 
   <div class="card">
@@ -601,6 +602,8 @@ $("#t_save").onclick=async()=>{
   try{
     const r=await api("/threads/setup",{method:"POST",body:JSON.stringify({appId:$("#t_appid").value.trim(),appSecret:$("#t_secret").value.trim(),redirectUri:$("#t_redirect").value.trim()})});
     $("#t_open").href=r.authorizeUrl; $("#t_secret").value="";
+    $("#t_url_show").hidden=false;
+    $("#t_url_show").innerHTML="Pautan guna App ID <b>"+esc((r.authorizeUrl.match(/client_id=(\d+)/)||[])[1]||"?")+"</b> dan redirect <b>"+esc(r.redirectUri||"")+"</b>";
     $("#t_saveMsg").innerHTML='<span class="ok">Siap — pergi B.</span>';
   }catch(e){ $("#t_saveMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 };
