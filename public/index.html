@@ -191,6 +191,13 @@
       <button class="i" data-note="n3" aria-expanded="false">i</button></div>
     <div class="note" id="n3">Waktu orang Malaysia scroll: <b>9–11 malam</b> paling kuat, <b>12:30–2 petang</b> kedua, pagi sebelum kerja ketiga. Post berjadual hanya keluar kalau komputer ni hidup.</div>
     <div class="scroll" id="times"></div>
+    <label style="margin-top:14px">Panjang post</label>
+    <div class="scroll" id="lens"></div>
+    <label class="row" style="margin-top:14px;gap:10px;align-items:center;font-size:14px;color:var(--ink)">
+      <input type="checkbox" id="sebutHarga" style="width:20px;height:20px;flex:none">
+      Sebut harga dalam post
+    </label>
+    <p class="hint" style="margin:6px 0 0;font-size:12.5px;color:var(--dim)">Biar mati — orang kena klik link untuk tahu harga.</p>
     <div class="pair" style="margin-top:12px">
       <div><label>Mula</label><input id="startDate" type="date"></div>
       <div><label>Berapa post</label><select id="count"><option>1</option><option selected>3</option><option>5</option><option>7</option></select></div>
@@ -275,7 +282,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 let TOKEN=localStorage.getItem("viralcool.token")||"";
 let S={products:[],posts:[],accounts:[],styles:{},settings:{llm:{}}};
-let style="cerita", times=["07:00","13:00","19:00"], picked=[], made=[], llmProvider=null, manualDipaksa=false;
+let style="cerita", panjang="sederhana", times=["07:00","13:00","19:00"], picked=[], made=[], llmProvider=null, manualDipaksa=false;
 
 async function api(path,opts={},retry=true){
   let r;
@@ -342,6 +349,11 @@ async function load(){
   const adaEnjin = prov!=="local";
   if(!manualDipaksa){ $("#cManual").hidden=adaEnjin; $("#manualLink").hidden=!adaEnjin; }
 }
+function renderLens(){
+  const opts=[["pendek","Pendek"],["sederhana","Sederhana"],["panjang","Panjang"]];
+  $("#lens").innerHTML=opts.map(([v,l])=>`<button class="pick" data-len="${v}" aria-pressed="${panjang===v}">${l}</button>`).join("");
+  $$("[data-len]").forEach(b=>b.onclick=()=>{ panjang=b.dataset.len; renderLens(); });
+}
 function renderTimes(){
   const opts=[["07:00","7 pagi"],["13:00","1 tgh"],["19:00","7 mlm"],["21:00","9 mlm"]];
   $("#times").innerHTML=opts.map(([v,l])=>`<button class="pick" data-t="${v}" aria-pressed="${times.includes(v)}">${l}</button>`).join("");
@@ -404,7 +416,7 @@ function showOut(posts,notes){
 /* ---- tindakan ---- */
 function body(){
   const masalahMode=!$("#boxMasalah").hidden;
-  const base={style,times,startDate:$("#startDate").value,count:Number($("#count").value)};
+  const base={style,panjang,sebutHarga:$("#sebutHarga").checked,times,startDate:$("#startDate").value,count:Number($("#count").value)};
   return masalahMode?{...base,productId:picked[0],masalah:$("#masalah").value.trim()}:{...base,url:$("#url").value.trim()};
 }
 $("#go").onclick=async()=>{
@@ -536,7 +548,7 @@ $("#t_connect").onclick=async()=>{
   }catch(e){ $("#t_connectMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 };
 $("#startDate").value=new Date().toISOString().slice(0,10);
-renderTimes(); mode("produk");
+renderTimes(); renderLens(); mode("produk");
 load().catch(()=>{ $("#acctText").textContent="server tak hidup"; serverMati(true); });
 </script>
 </body>

@@ -89,7 +89,7 @@ test("playbook platform ditambah pada prompt bila platform tu dijana", async () 
 test("generate local untuk threads hormat had 500 aksara dan isi reply/visual", async () => {
   const { posts } = await generate({
     settings: { llm: { provider: "local" } },
-    brief: { nama: "Air Fryer 5L", harga: "RM89", kelebihan: ["Senang basuh"], link: "https://shopee.com.my/x" },
+    brief: { nama: "Air Fryer 5L", harga: "RM89", sebutHarga: true, kelebihan: ["Senang basuh"], link: "https://shopee.com.my/x" },
     platforms: ["threads"], count: 5,
   });
   assert.ok(posts.every(p => p.caption.length <= 500));
@@ -111,8 +111,8 @@ test("rangka local gugurkan bentuk harga bila harga tiada", async () => {
   assert.ok(tanpa.posts.every(p => !/\[HARGA\]/.test(p.caption)), "tiada placeholder harga bogel");
 
   const dengan = await generate({ settings: { llm: { provider: "local" } },
-    brief: { nama: "Jump Starter", harga: "RM159", kelebihan: ["6000mAh"] }, platforms: ["threads"], count: 4 });
-  assert.ok(dengan.posts.some(p => p.caption.includes("RM159")), "harga dipakai bila ada");
+    brief: { nama: "Jump Starter", harga: "RM159", sebutHarga: true, kelebihan: ["6000mAh"] }, platforms: ["threads"], count: 4 });
+  assert.ok(dengan.posts.some(p => p.caption.includes("RM159")), "harga dipakai bila brief membenarkannya");
 });
 
 test("playbook haramkan formula yang bunyi AI", async () => {
@@ -161,4 +161,30 @@ test("playbook ada rangka cerita 8 beat dan ujian hook", async () => {
     assert.ok(ANGLES[a].shape.length > 30, `angle ${a} ada struktur`);
   }
   assert.match(ANGLES.circle.shape, /HARGA/);
+});
+
+test("harga tak bocor ke dalam post melainkan diminta", () => {
+  const sembunyi = buildBrief({ nama: "Squishy", harga: "RM12.90" }, ["threads"], 2);
+  assert.match(sembunyi, /JANGAN tulis dalam post/);
+  assert.match(sembunyi, /Elak juga 'murah'/);
+
+  const benarkan = buildBrief({ nama: "Squishy", harga: "RM12.90", sebutHarga: true }, ["threads"], 2);
+  assert.match(benarkan, /MEMBENARKAN harga disebut/);
+  assert.ok(!/JANGAN sebut atau anggar harga/.test(benarkan));
+});
+
+test("panjang post dihantar sebagai julat aksara", () => {
+  assert.match(buildBrief({ nama: "X", panjang: "pendek" }, ["threads"], 1), /100-180 aksara/);
+  assert.match(buildBrief({ nama: "X", panjang: "panjang" }, ["threads"], 1), /380-500 aksara/);
+  assert.match(buildBrief({ nama: "X" }, ["threads"], 1), /220-350 aksara/, "sederhana bila tak dinyatakan");
+});
+
+test("rangka local tak sebut harga bila harga disembunyikan", async () => {
+  const brief = { nama: "Squishy Butter", harga: "RM12.90", kelebihan: ["Lembut"], link: "https://s.shopee.com.my/x" };
+  const sembunyi = await generate({ settings: { llm: { provider: "local" } }, brief, platforms: ["threads"], count: 5 });
+  assert.ok(sembunyi.posts.every(p => !/RM\s?12\.90/.test(p.caption)), "tiada harga dalam teks");
+  assert.ok(sembunyi.posts.every(p => !/Kiraan|Hot take/.test(p.angle)), "rangka berasaskan harga digugurkan");
+
+  const benarkan = await generate({ settings: { llm: { provider: "local" } }, brief: { ...brief, sebutHarga: true }, platforms: ["threads"], count: 5 });
+  assert.ok(benarkan.posts.some(p => p.caption.includes("RM12.90")), "harga dipakai bila dibenarkan");
 });

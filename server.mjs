@@ -77,6 +77,7 @@ const STYLES = {
   bina:    { label: "Bina dalam terang", angle: "bina",       nota: "apa kau tengah cuba sekarang" },
   jujur:   { label: "Review jujur",    angle: "review-jujur", nota: "termasuk satu kelemahan" },
   mitos:   { label: "Pecah mitos",     angle: "myth",         nota: "betulkan salah faham" },
+  lawak:   { label: "Cerita lawak",    angle: "lawak",        nota: "babak kelakar, produk masuk tak sengaja" },
   senarai: { label: "Senarai pendek",  angle: "listicle",     nota: "3-4 perkara laju" },
   soalan:  { label: "Soalan jujur",    angle: "soalan",       nota: "buka perbualan, tiada link" },
   harga:   { label: "Kiraan harga",    angle: "harga-shock",  nota: "perlu harga" },
@@ -102,6 +103,9 @@ async function briefDariBody(body) {
     keterangan: found?.descriptionQuality === "produk" ? found.description : "",
     kelebihan: body.kelebihan || [], masalah: body.masalah || product.masalah || "",
     cerita: body.cerita || "", audience: body.audience || "pengguna media sosial Malaysia, 25-40",
+    panjang: ["pendek", "sederhana", "panjang"].includes(body.panjang) ? body.panjang : "sederhana",
+    // Harga hanya disebut bila pengguna minta, atau bila gaya itu memang tentang harga.
+    sebutHarga: body.sebutHarga === true || style === "harga",
     bahasa: "bm-santai", tone: "Santai & jujur", cta: "Link dalam balasan pertama",
     angles: [STYLES[style].angle], image: product.image, lastUsedAt: Date.now(),
   };
@@ -379,6 +383,9 @@ const ROUTES = [
       keterangan: found?.descriptionQuality === "produk" ? found.description : "",
       kelebihan: body.kelebihan || [], masalah: body.masalah || product.masalah || "",
       cerita: body.cerita || "", audience: body.audience || "pengguna media sosial Malaysia, 25-40",
+    panjang: ["pendek", "sederhana", "panjang"].includes(body.panjang) ? body.panjang : "sederhana",
+    // Harga hanya disebut bila pengguna minta, atau bila gaya itu memang tentang harga.
+    sebutHarga: body.sebutHarga === true || style === "harga",
       bahasa: "bm-santai", tone: "Santai & jujur", cta: "Link dalam balasan pertama",
       angles: [STYLES[style].angle], image: product.image, lastUsedAt: Date.now(),
     };

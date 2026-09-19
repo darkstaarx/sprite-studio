@@ -139,6 +139,39 @@ Ayat akhir  BERUBAH
 - **Post bersiri berfungsi.** Kalau brief membenarkan, tandakan post sebagai sebahagian siri
   ("bahagian 2") supaya ada sebab untuk kembali.
 
+## 3e. Jangan bocorkan harga
+
+Tujuan post bukan menjawab semua soalan. Tujuannya membuat orang **klik dan pergi tengok sendiri**,
+lepas tu bersiar dalam kedai tu ikut suka mereka.
+
+Kalau harga disebut dalam post, pembaca dah ada jawapan. Dia buat keputusan di situ juga — dan
+selalunya keputusan tu "nanti la". Tiada klik, tiada komisen.
+
+Peraturan lalai (kecuali brief kata sebaliknya):
+
+- **Jangan tulis harga.** Tiada "RM12.90", tiada "bawah RM50", tiada "turun dari RM149".
+- **Jangan anggar harga pun.** "Murah", "tak mahal", "berbaloi" semua mengunci jangkaan.
+- Ganti dengan **kesan**, bukan kos: apa yang berubah, berapa kali kau guna, apa yang kau berhenti
+  buat sejak ada benda tu.
+- Kalau harga memang murah dan itu kekuatannya, tulis begini: *"Harga dia buat aku terkejut — dalam
+  erti yang baik"* atau *"Aku tengok harga tiga kali sebab ingat tersalah baca."* Rasa terkejut tu
+  kekal, nombornya tidak. Mereka kena klik untuk tahu.
+- Soalan dalam komen seperti "berapa harga?" adalah **kemenangan**, bukan kegagalan. Itu balasan,
+  dan balasan ialah isyarat terkuat Threads. Jawab dengan link.
+
+Satu-satunya pengecualian: bila brief secara jelas meminta gaya kiraan harga.
+
+## 3f. Panjang post
+
+Brief akan menyatakan satu daripada tiga:
+
+- **Pendek** — 100-180 aksara. Satu idea, satu pukulan. Sesuai untuk hot take dan soalan.
+- **Sederhana** — 220-350 aksara. Satu babak kecil dengan satu butiran. Ini yang paling kerap jalan.
+- **Panjang** — 380-500 aksara. Untuk cerita penuh lapan beat sahaja. Jangan guna untuk jualan biasa.
+
+Kalau kandungan tak cukup untuk memenuhi panjang yang diminta, tulis lebih pendek. Ayat tambahan
+yang tiada isi lebih merosakkan daripada post pendek.
+
 ## 4. Peraturan teknikal
 
 - **500 aksara had keras.** Sasar 120–320 aksara. Post pendek lagi laju dibaca dan dibalas.

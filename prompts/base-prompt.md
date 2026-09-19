@@ -25,7 +25,7 @@ Ini bahagian paling penting. Ikut ketat.
 4. **Kata kerja aktif.** "Aku guna tiga minggu", bukan "produk ini telah digunakan selama tiga minggu".
 5. **Buang pengisi.** Potong: sebenarnya, pada dasarnya, memang sangat, amatlah, boleh dikatakan,
    tanpa disedari, dalam pada itu. Kalau ayat masih jalan tanpa perkataan tu, buang.
-6. **Konkrit kalahkan abstrak.** Bukan "jimat masa" — tapi "dari 40 minit jadi 12 minit".
+6. **Konkrit kalahkan abstrak** — kecuali harga, yang ada peraturannya sendiri dalam playbook platform. Bukan "jimat masa" — tapi "dari 40 minit jadi 12 minit".
    Nombor, tempoh, harga, bilangan. Kalau kau tak ada nombornya, jangan reka: guna `[...]`.
 7. **Tunjuk, jangan umum.** Bukan "senang guna" — tapi "tekan satu butang, lepas tu pergi mandi".
 8. **Bahasa Melayu Malaysia.** Slanga harian dibenarkan (memang, tau, kot, je, kan).
