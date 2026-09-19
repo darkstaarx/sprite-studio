@@ -377,6 +377,12 @@ Muka depan ada kad **Enjin ayat** dengan preset Nous Portal, Hermes 4 405B, Herm
 OpenRouter, Anthropic dan Ollama — pilih satu, tampal key, simpan. Model penaakulan yang mengeluarkan jejak `<think>`
 (Hermes 4 antaranya) dikendalikan: jejak itu dibuang sebelum JSON dibaca.
 
+Butang dalam kad itu ialah **Uji & simpan**: ia menghantar satu panggilan kecil ke pembekal kau
+sebelum menyimpan. Kalau kunci salah, mesej sebenar pembekal dipaparkan (contoh `401 — Invalid API
+key provided`). Kalau base URL tertinggal `/v1`, app mencuba variasi itu sendiri dan menyimpan yang
+betul. Tetapan hanya disimpan apabila ujian lulus, jadi kad tidak akan berkata "tersimpan" untuk
+tetapan yang sebenarnya tak jalan.
+
 Panggilan dibuat dari **server**, bukan browser — jadi tiada masalah CORS, dan key tak pernah
 dihantar ke UI (state API balas `__SET__` sahaja).
 

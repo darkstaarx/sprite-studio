@@ -202,11 +202,15 @@
     <div id="engineBox" hidden style="margin-top:12px">
       <div class="scroll" id="presets"></div>
       <div class="pair" style="margin-top:10px">
-        <div><label>Base URL</label><input id="llm_base"></div>
-        <div><label>Model</label><input id="llm_model"></div>
+        <div><label>Jenis API</label><select id="llm_provider">
+          <option value="openai">OpenAI-compatible</option>
+          <option value="anthropic">Anthropic</option>
+        </select></div>
+        <div><label>Model</label><input id="llm_model" placeholder="nama model tepat"></div>
       </div>
+      <label style="margin-top:10px">Base URL</label><input id="llm_base" placeholder="https://… (biasanya berakhir /v1)">
       <label style="margin-top:10px">API key</label><input id="llm_key" type="password" placeholder="sk-…">
-      <button class="btn wide" id="llm_save" style="margin-top:10px">Simpan enjin</button>
+      <button class="btn primary wide" id="llm_save" style="margin-top:10px">Uji &amp; simpan</button>
       <p class="msg" id="llm_msg"></p>
     </div>
   </div>
@@ -315,7 +319,8 @@ function renderPresets(){
   $("#presets").innerHTML=Object.entries(P).map(([k,l])=>`<button class="pick" data-preset="${k}">${l}</button>`).join("");
   $$("[data-preset]").forEach(b=>b.onclick=()=>{
     const p=PRESET[b.dataset.preset];
-    llmProvider=p.provider; $("#llm_base").value=p.baseUrl; $("#llm_model").value=p.model;
+    llmProvider=p.provider; $("#llm_provider").value=p.provider==="anthropic"?"anthropic":"openai";
+    $("#llm_base").value=p.baseUrl; $("#llm_model").value=p.model;
     $$("[data-preset]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
   });
 }
@@ -429,12 +434,22 @@ $("#libAdd").onclick=async()=>{
 };
 $("#engineToggle").onclick=()=>{ const b=$("#engineBox"); b.hidden=!b.hidden; if(!b.hidden) renderPresets(); };
 $("#llm_save").onclick=async()=>{
-  $("#llm_msg").textContent="menyimpan…";
-  const b={llm:{provider:llmProvider||S.settings?.llm?.provider||"local",baseUrl:$("#llm_base").value.trim(),model:$("#llm_model").value.trim()}};
-  if($("#llm_key").value.trim()) b.llm.apiKey=$("#llm_key").value.trim();
-  try{ await api("/settings",{method:"POST",body:JSON.stringify(b)});
-    $("#llm_key").value=""; $("#llm_msg").innerHTML='<span class="ok">Disimpan.</span>'; $("#engineBox").hidden=true; load();
-  }catch(e){ $("#llm_msg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+  const base=$("#llm_base").value.trim(), model=$("#llm_model").value.trim();
+  if(!base||!model) return $("#llm_msg").innerHTML='<span class="bad">Base URL dan model wajib diisi.</span>';
+  $("#llm_msg").textContent="menguji sambungan…";
+  const b={provider:$("#llm_provider").value,baseUrl:base,model};
+  if($("#llm_key").value.trim()) b.apiKey=$("#llm_key").value.trim();
+  try{
+    const r=await api("/llm/test",{method:"POST",body:JSON.stringify(b)});
+    $("#llm_key").value="";
+    $("#llm_base").value=r.baseUrl||base;
+    $("#llm_msg").innerHTML=`<span class="ok">Jalan. Model balas: “${esc(r.reply||"ok")}”</span>`
+      + (r.baseUrl&&r.baseUrl!==base?` <span class="warn">Base URL dibetulkan jadi ${esc(r.baseUrl)}</span>`:"");
+    setTimeout(()=>{ $("#engineBox").hidden=true; },1500);
+    load();
+  }catch(e){
+    $("#llm_msg").innerHTML=`<span class="bad">${esc(e.message)}</span>`;
+  }
 };
 function mode(m){
   $("#mProduk").setAttribute("aria-pressed",String(m==="produk"));

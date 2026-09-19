@@ -11,6 +11,7 @@ import { ANGLES, generate, listPrompts, readPrompt, writePrompt, matchProducts, 
 import * as sched from "./lib/scheduler.mjs";
 import { verify } from "./lib/publishers.mjs";
 import { detect } from "./lib/detect.mjs";
+import { testLLM } from "./lib/llm-test.mjs";
 import { startUrl, handleCallback, oauthReady } from "./lib/oauth.mjs";
 import { authorizeUrl, extractCode, exchange } from "./lib/threads-setup.mjs";
 
@@ -111,6 +112,12 @@ const ROUTES = [
     if (body.llm) {
       const { apiKey, ...rest } = body.llm;
       Object.assign(s.llm, rest);
+      // Kalau pengguna tak nyatakan jenis API, teka dari ada tidaknya base URL —
+      // tetapi pilihan yang dinyatakan secara jelas sentiasa menang.
+      if (typeof body.llm.provider !== "string") {
+        const adaBase = Boolean(String(s.llm.baseUrl || "").trim());
+        s.llm.provider = adaBase ? (s.llm.provider === "local" ? "openai" : s.llm.provider) : "local";
+      }
       if (apiKey && apiKey !== "__SET__") s.llm.apiKey = apiKey;
       if (apiKey === "") s.llm.apiKey = "";
     }
@@ -118,6 +125,25 @@ const ROUTES = [
     if (body.timezone) s.timezone = body.timezone;
     store.save();
     return [200, publicState()];
+  }],
+
+  // --- Uji enjin: satu panggilan kecil, dan betulkan base URL kalau perlu.
+  ["POST", /^\/api\/llm\/test$/, async (_m, body) => {
+    const cur = store.data.settings.llm;
+    const cfg = {
+      provider: body.provider || (body.baseUrl ? "openai" : cur.provider),
+      baseUrl: body.baseUrl ?? cur.baseUrl,
+      model: body.model ?? cur.model,
+      apiKey: (body.apiKey && body.apiKey !== "__SET__") ? body.apiKey : cur.apiKey,
+    };
+    const r = await testLLM(cfg);
+    if (r.ok && body.save !== false) {
+      Object.assign(cur, { provider: cfg.provider, baseUrl: r.baseUrl, model: cfg.model });
+      if (body.apiKey && body.apiKey !== "__SET__") cur.apiKey = body.apiKey;
+      store.save();
+      store.log("info", `Enjin ayat diuji dan disimpan: ${cfg.provider} ${cfg.model}`);
+    }
+    return [r.ok ? 200 : 502, { ...r, provider: cfg.provider, model: cfg.model }];
   }],
 
   ["GET", /^\/api\/prompts$/, async () => [200, { prompts: listPrompts() }]],
