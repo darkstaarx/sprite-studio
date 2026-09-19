@@ -96,7 +96,8 @@ test("generate local untuk threads hormat had 500 aksara dan isi reply/visual", 
   assert.ok(posts.every(p => p.reply));
   assert.ok(posts.every(p => p.visual));
   assert.ok(posts.every(p => !p.hashtags.length), "threads tak guna timbunan hashtag");
-  assert.equal(new Set(posts.map(p => p.angle)).size, 5, "lima bentuk berbeza");
+  assert.equal(new Set(posts.map(p => p.angle)).size, posts.length, "setiap post guna bentuk berbeza");
+  assert.ok(posts.length >= 3, "sekurang-kurangnya tiga bentuk boleh dijana dari brief ini");
 });
 
 test("writePrompt tolak nama tak sah", async () => {

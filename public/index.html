@@ -169,6 +169,26 @@
   <p class="hint" style="margin-top:10px">7 pagi, 1 tengah hari, 7 malam — waktu orang Malaysia scroll.</p>
 </div>
 
+<div class="step" id="brainCard">
+  <h2><i>AI</i> Enjin ayat</h2>
+  <p class="msg" id="llmNow"></p>
+  <div class="row">
+    <button class="btn sm" data-preset="openrouter">OpenRouter</button>
+    <button class="btn sm" data-preset="anthropic">Anthropic</button>
+    <button class="btn sm" data-preset="ollama">Ollama (tempatan)</button>
+    <button class="btn sm ghost" data-preset="local">Tiada AI (rangka sahaja)</button>
+  </div>
+  <div class="row" style="margin-top:11px">
+    <div style="flex:1;min-width:200px"><label>Base URL</label><input id="llm_base"></div>
+    <div style="flex:1;min-width:180px"><label>Model</label><input id="llm_model" placeholder="cth: anthropic/claude-sonnet-4.5"></div>
+  </div>
+  <div class="row" style="margin-top:11px">
+    <div style="flex:1;min-width:220px"><label>API key</label><input id="llm_key" type="password" placeholder="sk-…"></div>
+    <div style="align-self:end"><button class="btn" id="llm_save">Simpan enjin</button></div>
+    <span class="msg" id="llm_msg"></span>
+  </div>
+</div>
+
 <div class="step">
   <h2><i>4</i> Tulis &amp; jadualkan</h2>
   <button class="btn primary" id="go">Tulis &amp; jadualkan</button>
@@ -215,6 +235,12 @@ async function load(){
   $("#t_appid").value=S.settings?.threads?.appId||"";
   $("#t_secret").placeholder=S.settings?.threads?.appSecret==="__SET__"?"tersimpan — isi untuk tukar":"";
   renderStyles(); renderLib();
+  const prov=S.settings?.llm?.provider||"local";
+  $("#llmNow").innerHTML = prov==="local"
+    ? '<span class="bad">Sekarang: tiada AI.</span> Post yang keluar cuma <b>rangka ayat</b> — bukan cerita. Pilih satu di bawah dan isi key.'
+    : `<span class="ok">Sekarang: ${esc(prov)} · ${esc(S.settings.llm.model||"(model belum diisi)")}</span>`;
+  if(!$("#llm_base").value){ $("#llm_base").value=S.settings?.llm?.baseUrl||""; $("#llm_model").value=S.settings?.llm?.model||""; }
+  $("#llm_key").placeholder=S.settings?.llm?.apiKey==="__SET__"?"key tersimpan — isi untuk tukar":"sk-…";
   const tunggu=S.posts.filter(p=>p.status==="review").length, jadual=S.posts.filter(p=>p.status==="scheduled").length;
   $("#queueLine").textContent=`${tunggu} tunggu sahkan · ${jadual} berjadual · ${S.posts.filter(p=>p.status==="published").length} dah keluar`;
 }
@@ -270,13 +296,36 @@ async function go(){
       for(const id of picked) res.push(await api("/compose",{method:"POST",body:JSON.stringify({productId:id,masalah:$("#masalah").value.trim(),...common,count:perProduk})}));
     }
     made=res.flatMap(r=>r.posts);
-    $("#goMsg").innerHTML=`<span class="ok">${made.length} post siap. Semak, edit kalau perlu, lepas tu sahkan.</span>`;
+    const notes=[...new Set(res.flatMap(r=>r.notes||[]))];
+    $("#goMsg").innerHTML=`<span class="ok">${made.length} post siap.</span>`
+      + (notes.length?` <span class="warn">${notes.map(esc).join(" · ")}</span>`:" Semak, edit kalau perlu, lepas tu sahkan.");
     $("#out").innerHTML=made.map(postCard).join("");
     $$("[data-text]").forEach(t=>t.onchange=()=>api(`/posts/${t.dataset.text}`,{method:"PATCH",body:JSON.stringify({text:t.value})}));
     $("#outActions").hidden=false;
     load();
   }catch(e){ $("#goMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 }
+const PRESET={
+  openrouter:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:"anthropic/claude-sonnet-4.5"},
+  anthropic:{provider:"anthropic",baseUrl:"https://api.anthropic.com",model:"claude-sonnet-4-5"},
+  ollama:{provider:"openai",baseUrl:"http://localhost:11434/v1",model:"llama3.1:8b"},
+  local:{provider:"local",baseUrl:"",model:""},
+};
+let llmProvider=null;
+$$("[data-preset]").forEach(b=>b.onclick=()=>{
+  const p=PRESET[b.dataset.preset];
+  llmProvider=p.provider; $("#llm_base").value=p.baseUrl; $("#llm_model").value=p.model;
+  $("#llm_msg").innerHTML=b.dataset.preset==="local"?'<span class="hint">Tekan simpan untuk kembali ke rangka sahaja.</span>':'<span class="hint">Isi API key, lepas tu simpan.</span>';
+});
+$("#llm_save").onclick=async()=>{
+  $("#llm_msg").textContent="menyimpan…";
+  const body={llm:{provider:llmProvider||S.settings?.llm?.provider||"local",baseUrl:$("#llm_base").value.trim(),model:$("#llm_model").value.trim()}};
+  if($("#llm_key").value.trim()) body.llm.apiKey=$("#llm_key").value.trim();
+  try{
+    await api("/settings",{method:"POST",body:JSON.stringify(body)});
+    $("#llm_key").value=""; $("#llm_msg").innerHTML='<span class="ok">Disimpan. Cuba jana sekali lagi.</span>'; load();
+  }catch(e){ $("#llm_msg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+};
 $("#go").onclick=go;
 $("#approveAll").onclick=async()=>{
   $("#approveMsg").textContent="menjadualkan…";

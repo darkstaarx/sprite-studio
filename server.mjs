@@ -225,6 +225,8 @@ const ROUTES = [
       script: { angle: p.angle, hook: p.hook, body: p.body, cta: p.cta, broll: p.broll, reply: p.reply, visual: p.visual },
     }));
     const notes = [];
+    if (store.data.settings.llm.provider === "local") notes.push("Enjin ayat masih 'local' — ini rangka, bukan cerita. Pasang AI dalam kotak Enjin ayat untuk tulisan sebenar.");
+    if (made.length < (body.count || 5)) notes.push(`Hanya ${made.length} rangka berbeza boleh dijana dari fakta yang ada. Tambah harga dan kelebihan produk untuk lebih variasi.`);
     if (!brief.harga) notes.push("Harga tak dikesan — angle kiraan harga digugurkan. Isi harga dalam brief kalau kau nak angle tu.");
     if (found.descriptionQuality === "generik") notes.push("Keterangan halaman tiada fakta produk — tambah kelebihan sebenar dalam brief untuk ayat yang lebih tajam.");
     store.log("info", `Quick: ${made.length} post dari ${found.marketplace} — ${brief.nama}`);
@@ -332,8 +334,15 @@ const ROUTES = [
       scheduledAt: slots[i] ?? null, source: "ai", briefId: brief.id,
       script: { angle: p.angle || STYLES[style].label, hook: p.hook, body: p.body, cta: p.cta, reply: p.reply, visual: p.visual },
     }));
+    const notes = [];
+    if (store.data.settings.llm.provider === "local") {
+      notes.push("Enjin ayat masih 'local' — ini rangka ayat, bukan cerita. Isi kotak Enjin ayat di bawah untuk tulisan sebenar.");
+    }
+    if (made.length < (body.count || 3)) {
+      notes.push(`Hanya ${made.length} rangka berbeza boleh dijana dari fakta yang ada${product.price ? "" : " (harga pun tak dikesan)"}.`);
+    }
     store.log("info", `Compose: ${made.length} post gaya ${style} untuk ${product.name}`);
-    return [200, { product, style, posts: made, detected: found }];
+    return [200, { product, style, posts: made, detected: found, notes }];
   }],
 
   ["POST", /^\/api\/slots$/, async (_m, body) =>
