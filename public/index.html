@@ -238,6 +238,25 @@
     <p class="msg" id="approveMsg"></p>
   </div>
 
+  <!-- rancang minggu -->
+  <div class="card" id="cPlan">
+    <div class="head"><span class="n">📅</span><span class="title">Rancang seminggu</span>
+      <button class="i" data-note="nPlan" aria-expanded="false">i</button></div>
+    <div class="note" id="nPlan">Satu akaun, satu niche. App campur post jualan dengan kandungan nilai ikut nisbah yang kau set, dan sebarkan merentas hari supaya jualan tak berlonggok. Nisbah 1:2 bermakna satu post jualan untuk dua post tips.</div>
+    <div class="pair">
+      <div><label>Akaun</label><select id="planAcc"></select></div>
+      <div><label>Berapa hari</label><select id="planDays"><option>3</option><option selected>7</option><option>14</option></select></div>
+    </div>
+    <label style="margin-top:10px">Niche akaun ni</label>
+    <input id="planNiche" placeholder="cth: barangan pet">
+    <div class="pair" style="margin-top:10px">
+      <div><label>Post jualan</label><input id="mixJual" type="number" min="0" max="5" value="1"></div>
+      <div><label>Post tips</label><input id="mixTips" type="number" min="0" max="5" value="2"></div>
+    </div>
+    <button class="btn wide" id="planGo" style="margin-top:12px">Rancang &amp; jadualkan</button>
+    <p class="msg" id="planMsg"></p>
+  </div>
+
   <!-- selepas jadual -->
   <div class="card" id="cAfter" hidden>
     <div class="head"><span class="n">→</span><span class="title">Bila post keluar nanti</span>
@@ -321,7 +340,6 @@ async function load(){
   S=await api("/state");
   const acc=S.accounts.find(a=>a.platform==="threads");
   $("#dot").classList.toggle("on",!!acc);
-  $("#acctText").textContent=acc?acc.label:"Sambung Threads";
   $("#t_redirect").value=S.settings?.threads?.redirectUri||"";
   $("#t_appid").value=S.settings?.threads?.appId||"";
   $("#t_secret").placeholder=S.settings?.threads?.appSecret==="__SET__"?"tersimpan":"";
@@ -339,6 +357,15 @@ async function load(){
     $$("[data-style]").forEach(b=>b.onclick=()=>{ style=b.dataset.style; $$("[data-style]").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); });
   }
   renderLib();
+  const threads=S.accounts.filter(a=>a.platform==="threads");
+  $("#planAcc").innerHTML=threads.length?threads.map(a=>`<option value="${a.id}">${esc(a.label)}</option>`).join(""):'<option value="">(belum sambung)</option>';
+  if(threads.length){
+    const pilih=threads.find(a=>a.id===$("#planAcc").value)||threads[0];
+    $("#planAcc").value=pilih.id;
+    if(!$("#planNiche").value) $("#planNiche").value=pilih.niche||"";
+    if(pilih.mix){ $("#mixJual").value=pilih.mix.jual; $("#mixTips").value=pilih.mix.tips; }
+  }
+  $("#acctText").textContent=threads.length?(threads.length>1?`${threads.length} akaun`:threads[0].label):"Sambung Threads";
   const tunggu=S.posts.filter(p=>p.status==="review").length, jad=S.posts.filter(p=>p.status==="scheduled").length;
   $("#queueLine").textContent=`${tunggu} tunggu · ${jad} berjadual · ${S.posts.filter(p=>p.status==="published").length} keluar`;
   $$(".card").forEach(c=>c.classList.remove("filled"));
@@ -396,7 +423,7 @@ function renderLib(){
 }
 function postCard(p){
   return `<div class="post" data-id="${p.id}">
-    <div class="meta"><span class="chip">${esc(p.script?.angle||"")}</span><span>${fmt(p.scheduledAt)}</span>
+    <div class="meta">${p.jenis?`<span class="chip">${p.jenis==="tips"?"tips":"jualan"}</span>`:""}<span class="chip">${esc(p.script?.angle||"")}</span><span>${fmt(p.scheduledAt)}</span>
       <span style="margin-left:auto">${p.text.length}${p.text.length>500?' <span class="bad">&gt;500</span>':""}</span></div>
     <textarea data-text="${p.id}">${esc(p.text)}</textarea>
     ${p.script?.reply?`<p class="sub">↳ ${esc(p.script.reply)}</p>`:""}
@@ -450,6 +477,27 @@ $("#copyPrompt").onclick=async e=>{
     e.target.textContent="✓ copied"; setTimeout(()=>e.target.textContent="Copy arahan",1500);
     $("#promptMsg").innerHTML=`<span class="ok">${r.prompt.length.toLocaleString()} aksara</span>`;
   }catch(err){ $("#promptMsg").innerHTML=`<span class="bad">${esc(err.message)}</span>`; }
+};
+$("#planAcc").onchange=()=>{
+  const a=S.accounts.find(x=>x.id===$("#planAcc").value);
+  $("#planNiche").value=a?.niche||"";
+  if(a?.mix){ $("#mixJual").value=a.mix.jual; $("#mixTips").value=a.mix.tips; }
+};
+$("#planGo").onclick=async()=>{
+  const accountId=$("#planAcc").value;
+  if(!accountId) return $("#planMsg").innerHTML='<span class="bad">Sambung akaun Threads dulu.</span>';
+  const niche=$("#planNiche").value.trim();
+  const mix={jual:Number($("#mixJual").value),tips:Number($("#mixTips").value)};
+  $("#planMsg").textContent="merancang… ini ambil masa, satu panggilan untuk setiap produk";
+  try{
+    await api(`/accounts/${accountId}`,{method:"PATCH",body:JSON.stringify({niche,mix})});
+    const r=await api("/plan",{method:"POST",body:JSON.stringify({accountId,niche,mix,days:Number($("#planDays").value),times,panjang,sebutHarga:$("#sebutHarga").checked})});
+    const j=r.posts.filter(p=>p.jenis==="jual").length, t=r.posts.filter(p=>p.jenis==="tips").length;
+    $("#planMsg").innerHTML=`<span class="ok">${r.posts.length} post: ${j} jualan, ${t} tips.</span>`
+      + (r.nota?.length?` <span class="warn">${r.nota.map(esc).join(" · ")}</span>`:"");
+    showOut(r.posts);
+    load();
+  }catch(e){ $("#planMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 };
 $("#manualShow").onclick=()=>{ manualDipaksa=true; $("#cManual").hidden=false; $("#manualLink").hidden=true; $("#cManual").scrollIntoView({behavior:"smooth"}); };
 $("#importBtn").onclick=async()=>{

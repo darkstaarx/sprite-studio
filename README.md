@@ -64,6 +64,23 @@ dengan slot masa, balasan pertama dan cadangan visual.
 
 Jejak penaakulan `<think>` dibuang automatik, jadi jawapan Hermes boleh ditampal bulat-bulat.
 
+## Banyak akaun dan rancangan seminggu
+
+Setiap akaun Threads boleh disambung berasingan dan membawa **niche** sendiri. Kad **Rancang
+seminggu** mengambil satu akaun, nisbah kandungan, dan bilangan hari, kemudian:
+
+1. Bina slot untuk setiap hari mengikut waktu yang dipilih.
+2. Agihkan slot mengikut nisbah — `jual 1 : tips 2` menghasilkan corak J T T berulang, jadi post
+   jualan tak berlonggok.
+3. Post jualan dijana dari pustaka produk, dengan gaya berselang supaya tiga post tak berbunyi
+   serupa; kandungan nilai dijana dari niche, tanpa produk dan tanpa link.
+4. Semuanya masuk barisan sebagai `review` untuk kau semak dulu.
+
+Apa yang app ini **tidak** buat: mencari post orang lain dan berkomen secara automatik. Threads API
+tidak menyediakan carian untuk tujuan itu, dan komen automatik pada post orang asing ialah corak
+yang paling cepat menyebabkan akaun disekat. Senarai selepas-jadual mengingatkan kau berkomen
+sendiri — itu memang kerja yang perlu tangan manusia.
+
 ## Muka depan — empat langkah
 
 `http://localhost:8787/` ialah satu muka sahaja:
@@ -219,7 +236,7 @@ kau tekan post sendiri. Itu pilihan paling selamat dan ia default atas sebab tu.
 ```bash
 node server.mjs          # buka http://localhost:8787
 node server.mjs --dry    # mod selamat: semua "terbit" jadi pura-pura
-npm test                 # 41 ujian
+npm test                 # 74 ujian
 ```
 
 ## Cara akses
@@ -410,7 +427,7 @@ prompts/base-prompt.md  otak gaya penulisan (semua platform)
 prompts/platforms/      playbook khusus platform — threads.md siap, tambah sendiri yang lain
 public/index.html       muka depan empat langkah
 public/studio.html      studio lanjutan (akaun, autopilot, otak, log)
-test/                   41 ujian (unit + API hidup, mod dry)
+test/                   74 ujian (unit + API hidup, mod dry)
 ```
 
 ## Batasan jujur

@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Store, rid } from "./lib/store.mjs";
 import { PLATFORMS } from "./lib/platforms.mjs";
-import { ANGLES, generate, listPrompts, readPrompt, writePrompt, matchProducts, buildPromptFor, parsePosts } from "./lib/llm.mjs";
+import { ANGLES, generate, generateTips, listPrompts, readPrompt, writePrompt, matchProducts, buildPromptFor, parsePosts } from "./lib/llm.mjs";
 import * as sched from "./lib/scheduler.mjs";
 import { verify } from "./lib/publishers.mjs";
 import { detect } from "./lib/detect.mjs";
@@ -315,12 +315,18 @@ const ROUTES = [
     catch (e) { return [400, { error: e.message }]; }
     try {
       const acc = await exchange({ appId: t.appId, appSecret: t.appSecret, redirectUri: t.redirectUri, code });
-      store.data.accounts = store.data.accounts.filter(a => a.platform !== "threads");
-      const account = {
+      // Banyak akaun dibenarkan. Sambung semula akaun yang sama hanya menyegarkan tokennya.
+      const sedia = store.data.accounts.find(a => a.platform === "threads" && a.meta?.userId === acc.userId);
+      const account = sedia || {
         id: rid(), platform: "threads", label: acc.username ? "@" + acc.username : "Threads",
-        token: acc.token, expiresAt: acc.expiresAt, meta: { userId: acc.userId, username: acc.username },
+        niche: "", meta: {},
       };
-      store.data.accounts.push(account);
+      Object.assign(account, {
+        label: acc.username ? "@" + acc.username : account.label,
+        token: acc.token, expiresAt: acc.expiresAt,
+        meta: { ...account.meta, userId: acc.userId, username: acc.username },
+      });
+      if (!sedia) store.data.accounts.push(account);
       store.save();
       store.log("info", `Threads bersambung: ${account.label}`);
       return [200, { ok: true, account: { ...account, token: mask(account.token) }, shortLived: acc.shortLived }];
@@ -440,6 +446,81 @@ const ROUTES = [
     return [200, { posts: made }];
   }],
 
+  // --- Rancang seminggu untuk satu akaun: campur post jualan dengan kandungan nilai.
+  ["POST", /^\/api\/plan$/, async (_m, body) => {
+    const acc = body.accountId ? store.account(body.accountId) : store.accountFor("threads");
+    if (!acc) return [400, { error: "Pilih akaun dulu." }];
+    const niche = body.niche || acc.niche || "";
+    const mix = { jual: Math.max(0, Number(body.mix?.jual ?? acc.mix?.jual ?? 1)), tips: Math.max(0, Number(body.mix?.tips ?? acc.mix?.tips ?? 2)) };
+    if (mix.jual + mix.tips === 0) return [400, { error: "Nisbah tak boleh sifar semua." }];
+
+    const produk = (body.productIds?.length ? body.productIds : store.data.products.map(p => p.id))
+      .map(id => store.data.products.find(p => p.id === id)).filter(Boolean);
+    if (mix.jual > 0 && !produk.length) return [422, { error: "Tiada produk dalam pustaka untuk post jualan. Tambah link produk dulu, atau set nisbah jual kepada 0." }];
+    if (mix.tips > 0 && !niche) return [422, { error: "Isi niche akaun ni dulu (contoh: barangan pet) supaya tips boleh ditulis." }];
+
+    const hari = Math.max(1, Math.min(14, Number(body.days) || 7));
+    const times = body.times?.length ? body.times : ["07:00", "13:00", "19:00"];
+    const slots = sched.customSlots(store, hari * times.length, times, body.startDate);
+
+    // Corak berulang mengikut nisbah, contohnya jual:1 tips:2 -> J T T J T T ...
+    const corak = [...Array(mix.jual).fill("jual"), ...Array(mix.tips).fill("tips")];
+    const jenis = slots.map((_, i) => corak[i % corak.length]);
+    const bilTips = jenis.filter(j => j === "tips").length;
+    const bilJual = jenis.length - bilTips;
+
+    const GAYA = ["cerita", "lawak", "hottake", "soalan", "circle"];
+    const dibuat = [];
+    const nota = [];
+    if (store.data.settings.llm.provider === "local") nota.push("Enjin masih 'local' — isi kotak Enjin ayat untuk ayat sebenar.");
+
+    // Post jualan: satu panggilan per produk, gaya berselang supaya tak serupa.
+    let indeksJual = 0;
+    for (let i = 0; i < produk.length && indeksJual < bilJual; i++) {
+      const p = produk[i % produk.length];
+      const kuota = Math.ceil((bilJual - indeksJual) / (produk.length - i));
+      const style = GAYA[i % GAYA.length];
+      const brief = {
+        id: rid(), name: p.name, mode: "affiliate", nama: p.name, harga: p.price || "", link: p.url,
+        niche, kelebihan: [], masalah: p.masalah || "", cerita: "",
+        audience: body.audience || "", bahasa: "bm-santai", tone: "Rilek",
+        cta: "Link dalam balasan pertama", angles: [STYLES[style].angle],
+        panjang: body.panjang || "sederhana", sebutHarga: body.sebutHarga === true,
+      };
+      try {
+        const out = await generate({ settings: store.data.settings, brief, platforms: ["threads"], count: kuota });
+        out.posts.forEach((post, k) => dibuat.push({ jenis: "jual", post, lint: out.lint?.[k] || [], produk: p.name }));
+        indeksJual += out.posts.length;
+      } catch (e) { nota.push(`Produk "${p.name}": ${e.message}`); }
+    }
+
+    // Kandungan nilai: satu panggilan untuk semua.
+    if (bilTips > 0) {
+      try {
+        const out = await generateTips({ settings: store.data.settings, niche, count: bilTips, panjang: body.panjang || "sederhana", audience: body.audience || "" });
+        out.posts.forEach((post, k) => dibuat.push({ jenis: "tips", post, lint: out.lint?.[k] || [] }));
+      } catch (e) { nota.push(`Tips: ${e.message}`); }
+    }
+
+    // Susun ikut corak supaya jualan tak berlonggok.
+    const baris = [];
+    const baki = { jual: dibuat.filter(d => d.jenis === "jual"), tips: dibuat.filter(d => d.jenis === "tips") };
+    for (const j of jenis) {
+      const ambil = baki[j].shift() || baki[j === "jual" ? "tips" : "jual"].shift();
+      if (ambil) baris.push(ambil);
+    }
+
+    const posts = baris.map((b, i) => store.addPost({
+      platform: "threads", accountId: acc.id,
+      text: b.post.caption, status: "review", scheduledAt: slots[i] ?? null,
+      source: "ai", jenis: b.jenis,
+      script: { angle: b.post.angle || (b.jenis === "tips" ? "Tips" : ""), hook: b.post.hook, body: b.post.body, cta: b.post.cta, reply: b.post.reply, visual: b.post.visual },
+      lint: (b.lint || []).map(x => x.pesan || x),
+    }));
+    store.log("info", `Plan ${acc.label}: ${posts.length} post (${bilJual} jual, ${bilTips} tips) dalam ${hari} hari`);
+    return [200, { account: { id: acc.id, label: acc.label, niche }, posts, mix, nota }];
+  }],
+
   ["POST", /^\/api\/slots$/, async (_m, body) =>
     [200, { slots: sched.nextSlots(store, Math.max(1, Math.min(50, body.count || 1))) }]],
 
@@ -457,6 +538,17 @@ const ROUTES = [
     store.data.accounts.push(acc);
     store.save();
     store.log("info", `Akaun ditambah: ${acc.platform} (${acc.label})`);
+    return [200, { account: { ...acc, token: mask(acc.token) } }];
+  }],
+  ["PATCH", /^\/api\/accounts\/([\w-]+)$/, async (m, body) => {
+    const acc = store.account(m[1]);
+    if (!acc) return [404, { error: "Akaun tak dijumpai." }];
+    if (typeof body.label === "string" && body.label.trim()) acc.label = body.label.trim();
+    if (typeof body.niche === "string") acc.niche = body.niche.trim();
+    if (body.mix && typeof body.mix === "object") {
+      acc.mix = { jual: Math.max(0, Number(body.mix.jual) || 0), tips: Math.max(0, Number(body.mix.tips) || 0) };
+    }
+    store.save();
     return [200, { account: { ...acc, token: mask(acc.token) } }];
   }],
   ["DELETE", /^\/api\/accounts\/([\w-]+)$/, async m => {
