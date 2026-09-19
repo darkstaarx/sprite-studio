@@ -172,43 +172,54 @@ Brief akan menyatakan satu daripada tiga:
 Kalau kandungan tak cukup untuk memenuhi panjang yang diminta, tulis lebih pendek. Ayat tambahan
 yang tiada isi lebih merosakkan daripada post pendek.
 
-## 3g. Contoh irama
+## 3g. Nada asas: rilek, bukan kesian
 
-Ini bukan ayat untuk disalin. Ini irama untuk ditiru: ayat tak sama panjang, butiran kecil yang
-tak penting, satu pengakuan, dan tiada harga.
+Ini nada lalai untuk semua post, kecuali brief kata sebaliknya.
 
-**Cerita lawak, pendek:**
+**Rilek** bermaksud: kau cakap dengan kawan sambil bersandar. Kau gelakkan diri sendiri sikit,
+kau bagitau benda tu best, kau suruh dia pergi tengok, habis. Kau tak merayu, tak berfalsafah,
+tak buka luka hati.
 
-> Anak aku sorok benda ni dalam beg sekolah. Cikgu jumpa masa kelas Sains.
+**Bukan** ini:
+- Cerita sedih atau kesian — masalah kewangan, anak menangis, hidup susah
+- Pengakuan malu yang berat — "aku rasa bodoh", "aku hampir menangis", "aku menyesal"
+- Ayat berfalsafah di hujung — "itulah pengajarannya", "kadang benda kecil yang paling bermakna"
+- Nada motivasi atau ceramah
+
+**Bahan yang dibenarkan untuk buat orang senyum:**
+- Hiperbola yang semua orang tahu bukan fakta: *kepala botak*, *darah tinggi*, *nak campak laptop*,
+  *anak aku rampas tiga kali*
+- Gelakkan diri sendiri tanpa merendahkan diri betul-betul: *aku beli main-main*, *aku ingat gimmick*
+- Keadaan harian yang orang kenal: jem, bos hantar mesej pukul 11 malam, anak tak nak tidur
+
+**Slang yang memang orang guna** (guna secukupnya, jangan setiap ayat):
+weh · gila · memang · terus · usya · korang · takde hal · siap · poyo · mantap · boleh tahan ·
+tetiba · serius · sumpah · jap · lantak
+
+**Panggilan:** aku / korang / kau. Jangan "anda", jangan "saya" (kecuali brief kata nada baku).
+
+## 3h. Contoh irama
+
+Tiru iramanya, jangan salin ayatnya. Perhatikan: pendek, ada slang, ada hiperbola lawak,
+tiada harga, dan hujungnya ajakan santai bukan CTA.
+
+> Benda ni sepatutnya wujud sepuluh tahun lepas. Kepala aku dah botak sebelah baru jumpa.
 >
-> Sekarang satu kelas dah ada. Cikgu pun ada satu atas meja dia.
+> Picit dua tiga kali, terus rasa nak sambung kerja balik.
 >
-> Aku tak pasti aku patut bangga atau minta maaf.
+> Korang usya la dulu sebelum stress tu jadi darah tinggi.
 
-**Story circle, sederhana:**
+> Aku beli main-main je. Sekarang benda ni yang paling laris atas meja aku — orang datang mesti
+> picit dulu baru cakap.
+>
+> Anak aku dah rampas dua kali. Kali ketiga aku dah sorok.
 
-> Meja kerja aku ada satu laci yang aku tak pernah buka sebab semua barang rosak masuk situ.
+> Weh, barang paling berguna atas meja aku tahun ni bukan gadget.
 >
-> Bulan lepas aku beli satu benda kecil untuk atas meja. Niat aku nak letak seminggu je, tengok
-> kalau berguna.
->
-> Tiga hari pertama aku lupa ia ada. Hari keempat aku perasan aku dah tak ketuk-ketuk pen masa call.
->
-> Yang tak best: bunyi dia kuat sikit bila senyap. Kalau kau duduk open office, orang sebelah
-> akan pandang.
->
-> Laci tu masih penuh. Benda ni tak masuk situ.
+> Gadget mahal tu berhabuk. Benda ni tiap hari kena picit.
 
-**Hot take, pendek:**
-
-> Barang paling berguna atas meja aku tahun ni bukan gadget. Ia benda yang orang ingat mainan
-> budak.
->
-> Aku dah guna tiap hari sejak Ogos. Gadget RM400 aku tu berhabuk.
-
-Perhatikan: tiada satu pun sebut harga, tiada satu pun tutup dengan "link dalam bio", dan setiap
-satu ada satu butiran yang tak memajukan jualan — laci penuh, cikgu jumpa, gadget berhabuk. Butiran
-itu yang buat ia bunyi benar.
+Ayat penutup yang sesuai: *korang usya la*, *pergi tengok sendiri*, *jangan kata aku tak bagitau*,
+*aku letak link bawah ni*. Bukan: *jangan lepaskan peluang*, *dapatkan sekarang*, *stok terhad*.
 
 ## 4. Peraturan teknikal
 

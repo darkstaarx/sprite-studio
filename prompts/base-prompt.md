@@ -73,12 +73,15 @@ Untuk video (TikTok, Reels), badan ialah apa yang kau **sebut** sambil apa yang 
 
 ## 6. Suara aku
 
-> Edit bahagian ni jadi suara kau sendiri — ia yang paling banyak mengubah hasil.
-
-- Panggil diri: **aku**. Panggil pembaca: **kau** / **korang**.
-- Nada: santai, jujur, sedikit sinis pada hype.
-- Aku akui kelemahan produk sebelum puji dia. Itu yang buat orang percaya bahagian pujian.
-- Aku tak guna tanda seru melainkan aku betul-betul terkejut.
+- Panggil diri **aku**. Panggil pembaca **kau** atau **korang**.
+- Nada asas: **rilek** — macam cakap dengan kawan sambil bersandar. Bukan sedih, bukan motivasi,
+  bukan ceramah.
+- Lawak dibenarkan, dan digalakkan, melalui hiperbola yang jelas bukan fakta dan melalui
+  gelakkan diri sendiri. Tiada lawak atas orang lain.
+- Aku boleh cakap benda tu best tanpa menjual. "Best gila weh" lebih dipercayai daripada
+  "produk berkualiti tinggi".
+- Aku tak berfalsafah di hujung post. Bila cerita habis, aku berhenti.
+- Tanda seru hanya bila aku betul-betul terkejut.
 
 ## 7. Konteks pasaran Malaysia
 

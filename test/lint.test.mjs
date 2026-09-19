@@ -53,3 +53,20 @@ test("arahan pembetulan senaraikan post dan masalahnya", () => {
   assert.ok(!/Post 2/.test(arahan), "post yang lulus tak disenaraikan");
   assert.equal(arahanBetulkan([{ index: 0, isu: [] }]), "");
 });
+
+test("tangkap nada kesian dan ayat jualan keras", () => {
+  const k = t => lintPost({ caption: t }, { panjang: "sederhana" }).map(i => i.kod);
+  assert.ok(k("Yang buat aku rasa bodoh ialah aku tak beli awal-awal lagi, sedangkan benda ni memang senang guna setiap hari.").includes("nada-kesian"));
+  assert.ok(k("Aku hampir menangis bila tengok bil bulan tu, sebab semua barang naik harga dan gaji tak naik pun sejak tahun lepas.").includes("nada-kesian"));
+  assert.ok(k("Aku guna benda ni tiap hari sejak bulan lepas. Kadang benda kecil yang paling bermakna dalam hidup kita ni, betul tak?").includes("nada-kesian"));
+  assert.ok(k("Aku guna benda ni tiap hari dan memang best. Jangan lepaskan peluang, stok terhad sahaja untuk minggu ni je weh.").includes("jualan-keras"));
+});
+
+test("nada rilek dengan slang lulus tanpa aduan", () => {
+  const rilek = `Benda ni sepatutnya wujud sepuluh tahun lepas. Kepala aku dah botak sebelah baru jumpa.
+
+Picit dua tiga kali, terus rasa nak sambung kerja balik.
+
+Korang usya la dulu sebelum stress tu jadi darah tinggi.`;
+  assert.deepEqual(lintPost({ caption: rilek }, { panjang: "sederhana" }), []);
+});
