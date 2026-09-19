@@ -12,11 +12,16 @@ test("authorizeUrl bawa scope penerbitan dan tolak redirect bukan https", () => 
   assert.throws(() => authorizeUrl({ appId: "", redirectUri: "https://x/cb" }), /App ID/);
 });
 
-test("extractCode terima URL penuh, kod mentah, dan laporkan penolakan Meta", () => {
-  assert.equal(extractCode("https://localhost:8787/cb?code=AQB123#_"), "AQB123");
-  assert.equal(extractCode("  AQB456  "), "AQB456");
-  assert.throws(() => extractCode("https://localhost:8787/cb?error=access_denied&error_description=Pengguna%20tolak"), /Pengguna tolak/);
-  assert.throws(() => extractCode("https://localhost:8787/cb"), /tiada bahagian \?code=/);
+test("extractCode terima apa cara pun pengguna salin", () => {
+  const kod = "AQBxxxxxxxxxxxxxxxxxxxxxxxx";
+  assert.equal(extractCode(`https://localhost:8787/cb?code=${kod}#_`), kod, "URL penuh");
+  assert.equal(extractCode(`  ${kod}  `), kod, "kod mentah");
+  assert.equal(extractCode(`code=${kod}`), kod, "salin bahagian code sahaja");
+  assert.equal(extractCode(`localhost:8787/cb?code=${kod}&state=x`), kod, "URL tanpa skema, ada parameter lain");
+  assert.equal(extractCode(`${kod}#__`), kod, "buang ekor # yang Meta tambah");
+  assert.throws(() => extractCode("https://localhost:8787/cb?error=access_denied&error_description=Pengguna+tolak"), /Pengguna tolak/);
+  assert.throws(() => extractCode("https://localhost:8787/cb"), /Tak jumpa kod/);
+  assert.throws(() => extractCode("AQB123"), /terlalu pendek/);
   assert.throws(() => extractCode(""), /Tampal kod atau URL/);
 });
 
