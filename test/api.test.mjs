@@ -270,12 +270,13 @@ test("laluan tanpa key: ambil arahan, tampal jawapan AI luar, masuk barisan", as
   } finally { shop.close(); }
 });
 
-test("gaya baharu sampai ke UI dan boleh dipakai", async () => {
+test("senarai gaya ringkas dan tiada yang bertindih", async () => {
   const st = await api("/api/state");
-  for (const k of ["cerita", "circle", "hottake", "bina", "soalan"]) {
-    assert.ok(st.body.styles[k], `gaya ${k} ada dalam senarai`);
-  }
-  assert.match(st.body.styles.circle.nota, /8 beat|biasa/i);
+  assert.deepEqual(Object.keys(st.body.styles), ["cerita", "lawak", "hottake", "review", "soalan"],
+    "lima gaya sahaja, setiap satu jelas berbeza");
+  assert.equal(st.body.styles.cerita.angle, "circle", "gaya cerita guna rangka 8 beat");
+  assert.ok(!Object.values(st.body.styles).some(v => /harga/i.test(v.label)),
+    "tiada gaya kiraan harga, kerana harga memang disembunyikan");
 
   const http = await import("node:http");
   const shop = http.createServer((req, res) => {

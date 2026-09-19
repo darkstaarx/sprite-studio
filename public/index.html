@@ -196,7 +196,7 @@
   <div class="card" id="c3">
     <div class="head"><span class="n">3</span><span class="title">Bila keluar</span>
       <button class="i" data-note="n3" aria-expanded="false">i</button></div>
-    <div class="note" id="n3">Waktu orang Malaysia scroll: <b>9–11 malam</b> paling kuat, <b>12:30–2 petang</b> kedua, pagi sebelum kerja ketiga. Post berjadual hanya keluar kalau komputer ni hidup.</div>
+    <div class="note" id="n3"><b>Sekarang</b> bermakna post tak dijadual — kau tekan "Terbit sekarang" bila dah puas hati. Waktu orang Malaysia scroll: <b>9–11 malam</b> paling kuat, <b>12:30–2 petang</b> kedua, pagi sebelum kerja ketiga. Post berjadual hanya keluar kalau komputer ni hidup.</div>
     <div class="scroll" id="times"></div>
     <label style="margin-top:14px">Panjang post</label>
     <div class="scroll" id="lens"></div>
@@ -241,7 +241,8 @@
   <div class="card" id="cOut" hidden>
     <div class="head"><span class="n">✓</span><span class="title" id="outTitle">Hasil</span></div>
     <div id="out"></div>
-    <button class="btn primary wide" id="approveAll">Sahkan &amp; jadualkan semua</button>
+    <div class="row"><button class="btn primary" id="approveAll" style="flex:1">Sahkan &amp; jadualkan</button>
+      <button class="btn" id="publishAll">Terbit sekarang</button></div>
     <p class="msg" id="approveMsg"></p>
   </div>
 
@@ -308,7 +309,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 let TOKEN=localStorage.getItem("viralcool.token")||"";
 let S={products:[],posts:[],accounts:[],styles:{},settings:{llm:{}}};
-let style="cerita", panjang="sederhana", times=["07:00","13:00","19:00"], picked=[], made=[], llmProvider=null, manualDipaksa=false;
+let style="cerita", panjang="sederhana", terusPost=false, times=["07:00","13:00","19:00"], picked=[], made=[], llmProvider=null, manualDipaksa=false;
 
 async function api(path,opts={},retry=true){
   let r;
@@ -399,10 +400,12 @@ function renderLens(){
   $$("[data-len]").forEach(b=>b.onclick=()=>{ panjang=b.dataset.len; renderLens(); });
 }
 function renderTimes(){
-  const opts=[["07:00","7 pagi"],["13:00","1 tgh"],["19:00","7 mlm"],["21:00","9 mlm"]];
-  $("#times").innerHTML=opts.map(([v,l])=>`<button class="pick" data-t="${v}" aria-pressed="${times.includes(v)}">${l}</button>`).join("");
+  const opts=[["now","Sekarang"],["07:00","7 pagi"],["13:00","1 tgh"],["19:00","7 mlm"],["21:00","9 mlm"]];
+  $("#times").innerHTML=opts.map(([v,l])=>`<button class="pick" data-t="${v}" aria-pressed="${v==="now"?terusPost:(!terusPost&&times.includes(v))}">${l}</button>`).join("");
   $$("[data-t]").forEach(b=>b.onclick=()=>{
     const t=b.dataset.t;
+    if(t==="now"){ terusPost=!terusPost; renderTimes(); return; }
+    terusPost=false;
     times = times.includes(t)?times.filter(x=>x!==t):[...times,t].sort();
     if(!times.length) times=[t];
     renderTimes();
@@ -446,6 +449,8 @@ function postCard(p){
     ${p.script?.reply?`<p class="sub">↳ ${esc(p.script.reply)}</p>`:""}
     ${p.script?.visual?`<p class="sub">📷 ${esc(p.script.visual)}</p>`:""}
     ${(p.lint||[]).length?`<p class="sub" style="color:var(--bad)">⚠ ${p.lint.map(esc).join(" · ")}</p>`:""}
+    <div class="row" style="margin-top:8px"><button class="btn sm p-now" data-now="${p.id}">Terbit sekarang</button>
+      <span class="msg p-msg" style="margin:0"></span></div>
   </div>`;
 }
 function showOut(posts,notes){
@@ -454,6 +459,7 @@ function showOut(posts,notes){
   $("#outTitle").textContent=`${posts.length} post siap`;
   $("#out").innerHTML=posts.map(postCard).join("");
   $$("[data-text]").forEach(t=>t.onchange=()=>api(`/posts/${t.dataset.text}`,{method:"PATCH",body:JSON.stringify({text:t.value})}));
+  $$("[data-now]").forEach(b=>b.onclick=()=>terbitSatu(b.dataset.now,b));
   $("#goMsg").innerHTML=notes?.length?`<span class="warn">${notes.map(esc).join(" · ")}</span>`:"";
   $("#cOut").scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -461,7 +467,7 @@ function showOut(posts,notes){
 /* ---- tindakan ---- */
 function body(){
   const masalahMode=!$("#boxMasalah").hidden;
-  const base={style,panjang,sebutHarga:$("#sebutHarga").checked,times,startDate:$("#startDate").value,count:Number($("#count").value)};
+  const base={style,panjang,sebutHarga:$("#sebutHarga").checked,times:terusPost?[]:times,startDate:$("#startDate").value,count:Number($("#count").value)};
   return masalahMode?{...base,productId:picked[0],masalah:$("#masalah").value.trim()}:{...base,url:$("#url").value.trim()};
 }
 $("#go").onclick=async()=>{
@@ -477,6 +483,27 @@ $("#go").onclick=async()=>{
     showOut(res.flatMap(r=>r.posts),[...new Set(res.flatMap(r=>r.notes||[]))]);
     load();
   }catch(e){ $("#goMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+};
+async function terbitSatu(id,btn){
+  const kotak=btn.closest(".post").querySelector(".p-msg");
+  btn.disabled=true; kotak.textContent="menghantar…";
+  try{
+    const r=await api(`/posts/${id}/publish`,{method:"POST"});
+    kotak.innerHTML=r.post?.status==="published"
+      ? `<span class="ok">Dah keluar${S.dry?" (dry-run)":""}.</span>`
+      : `<span class="bad">${esc(r.post?.error||"gagal")}</span>`;
+  }catch(e){ kotak.innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+  btn.disabled=false; load();
+}
+$("#publishAll").onclick=async()=>{
+  if(!confirm(`Terbit ${made.length} post sekarang juga?`)) return;
+  $("#approveMsg").textContent="menghantar…";
+  let ok=0;
+  for(const p of made){
+    try{ const r=await api(`/posts/${p.id}/publish`,{method:"POST"}); if(r.post?.status==="published") ok++; }catch(_){}
+  }
+  $("#approveMsg").innerHTML=`<span class="${ok===made.length?"ok":"warn"}">${ok}/${made.length} keluar.</span>`;
+  load();
 };
 $("#approveAll").onclick=async()=>{
   $("#approveMsg").textContent="menjadualkan…";

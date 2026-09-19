@@ -71,16 +71,11 @@ function publicState() {
 
 // Gaya tulisan yang pengguna pilih di muka depan -> angle dalam enjin.
 const STYLES = {
-  cerita:  { label: "Cerita sebenar",  angle: "cerita",       nota: "babak, dialog, butiran kecil" },
-  circle:  { label: "Story circle",    angle: "circle",       nota: "8 beat: biasa → mahu → harga → berubah" },
-  hottake: { label: "Hot take",        angle: "hottake",      nota: "claim berani yang kau boleh pertahan" },
-  bina:    { label: "Bina dalam terang", angle: "bina",       nota: "apa kau tengah cuba sekarang" },
-  jujur:   { label: "Review jujur",    angle: "review-jujur", nota: "termasuk satu kelemahan" },
-  mitos:   { label: "Pecah mitos",     angle: "myth",         nota: "betulkan salah faham" },
-  lawak:   { label: "Cerita lawak",    angle: "lawak",        nota: "babak kelakar, produk masuk tak sengaja" },
-  senarai: { label: "Senarai pendek",  angle: "listicle",     nota: "3-4 perkara laju" },
-  soalan:  { label: "Soalan jujur",    angle: "soalan",       nota: "buka perbualan, tiada link" },
-  harga:   { label: "Kiraan harga",    angle: "harga-shock",  nota: "perlu harga" },
+  cerita:  { label: "Cerita",     angle: "circle",       nota: "babak sebenar, ada harga yang kau bayar" },
+  lawak:   { label: "Lawak",      angle: "lawak",        nota: "babak kelakar, produk masuk tak sengaja" },
+  hottake: { label: "Hot take",   angle: "hottake",      nota: "claim berani yang kau boleh pertahan" },
+  review:  { label: "Review",     angle: "review-jujur", nota: "jujur, termasuk satu kelemahan" },
+  soalan:  { label: "Soalan",     angle: "soalan",       nota: "buka perbualan, tiada link" },
 };
 
 /** Bina brief dari link atau produk dalam pustaka. Dikongsi oleh /compose dan /compose/prompt. */
@@ -104,7 +99,6 @@ async function briefDariBody(body) {
     kelebihan: body.kelebihan || [], masalah: body.masalah || product.masalah || "",
     cerita: body.cerita || "", audience: body.audience || "pengguna media sosial Malaysia, 25-40",
     panjang: ["pendek", "sederhana", "panjang"].includes(body.panjang) ? body.panjang : "sederhana",
-    // Harga hanya disebut bila pengguna minta, atau bila gaya itu memang tentang harga.
     sebutHarga: body.sebutHarga === true || style === "harga",
     bahasa: "bm-santai", tone: "Santai & jujur", cta: "Link dalam balasan pertama",
     angles: [STYLES[style].angle], image: product.image, lastUsedAt: Date.now(),
@@ -390,7 +384,6 @@ const ROUTES = [
       kelebihan: body.kelebihan || [], masalah: body.masalah || product.masalah || "",
       cerita: body.cerita || "", audience: body.audience || "pengguna media sosial Malaysia, 25-40",
     panjang: ["pendek", "sederhana", "panjang"].includes(body.panjang) ? body.panjang : "sederhana",
-    // Harga hanya disebut bila pengguna minta, atau bila gaya itu memang tentang harga.
     sebutHarga: body.sebutHarga === true || style === "harga",
       bahasa: "bm-santai", tone: "Santai & jujur", cta: "Link dalam balasan pertama",
       angles: [STYLES[style].angle], image: product.image, lastUsedAt: Date.now(),
@@ -469,7 +462,7 @@ const ROUTES = [
     const bilTips = jenis.filter(j => j === "tips").length;
     const bilJual = jenis.length - bilTips;
 
-    const GAYA = ["cerita", "lawak", "hottake", "soalan", "circle"];
+    const GAYA = ["cerita", "lawak", "hottake", "review", "soalan"];
     const dibuat = [];
     const nota = [];
     if (store.data.settings.llm.provider === "local") nota.push("Enjin masih 'local' — isi kotak Enjin ayat untuk ayat sebenar.");
