@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Store, rid } from "./lib/store.mjs";
 import { PLATFORMS } from "./lib/platforms.mjs";
-import { ANGLES, generate, listPrompts, readPrompt, writePrompt } from "./lib/llm.mjs";
+import { ANGLES, generate, listPrompts, readPrompt, writePrompt, matchProducts } from "./lib/llm.mjs";
 import * as sched from "./lib/scheduler.mjs";
 import { verify } from "./lib/publishers.mjs";
 import { detect } from "./lib/detect.mjs";
@@ -50,6 +50,8 @@ function publicState() {
     settings: { ...s, llm: { ...s.llm, apiKey: s.llm.apiKey ? "__SET__" : "" } },
     accounts: store.data.accounts.map(a => ({ ...a, token: mask(a.token) })),
     briefs: store.data.briefs,
+    products: store.data.products,
+    styles: STYLES,
     posts: store.data.posts.slice().sort((a, b) => (a.scheduledAt || a.createdAt) - (b.scheduledAt || b.createdAt)),
     logs: store.data.logs.slice(0, 60),
     platforms: PLATFORMS,
@@ -59,6 +61,16 @@ function publicState() {
     now: Date.now(),
   };
 }
+
+// Gaya tulisan yang pengguna pilih di muka depan -> angle dalam enjin.
+const STYLES = {
+  cerita:  { label: "Cerita sebenar",  angle: "cerita",       nota: "babak, dialog, butiran kecil" },
+  jujur:   { label: "Review jujur",    angle: "review-jujur", nota: "termasuk satu kelemahan" },
+  mitos:   { label: "Pecah mitos",     angle: "myth",         nota: "betulkan salah faham" },
+  senarai: { label: "Senarai pendek",  angle: "listicle",     nota: "3-4 perkara laju" },
+  soalan:  { label: "Soalan jujur",    angle: "soalan",       nota: "buka perbualan, tiada link" },
+  harga:   { label: "Kiraan harga",    angle: "harga-shock",  nota: "perlu harga" },
+};
 
 const ROUTES = [
   ["GET", /^\/api\/state$/, async () => [200, publicState()]],
@@ -212,6 +224,82 @@ const ROUTES = [
     if (found.descriptionQuality === "generik") notes.push("Keterangan halaman tiada fakta produk — tambah kelebihan sebenar dalam brief untuk ayat yang lebih tajam.");
     store.log("info", `Quick: ${made.length} post dari ${found.marketplace} — ${brief.nama}`);
     return [200, { detected: found, briefId: brief.id, posts: made, notes }];
+  }],
+
+  // --- Pustaka produk: tampal link sekali, sistem ingat.
+  ["POST", /^\/api\/products$/, async (_m, body) => {
+    if (!body.url) return [400, { error: "Bagi link produk." }];
+    let found = {};
+    try { found = await detect(String(body.url)); } catch (e) { found = { warnings: [e.message] }; }
+    const product = {
+      id: rid(),
+      url: found.affiliateUrl || String(body.url),
+      name: body.name || found.name || "",
+      price: body.price || found.price || "",
+      image: found.image || "",
+      marketplace: found.marketplace || "",
+      masalah: body.masalah || "",
+      createdAt: Date.now(),
+    };
+    if (!product.name) return [422, { error: "Nama produk tak dapat dikesan. Isi nama sendiri.", detected: found }];
+    store.data.products.push(product);
+    store.save();
+    return [200, { product, detected: found }];
+  }],
+  ["DELETE", /^\/api\/products\/([\w-]+)$/, async m => {
+    store.data.products = store.data.products.filter(p => p.id !== m[1]);
+    store.save();
+    return [200, { ok: true }];
+  }],
+
+  // --- Masalah -> produk dalam pustaka yang boleh tolong.
+  ["POST", /^\/api\/match$/, async (_m, body) => {
+    const masalah = String(body.masalah || "").trim();
+    if (!masalah) return [400, { error: "Tulis masalah dulu." }];
+    const lib = store.data.products;
+    if (!lib.length) return [422, { error: "Pustaka produk kosong. Tambah beberapa link produk dulu." }];
+    const want = Math.min(body.count || 5, lib.length);
+    try {
+      const picked = await matchProducts({ settings: store.data.settings, masalah, products: lib, count: want });
+      return [200, { masalah, matches: picked }];
+    } catch (e) { return [502, { error: e.message }]; }
+  }],
+
+  // --- Satu produk -> post mengikut gaya dan waktu pilihan.
+  ["POST", /^\/api\/compose$/, async (_m, body) => {
+    const style = STYLES[body.style] ? body.style : "cerita";
+    let product = body.productId ? store.data.products.find(p => p.id === body.productId) : null;
+    let found = null;
+    if (!product) {
+      if (!body.url) return [400, { error: "Bagi link produk atau pilih dari pustaka." }];
+      try { found = await detect(String(body.url)); } catch (e) { return [502, { error: e.message }]; }
+      if (!found.hasName && !body.nama) return [422, { error: "Produk tak dapat dikesan. Isi nama sendiri.", detected: found }];
+      product = { url: found.affiliateUrl, name: body.nama || found.name, price: body.harga || found.price, image: found.image, marketplace: found.marketplace };
+    }
+    const brief = {
+      id: rid(), name: product.name, mode: body.mode || "affiliate", nama: product.name,
+      harga: product.price || body.harga || "", link: product.url, niche: product.marketplace || "",
+      keterangan: found?.descriptionQuality === "produk" ? found.description : "",
+      kelebihan: body.kelebihan || [], masalah: body.masalah || product.masalah || "",
+      cerita: body.cerita || "", audience: body.audience || "pengguna media sosial Malaysia, 25-40",
+      bahasa: "bm-santai", tone: "Santai & jujur", cta: "Link dalam balasan pertama",
+      angles: [STYLES[style].angle], image: product.image, lastUsedAt: Date.now(),
+    };
+    let posts;
+    try {
+      ({ posts } = await generate({ settings: store.data.settings, brief, platforms: ["threads"], count: body.count || 3 }));
+    } catch (e) { return [502, { error: `Gagal tulis ayat: ${e.message}` }]; }
+
+    const slots = sched.customSlots(store, posts.length, body.times, body.startDate);
+    const made = posts.map((p, i) => store.addPost({
+      platform: "threads",
+      accountId: store.accountFor("threads")?.id || null,
+      text: p.caption, status: body.status === "scheduled" ? "scheduled" : "review",
+      scheduledAt: slots[i] ?? null, source: "ai", briefId: brief.id,
+      script: { angle: p.angle || STYLES[style].label, hook: p.hook, body: p.body, cta: p.cta, reply: p.reply, visual: p.visual },
+    }));
+    store.log("info", `Compose: ${made.length} post gaya ${style} untuk ${product.name}`);
+    return [200, { product, style, posts: made, detected: found }];
   }],
 
   ["POST", /^\/api\/slots$/, async (_m, body) =>

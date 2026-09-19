@@ -17,6 +17,32 @@ brief produk ─► base prompt (otak gaya) ─► LLM ─► post + skrip rakam
   OpenRouter/Hermes/Ollama/Anthropic bila kau dah ada key.
 - **Data kau duduk di `data/db.json`.** Token pun. Tiada telemetri, tiada cloud.
 
+## Muka depan — empat langkah
+
+`http://localhost:8787/` ialah satu muka sahaja:
+
+**Mod "Ada produk"**
+1. Tampal link produk
+2. Pilih gaya tulisan (cerita sebenar, review jujur, pecah mitos, senarai, soalan, kiraan harga)
+3. Pilih waktu — 7 pagi, 1 tengah hari, 7 malam (boleh tambah 9 malam), tarikh mula, berapa post
+4. Tulis & jadualkan → semak → sahkan
+
+**Mod "Ada masalah"**
+1. Taip masalah, contoh "anak sekolah"
+2. Sistem cadangkan sehingga 5 produk dari pustaka kau yang boleh tolong, dengan sebab
+3. Pilih mana yang kau nak pakai
+4. Gaya dan waktu sama seperti di atas
+
+Pustaka produk: tampal link sekali, sistem kesan nama/harga/gambar dan ingat. Padanan masalah guna
+LLM bila dikonfigur, dan padanan kata kunci bila tidak.
+
+**Had yang perlu kau tahu:** carian produk hanya meliputi pustaka kau sendiri. Shopee tak benarkan
+carian katalog tanpa API affiliate, jadi sehingga kredential itu dipasang, sistem tak boleh cari
+produk yang kau sendiri belum simpan.
+
+Studio enam tab yang lama masih ada di `/studio.html` untuk kerja terperinci (akaun, autopilot,
+otak, log).
+
 ## Aliran affiliate — satu tampal
 
 Ini teras app ni. Tab **Tulis**, kotak paling atas:
@@ -146,7 +172,7 @@ kau tekan post sendiri. Itu pilihan paling selamat dan ia default atas sebab tu.
 ```bash
 node server.mjs          # buka http://localhost:8787
 node server.mjs --dry    # mod selamat: semua "terbit" jadi pura-pura
-npm test                 # 34 ujian
+npm test                 # 38 ujian
 ```
 
 ## Cara akses
@@ -319,8 +345,9 @@ lib/scheduler.mjs       slot masa, autopilot, tick terbit + retry backoff
 lib/oauth.mjs           OAuth Threads dan Meta (optional)
 prompts/base-prompt.md  otak gaya penulisan (semua platform)
 prompts/platforms/      playbook khusus platform — threads.md siap, tambah sendiri yang lain
-public/index.html       UI satu fail
-test/                   34 ujian (unit + API hidup, mod dry)
+public/index.html       muka depan empat langkah
+public/studio.html      studio lanjutan (akaun, autopilot, otak, log)
+test/                   38 ujian (unit + API hidup, mod dry)
 ```
 
 ## Batasan jujur

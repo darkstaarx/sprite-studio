@@ -174,3 +174,52 @@ test("quick tolak link yang tak boleh dikesan tanpa nama manual", async () => {
   assert.equal(r.status, 422);
   assert.match(r.body.error, /Isi nama produk sendiri/);
 });
+
+test("muka depan: pustaka produk, padan masalah, compose ikut gaya dan waktu", async () => {
+  const http = await import("node:http");
+  const shop = http.createServer((req, res) => {
+    const nama = req.url.includes("beg") ? "Beg Sekolah Kalis Air Darjah 1-6"
+      : req.url.includes("botol") ? "Botol Air Vakum 500ml Budak"
+      : "Air Fryer 5L Digital";
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end(`<html><head><meta property="og:title" content="${nama}">
+      <meta property="og:image" content="https://cdn/x.jpg">
+      <meta property="product:price:amount" content="59.00">
+      <meta property="product:price:currency" content="MYR"></head><body></body></html>`);
+  });
+  await new Promise(r => shop.listen(0, "127.0.0.1", r));
+  const port = shop.address().port;
+
+  for (const slug of ["beg-i.1.1", "botol-i.2.2", "fryer-i.3.3"]) {
+    const r = await api("/api/products", { method: "POST", body: JSON.stringify({ url: `http://127.0.0.1:${port}/${slug}` }) });
+    assert.equal(r.status, 200, slug);
+    assert.equal(r.body.product.price, "RM59");
+  }
+  const state1 = await api("/api/state");
+  assert.equal(state1.body.products.length, 3);
+  assert.ok(state1.body.styles.cerita && state1.body.styles.soalan, "gaya tulisan dihantar ke UI");
+
+  const match = await api("/api/match", { method: "POST", body: JSON.stringify({ masalah: "beg anak sekolah rosak", count: 5 }) });
+  assert.equal(match.status, 200);
+  assert.match(match.body.matches[0].product.name, /Beg Sekolah/, "produk paling relevan didahulukan");
+  assert.ok(match.body.matches[0].kenapa.length > 5);
+
+  const compose = await api("/api/compose", { method: "POST", body: JSON.stringify({
+    productId: match.body.matches[0].product.id, style: "cerita",
+    times: ["07:00", "13:00", "19:00"], count: 3 }) });
+  assert.equal(compose.status, 200);
+  assert.equal(compose.body.posts.length, 3);
+  const jam = compose.body.posts.map(p => new Date(p.scheduledAt).getHours()).sort((a, b) => a - b);
+  assert.deepEqual([...new Set(jam)], [7, 13, 19], "post jatuh pada waktu yang dipilih");
+  assert.ok(compose.body.posts.every(p => p.status === "review"), "tunggu sahkan dulu");
+
+  for (const p of compose.body.posts) await api(`/api/posts/${p.id}`, { method: "DELETE" });
+  for (const p of state1.body.products) await api(`/api/products/${p.id}`, { method: "DELETE" });
+  shop.close();
+});
+
+test("match menolak pustaka kosong dengan sebab yang jelas", async () => {
+  const r = await api("/api/match", { method: "POST", body: JSON.stringify({ masalah: "apa-apa" }) });
+  assert.equal(r.status, 422);
+  assert.match(r.body.error, /Pustaka produk kosong/);
+});
