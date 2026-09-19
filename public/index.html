@@ -232,7 +232,8 @@
   </div>
 
   <!-- tanpa key -->
-  <div class="card">
+  <p style="text-align:center" id="manualLink" hidden><button class="btn link" id="manualShow">Tiada API key? Guna AI lain →</button></p>
+  <div class="card" id="cManual">
     <div class="head"><span class="n">↔</span><span class="title">Tanpa API key</span>
       <button class="i" data-note="nM" aria-expanded="false">i</button></div>
     <div class="note" id="nM">Copy arahan penuh, jalankan dalam AI kau sendiri (Hermes Agent, ChatGPT, Claude), lepas tu tampal jawapan dia balik. Hasilnya sama macam kalau key dipasang.</div>
@@ -260,7 +261,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 let TOKEN=localStorage.getItem("viralcool.token")||"";
 let S={products:[],posts:[],accounts:[],styles:{},settings:{llm:{}}};
-let style="cerita", times=["07:00","13:00","19:00"], picked=[], made=[], llmProvider=null;
+let style="cerita", times=["07:00","13:00","19:00"], picked=[], made=[], llmProvider=null, manualDipaksa=false;
 
 async function api(path,opts={},retry=true){
   let r;
@@ -323,6 +324,9 @@ async function load(){
   if($("#url").value.trim()||picked.length) $("#c1").classList.add("filled");
   $("#c2").classList.add("filled"); $("#c3").classList.add("filled");
   if(prov!=="local") $("#cEngine").classList.add("filled");
+  // Kotak salin-tampal hanya berguna bila tiada enjin. Sorokkan bila enjin dah jalan.
+  const adaEnjin = prov!=="local";
+  if(!manualDipaksa){ $("#cManual").hidden=adaEnjin; $("#manualLink").hidden=!adaEnjin; }
 }
 function renderTimes(){
   const opts=[["07:00","7 pagi"],["13:00","1 tgh"],["19:00","7 mlm"],["21:00","9 mlm"]];
@@ -419,7 +423,11 @@ $("#copyPrompt").onclick=async e=>{
     $("#promptMsg").innerHTML=`<span class="ok">${r.prompt.length.toLocaleString()} aksara</span>`;
   }catch(err){ $("#promptMsg").innerHTML=`<span class="bad">${esc(err.message)}</span>`; }
 };
+$("#manualShow").onclick=()=>{ manualDipaksa=true; $("#cManual").hidden=false; $("#manualLink").hidden=true; $("#cManual").scrollIntoView({behavior:"smooth"}); };
 $("#importBtn").onclick=async()=>{
+  if(!$("#pasteBox").value.trim()){
+    return $("#importMsg").innerHTML='<span class="bad">Kotak kosong.</span> Kotak ni untuk tampal jawapan dari AI luar. Kalau enjin kau dah hijau, guna butang <b>Tulis &amp; jadualkan</b> di bawah je.';
+  }
   $("#importMsg").textContent="membaca…";
   try{
     const r=await api("/compose/import",{method:"POST",body:JSON.stringify({text:$("#pasteBox").value,times,startDate:$("#startDate").value})});
