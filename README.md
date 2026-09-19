@@ -17,6 +17,29 @@ brief produk ─► base prompt (otak gaya) ─► LLM ─► post + skrip rakam
   OpenRouter/Hermes/Ollama/Anthropic bila kau dah ada key.
 - **Data kau duduk di `data/db.json`.** Token pun. Tiada telemetri, tiada cloud.
 
+## Sambung Threads (tanpa server HTTPS)
+
+Meta hanya terima redirect URI berbentuk `https://`, jadi callback ke `http://localhost` ditolak.
+ViralCool mengelak masalah itu: biarkan Meta redirect ke alamat https yang tak wujud, kemudian
+salin URL dari bar alamat dan tampal balik ke dalam app. Kod kebenaran ada di dalam URL itu.
+
+Tekan **Sambung Threads** di muka depan, lepas tu ikut tiga langkah:
+
+**A. Buat app di Meta (sekali sahaja)** — [developers.facebook.com/apps](https://developers.facebook.com/apps)
+→ Create app → use case **"Access the Threads API"**. Dalam app itu:
+kebenaran `threads_basic` dan `threads_content_publish`; tambah akaun Threads kau sebagai
+**Threads Tester** dan **terima jemputan** dalam app Threads (Settings → Website permissions);
+tampal redirect URI yang ViralCool tunjukkan ke dalam **Redirect Callback URLs**.
+Isi App ID dan App Secret dalam ViralCool, tekan simpan.
+
+**B. Bagi kebenaran** — tekan pautan yang muncul, log masuk, approve. Browser akan cuba buka
+halaman yang tak wujud. Itu memang dijangka.
+
+**C. Salin URL** — salin keseluruhan URL dari bar alamat (ada `?code=…`) dan tampal dalam ViralCool.
+App tukar kod itu kepada token 60 hari, baca nama akaun kau, dan simpan.
+
+App Secret disimpan dalam `data/db.json` pada mesin kau dan tidak pernah dihantar balik ke UI.
+
 ## Muka depan — empat langkah
 
 `http://localhost:8787/` ialah satu muka sahaja:
@@ -172,7 +195,7 @@ kau tekan post sendiri. Itu pilihan paling selamat dan ia default atas sebab tu.
 ```bash
 node server.mjs          # buka http://localhost:8787
 node server.mjs --dry    # mod selamat: semua "terbit" jadi pura-pura
-npm test                 # 38 ujian
+npm test                 # 41 ujian
 ```
 
 ## Cara akses
@@ -342,12 +365,13 @@ lib/platforms.mjs       had aksara, keperluan media, gaya tulisan setiap platfor
 lib/llm.mjs             bina prompt, panggil LLM, parse JSON, penjana templat 'local'
 lib/publishers.mjs      adapter Threads / Facebook / Instagram / TikTok / manual + verify token
 lib/scheduler.mjs       slot masa, autopilot, tick terbit + retry backoff
-lib/oauth.mjs           OAuth Threads dan Meta (optional)
+lib/oauth.mjs           OAuth Threads dan Meta melalui callback (perlu URL awam)
+lib/threads-setup.mjs   sambung Threads dengan salin-tampal URL (tiada HTTPS diperlukan)
 prompts/base-prompt.md  otak gaya penulisan (semua platform)
 prompts/platforms/      playbook khusus platform — threads.md siap, tambah sendiri yang lain
 public/index.html       muka depan empat langkah
 public/studio.html      studio lanjutan (akaun, autopilot, otak, log)
-test/                   38 ujian (unit + API hidup, mod dry)
+test/                   41 ujian (unit + API hidup, mod dry)
 ```
 
 ## Batasan jujur

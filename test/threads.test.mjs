@@ -1,0 +1,51 @@
+import { test, before, after } from "node:test";
+import assert from "node:assert/strict";
+import http from "node:http";
+import { authorizeUrl, extractCode } from "../lib/threads-setup.mjs";
+
+test("authorizeUrl bawa scope penerbitan dan tolak redirect bukan https", () => {
+  const u = new URL(authorizeUrl({ appId: "123", redirectUri: "https://localhost:8787/cb" }));
+  assert.equal(u.searchParams.get("client_id"), "123");
+  assert.equal(u.searchParams.get("scope"), "threads_basic,threads_content_publish");
+  assert.equal(u.searchParams.get("response_type"), "code");
+  assert.throws(() => authorizeUrl({ appId: "123", redirectUri: "http://localhost:8787/cb" }), /https/);
+  assert.throws(() => authorizeUrl({ appId: "", redirectUri: "https://x/cb" }), /App ID/);
+});
+
+test("extractCode terima URL penuh, kod mentah, dan laporkan penolakan Meta", () => {
+  assert.equal(extractCode("https://localhost:8787/cb?code=AQB123#_"), "AQB123");
+  assert.equal(extractCode("  AQB456  "), "AQB456");
+  assert.throws(() => extractCode("https://localhost:8787/cb?error=access_denied&error_description=Pengguna%20tolak"), /Pengguna tolak/);
+  assert.throws(() => extractCode("https://localhost:8787/cb"), /tiada bahagian \?code=/);
+  assert.throws(() => extractCode(""), /Tampal kod atau URL/);
+});
+
+// Meta palsu untuk menguji pertukaran kod tanpa menyentuh rangkaian sebenar.
+let meta, base;
+before(async () => {
+  meta = http.createServer((req, res) => {
+    const u = new URL(req.url, "http://x");
+    res.setHeader("content-type", "application/json");
+    if (u.pathname === "/oauth/access_token") return res.end(JSON.stringify({ access_token: "SHORT", user_id: "9" }));
+    if (u.pathname === "/access_token") return res.end(JSON.stringify({ access_token: "LONG60", expires_in: 5184000 }));
+    if (u.pathname === "/v1.0/me") {
+      if (u.searchParams.get("access_token") !== "LONG60") { res.statusCode = 401; return res.end(JSON.stringify({ error: { message: "token salah" } })); }
+      return res.end(JSON.stringify({ id: "17841400000", username: "affie" }));
+    }
+    res.statusCode = 404; res.end("{}");
+  });
+  await new Promise(r => meta.listen(0, "127.0.0.1", r));
+  base = `http://127.0.0.1:${meta.address().port}`;
+  process.env.THREADS_GRAPH_BASE = base;
+});
+after(() => meta.close());
+
+test("exchange tukar kod jadi token 60 hari dan baca akaun", async () => {
+  const { exchange } = await import("../lib/threads-setup.mjs?fresh=1");
+  const r = await exchange({ appId: "1", appSecret: "s", redirectUri: "https://localhost/cb", code: "AQB" });
+  assert.equal(r.token, "LONG60");
+  assert.equal(r.userId, "17841400000");
+  assert.equal(r.username, "affie");
+  assert.equal(r.shortLived, false);
+  assert.ok(r.expiresAt > Date.now() + 50 * 24 * 3600e3, "luput lebih 50 hari dari sekarang");
+});

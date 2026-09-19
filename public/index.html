@@ -68,6 +68,41 @@
     <button class="btn sm" id="connect" hidden>Sambung Threads</button></div>
 </header>
 
+<!-- ============ SETUP THREADS ============ -->
+<div id="setup" hidden>
+  <div class="step">
+    <h2><i>A</i> Buat app Threads di Meta (sekali sahaja)</h2>
+    <p class="hint" style="margin-top:0">Buka <a href="https://developers.facebook.com/apps" target="_blank" rel="noopener">developers.facebook.com/apps</a> → <b>Create app</b> → pilih use case <b>“Access the Threads API”</b>. Dalam app tu:</p>
+    <ol class="hint" style="margin:8px 0 0;padding-left:20px;line-height:1.8">
+      <li>Tambah kebenaran <code>threads_basic</code> dan <code>threads_content_publish</code></li>
+      <li>Tambah akaun Threads kau sebagai <b>Threads Tester</b>, lepas tu <b>terima jemputan</b> dalam app Threads → Settings → Website permissions</li>
+      <li>Dalam <b>Redirect Callback URLs</b>, tampal alamat di bawah ni (Meta hanya terima https, sebab tu ia nampak pelik — tak apa, ia tak perlu wujud pun)</li>
+    </ol>
+    <div style="margin-top:12px"><label>Redirect URI (salin ke Meta)</label><input id="t_redirect"></div>
+    <div class="row" style="margin-top:11px">
+      <div style="flex:1;min-width:180px"><label>App ID</label><input id="t_appid" inputmode="numeric"></div>
+      <div style="flex:1;min-width:180px"><label>App Secret</label><input id="t_secret" type="password"></div>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn" id="t_save">Simpan &amp; sediakan pautan</button><span class="msg" id="t_saveMsg"></span></div>
+  </div>
+
+  <div class="step">
+    <h2><i>B</i> Bagi kebenaran</h2>
+    <p class="hint" style="margin-top:0">Tekan butang ni, log masuk Threads, tekan approve. Lepas tu browser akan cuba buka satu halaman yang <b>tak wujud</b> — itu normal.</p>
+    <a class="btn" id="t_open" target="_blank" rel="noopener" href="#" aria-disabled="true">Buka halaman kebenaran Threads</a>
+  </div>
+
+  <div class="step">
+    <h2><i>C</i> Salin URL dari bar alamat</h2>
+    <p class="hint" style="margin-top:0">Walaupun halaman tu error, <b>URL dalam bar alamat</b> ada kod kebenaran kau. Salin keseluruhan URL tu dan tampal di sini.</p>
+    <input id="t_url" placeholder="https://localhost:8787/oauth/threads/callback?code=AQB...">
+    <div class="row" style="margin-top:12px"><button class="btn primary" id="t_connect" style="width:auto">Sambung Threads</button><span class="msg" id="t_connectMsg"></span></div>
+  </div>
+
+  <div class="row" style="margin-bottom:20px"><button class="btn ghost" id="t_close">← Balik ke muka utama</button></div>
+</div>
+
+<div id="mainFlow">
 <div class="modes">
   <button class="mode" id="modeProduk" aria-pressed="true"><b>Ada produk</b><span>Tampal link, dapat post</span></button>
   <button class="mode" id="modeMasalah" aria-pressed="false"><b>Ada masalah</b><span>Cari produk yang tolong</span></button>
@@ -131,6 +166,8 @@
   </div>
 </div>
 
+</div>
+
 <footer>
   <span id="queueLine">—</span>
   <a href="/studio.html">Studio lanjutan →</a>
@@ -159,7 +196,10 @@ async function load(){
   $("#dot").classList.toggle("on",!!acc);
   $("#acctText").textContent=acc?`Threads: ${acc.label}`:"Threads belum bersambung";
   $("#connect").hidden=!!acc;
-  $("#connect").onclick=()=>location.href=S.oauth?.threads?"/oauth/threads/start":"/studio.html#akaun";
+  $("#connect").onclick=()=>showSetup(true);
+  $("#t_redirect").value=S.settings?.threads?.redirectUri||"https://localhost:8787/oauth/threads/callback";
+  $("#t_appid").value=S.settings?.threads?.appId||"";
+  $("#t_secret").placeholder=S.settings?.threads?.appSecret==="__SET__"?"tersimpan — isi untuk tukar":"";
   renderStyles(); renderLib();
   const tunggu=S.posts.filter(p=>p.status==="review").length, jadual=S.posts.filter(p=>p.status==="scheduled").length;
   $("#queueLine").textContent=`${tunggu} tunggu sahkan · ${jadual} berjadual · ${S.posts.filter(p=>p.status==="published").length} dah keluar`;
@@ -270,6 +310,28 @@ function setMode(m){
   $("#flowProduk").hidden=m!=="produk";
   $("#flowMasalah").hidden=m==="produk";
 }
+function showSetup(on){ $("#setup").hidden=!on; $("#mainFlow").hidden=on; window.scrollTo({top:0,behavior:"smooth"}); }
+$("#t_close").onclick=()=>showSetup(false);
+$("#t_save").onclick=async()=>{
+  $("#t_saveMsg").textContent="menyimpan…";
+  try{
+    const r=await api("/threads/setup",{method:"POST",body:JSON.stringify({
+      appId:$("#t_appid").value.trim(), appSecret:$("#t_secret").value.trim(), redirectUri:$("#t_redirect").value.trim()})});
+    $("#t_open").href=r.authorizeUrl; $("#t_open").removeAttribute("aria-disabled");
+    $("#t_saveMsg").innerHTML='<span class="ok">Siap. Pergi langkah B.</span>';
+    $("#t_secret").value="";
+  }catch(e){ $("#t_saveMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+};
+$("#t_connect").onclick=async()=>{
+  $("#t_connectMsg").textContent="menyambung…";
+  try{
+    const r=await api("/threads/connect",{method:"POST",body:JSON.stringify({redirectUrl:$("#t_url").value.trim()})});
+    $("#t_connectMsg").innerHTML=`<span class="ok">Bersambung sebagai ${esc(r.account.label)}.</span>`
+      + (r.shortLived?' <span class="warn">Token pendek sahaja (1 jam) — cuba lagi kalau ia luput.</span>':"");
+    $("#t_url").value="";
+    await load(); setTimeout(()=>showSetup(false),1200);
+  }catch(e){ $("#t_connectMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+};
 $("#startDate").value=new Date().toISOString().slice(0,10);
 renderTimes();
 load().catch(e=>{ $("#acctText").textContent="tak dapat sambung server"; console.error(e); });

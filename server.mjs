@@ -12,6 +12,7 @@ import * as sched from "./lib/scheduler.mjs";
 import { verify } from "./lib/publishers.mjs";
 import { detect } from "./lib/detect.mjs";
 import { startUrl, handleCallback, oauthReady } from "./lib/oauth.mjs";
+import { authorizeUrl, extractCode, exchange } from "./lib/threads-setup.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 loadEnv(path.join(HERE, ".env"));
@@ -47,7 +48,11 @@ const mask = t => (t ? t.slice(0, 6) + "…" + t.slice(-4) : "");
 function publicState() {
   const s = store.data.settings;
   return {
-    settings: { ...s, llm: { ...s.llm, apiKey: s.llm.apiKey ? "__SET__" : "" } },
+    settings: {
+      ...s,
+      llm: { ...s.llm, apiKey: s.llm.apiKey ? "__SET__" : "" },
+      threads: { ...s.threads, appSecret: s.threads.appSecret ? "__SET__" : "" },
+    },
     accounts: store.data.accounts.map(a => ({ ...a, token: mask(a.token) })),
     briefs: store.data.briefs,
     products: store.data.products,
@@ -224,6 +229,35 @@ const ROUTES = [
     if (found.descriptionQuality === "generik") notes.push("Keterangan halaman tiada fakta produk — tambah kelebihan sebenar dalam brief untuk ayat yang lebih tajam.");
     store.log("info", `Quick: ${made.length} post dari ${found.marketplace} — ${brief.nama}`);
     return [200, { detected: found, briefId: brief.id, posts: made, notes }];
+  }],
+
+  // --- Sambung Threads tanpa server HTTPS (salin URL dari bar alamat).
+  ["POST", /^\/api\/threads\/setup$/, async (_m, body) => {
+    const t = store.data.settings.threads;
+    if (typeof body.appId === "string") t.appId = body.appId.trim();
+    if (typeof body.appSecret === "string" && body.appSecret !== "__SET__") t.appSecret = body.appSecret.trim();
+    if (typeof body.redirectUri === "string" && body.redirectUri.trim()) t.redirectUri = body.redirectUri.trim();
+    store.save();
+    try { return [200, { ok: true, authorizeUrl: authorizeUrl(t), redirectUri: t.redirectUri }]; }
+    catch (e) { return [400, { error: e.message }]; }
+  }],
+  ["POST", /^\/api\/threads\/connect$/, async (_m, body) => {
+    const t = store.data.settings.threads;
+    let code;
+    try { code = extractCode(body.redirectUrl || body.code); }
+    catch (e) { return [400, { error: e.message }]; }
+    try {
+      const acc = await exchange({ appId: t.appId, appSecret: t.appSecret, redirectUri: t.redirectUri, code });
+      store.data.accounts = store.data.accounts.filter(a => a.platform !== "threads");
+      const account = {
+        id: rid(), platform: "threads", label: acc.username ? "@" + acc.username : "Threads",
+        token: acc.token, expiresAt: acc.expiresAt, meta: { userId: acc.userId, username: acc.username },
+      };
+      store.data.accounts.push(account);
+      store.save();
+      store.log("info", `Threads bersambung: ${account.label}`);
+      return [200, { ok: true, account: { ...account, token: mask(account.token) }, shortLived: acc.shortLived }];
+    } catch (e) { return [502, { error: e.message }]; }
   }],
 
   // --- Pustaka produk: tampal link sekali, sistem ingat.
