@@ -319,7 +319,7 @@ function renderTimes(){
   });
 }
 function renderPresets(){
-  const P={nousportal:"Nous Portal",hermes405:"Hermes 405B",hermes70:"Hermes 70B",openrouter:"OpenRouter",anthropic:"Anthropic",ollama:"Ollama",local:"Tiada AI"};
+  const P={asai:"aSaI",nousportal:"Nous Portal",hermes405:"Hermes 405B",hermes70:"Hermes 70B",openrouter:"OpenRouter",anthropic:"Anthropic",ollama:"Ollama",local:"Tiada AI"};
   $("#presets").innerHTML=Object.entries(P).map(([k,l])=>`<button class="pick" data-preset="${k}">${l}</button>`).join("");
   $$("[data-preset]").forEach(b=>b.onclick=()=>{
     const p=PRESET[b.dataset.preset];
@@ -329,6 +329,7 @@ function renderPresets(){
   });
 }
 const PRESET={
+  asai:{provider:"openai",baseUrl:"https://serveras.click/v1",model:"asai/gpt-5.6-sol"},
   nousportal:{provider:"openai",baseUrl:"https://inference-api.nousresearch.com/v1",model:"Hermes-4-405B"},
   hermes405:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:"nousresearch/hermes-4-405b"},
   hermes70:{provider:"openai",baseUrl:"https://openrouter.ai/api/v1",model:"nousresearch/hermes-4-70b"},
