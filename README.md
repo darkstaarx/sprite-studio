@@ -1,118 +1,117 @@
-# SkripGun
+# ViralCool
 
-Versi minimalist, untuk kegunaan sendiri, bagi apa yang [ViralKaya](https://viralkaya.com/) jual:
-**tampal link produk → dapat skrip viral TikTok / Threads / Facebook / Reels dalam BM atau English.**
-Bezanya SkripGun tak jual langganan, tak ada backend, dan dia sambung terus ke
-**Metricool** untuk jadual & publish.
-
-Satu fail: [`index.html`](index.html). Buka je dalam browser (double-click pun jadi).
-Semua brief, barisan post dan tetapan duduk dalam `localStorage` browser kau — tiada server, tiada akaun.
-
-## ViralKaya auto-post ke?
-
-Tidak. Setakat maklumat awam yang ada, ViralKaya jana **skrip + caption** sahaja —
-posting kau buat sendiri. Sebab itu gabungan `SkripGun → Metricool` masuk akal:
+Penjana ayat viral **dan** penjadual/penerbit sendiri. Gabungan apa yang ViralKaya buat (tulis skrip)
+dengan apa yang Metricool buat (jadual + terbit) — tapi jalan atas mesin kau, guna akaun kau,
+tiada langganan dan tiada perantara.
 
 ```
-brief produk ─► prompt ─► LLM (Claude/Hermes/apa saja) ─► caption + skrip
-                                                            │
-                                    ┌───────────────────────┴───────────────┐
-                                    ▼                                       ▼
-                        CSV import (semua plan)                 Scheduler API (plan berbayar)
-                                    └──────────────► Metricool ──────► auto-publish
+brief produk ─► base prompt (otak gaya) ─► LLM ─► post + skrip rakaman
+                                                     │
+                                          approve ───┤ (atau autopilot: AI terus jadual)
+                                                     ▼
+                                    barisan berjadual ─► enjin jadual ─► Threads / FB / IG / TikTok
 ```
 
-Yang perlu kau buat sendiri tetap sama: rakam video. Teks, caption, hashtag, jadual — automatik.
+- **Tiada dependency.** Node 20+ sahaja. Tiada npm install.
+- **Tiada API key pun boleh mula.** Provider default `local` menjana post dari templat; tukar ke
+  OpenRouter/Hermes/Ollama/Anthropic bila kau dah ada key.
+- **Data kau duduk di `data/db.json`.** Token pun. Tiada telemetri, tiada cloud.
 
-## Aliran kerja
-
-1. **Tab 1 · Brief** — tampal link produk (Shopee/Lazada/TikTok Shop/Temu; nama produk ditarik dari
-   slug URL), pilih platform, angle hook, bahasa, tone, panjang video, bilangan variasi.
-2. **Tab 2 · Prompt** — tekan *Jana prompt* → prompt penuh siap copy, atau terus buka Claude/ChatGPT
-   dengan prompt dah terisi. Ada juga *mod auto* kalau kau dah isi API key (lihat bawah).
-3. **Tab 3 · Hasil & Jadual** — tampal balik output LLM → *Pecah jadi post* → setiap variasi jadi satu
-   baris dalam barisan jadual. *Susun slot masa* isi tarikh/masa automatik (contoh: satu post tiap 24 jam,
-   8 malam). Edit caption ikut suka.
-4. **Eksport** — `Download CSV` untuk import ke Metricool Calendar, atau `Download JSON` untuk
-   `scripts/metricool_push.py`.
-
-Skrip rakaman (hook / body / CTA / cadangan b-roll) disimpan di bawah setiap baris — buka
-*skrip rakaman* bila nak rakam.
-
-## Import CSV ke Metricool
-
-Metricool: **Calendar → ⋯ (kanan atas) → Import CSV**. Turunkan *template* dari situ dulu, tampal
-**baris header sebenar** fail tu ke dalam kotak "Baris header CSV Metricool kau" dalam tab 3 —
-eksport akan padan ikut nama kolum (template Metricool berubah dari semasa ke semasa, jadi jangan
-percaya susunan default membuta). Default yang aku guna:
-
-```
-Text, Date, Time, Facebook, Twitter, LinkedIn, GMB, Instagram, TikTok, Threads,
-Pinterest, Youtube, Bluesky, Type of Post, Brand Name, Picture Url 1..10
-```
-
-Kolum rangkaian diisi `TRUE`/`FALSE` ikut platform setiap post. Gambar/video **tak** boleh naik
-melalui CSV kecuali kau ada URL awam — biasanya lebih senang tambah media dalam Metricool lepas import.
-
-## Metricool API (optional)
+## Mula
 
 ```bash
-export METRICOOL_USER_TOKEN=...   # header X-Mc-Auth
-export METRICOOL_USER_ID=...
-export METRICOOL_BLOG_ID=...      # id brand
-
-python3 scripts/metricool_push.py --brands                    # cari blogId
-python3 scripts/metricool_push.py skripgun-queue.json         # dry-run (default)
-python3 scripts/metricool_push.py skripgun-queue.json --send  # betul-betul jadual
-python3 scripts/metricool_push.py skripgun-queue.json --send --draft   # masuk sebagai draf
+node server.mjs          # buka http://localhost:8787
+node server.mjs --dry    # mod selamat: semua "terbit" jadi pura-pura
+npm test                 # 16 ujian
 ```
 
-Stdlib Python sahaja, tiada dependency. Nota jujur: akses API Metricool hanya ada pada plan berbayar
-tertentu, dan dokumentasi rasmi tak dapat dibaca masa skrip ni ditulis (proxy block domain dia), jadi
-bentuk `POST /api/v2/scheduler/posts` di dalam ni ikut maklumat awam. Kalau dapat 4xx, banding dengan
-`app.metricool.com/resources/apidocs` dan tukar `--path` atau `build_payload()`. Laluan CSV tak ada
-masalah ni — itu sebab dia jadi default.
+## Tab dalam UI
 
-## Mod auto (API key)
+| Tab | Guna |
+|---|---|
+| **Barisan** | Semua post: tunggu approve, berjadual, terbit, gagal. Edit teks, tukar masa, terbit sekarang, buang. |
+| **Tulis** | Brief produk (link, harga, kelebihan, masalah, audience, angle) → jana → pilih → masuk barisan. |
+| **Autopilot** | AI jana + jadual sendiri bila barisan menipis. Boleh auto-publish tanpa approve. Tetapan LLM juga di sini. |
+| **Akaun** | Sambung Threads / Facebook / Instagram / TikTok — OAuth atau tampal token terus. |
+| **Otak** | Editor `prompts/base-prompt.md` — cara AI menulis ayat. Simpan, terus berkesan. |
+| **Log** | Apa yang enjin buat: terbit, gagal, autopilot, OAuth. |
 
-Tab 4 · Setting. Dua bentuk API disokong:
+## Otak: `prompts/base-prompt.md`
 
-| Pilihan | Base URL | Contoh model |
+Fail ni yang mengajar AI menulis, dan ia fail biasa — edit dalam UI atau dalam editor kau.
+Isinya: hukum ayat (satu ayat satu idea, irama panjang-pendek, buang pengisi, konkrit kalahkan
+abstrak), hukum hook 3 saat, struktur post, larangan keras (tiada claim kesihatan, tiada superlatif
+palsu, wajib dedah affiliate), profil suara kau, dan kontrak output JSON.
+
+Bahagian **§7 Sumber gaya tambahan** memang dibiar kosong: tampal di situ peraturan atau contoh
+tulisan yang kau nak AI ikut (contohnya post Threads yang kau rujuk). Satu peraturan satu baris di
+bawah `PERATURAN:`, contoh post penuh di bawah `CONTOH:` — AI tiru iramanya, bukan salin ayatnya.
+
+## Autopilot — "AI act sendiri"
+
+Tetapkan slot (`12:30, 20:00`), berapa post nak simpan dalam barisan (`minQueue`), dan berapa nak
+jana setiap kali (`batch`). Setiap 30 saat enjin semak:
+
+1. Ada post yang dah sampai masa? Terbitkan. Gagal → cuba semula 3 kali (2 min, 10 min, 30 min)
+   sebelum ditanda `failed`.
+2. Barisan bawah `minQueue`? Jana batch baru dari brief yang paling lama tak diguna, letak dalam
+   slot kosong seterusnya.
+
+`autoPublish: false` (default) bermaksud AI jana dan jadual, tapi post duduk dalam status
+`review` sampai kau tekan approve. Hidupkan `true` kalau kau nak dia jalan tanpa kau.
+
+## Sambung akaun
+
+**Cara pantas (peribadi):** tab Akaun → *Tambah token manual*. Tampal access token + id:
+
+| Platform | Yang perlu | Nota |
 |---|---|---|
-| OpenAI-compatible | `https://openrouter.ai/api/v1` | `nousresearch/hermes-4-405b` |
-| OpenAI-compatible | `http://localhost:11434/v1` (Ollama) | `llama3.1:8b`, `hermes3` |
-| Anthropic | `https://api.anthropic.com` | `claude-sonnet-5` |
+| Threads | token + Threads user id | Post teks terus. Gambar/video perlu URL awam. |
+| Facebook Page | **Page** access token + Page id | Guna `/feed`, atau `/photos` kalau ada gambar. |
+| Instagram | Page token + IG business user id | Wajib ada media URL awam. Video → REELS. |
+| TikTok | token OAuth TikTok | Default hantar ke **inbox/draf** (tak perlu app diaudit). Direct post perlu audit. |
+| Manual | — | Tiada API: post ditanda siap dan webhook kau di-ping supaya kau post sendiri. |
 
-Key disimpan dalam `localStorage` browser kau sahaja. Dua amaran:
+**Cara penuh (OAuth):** isi `THREADS_APP_ID/SECRET` atau `META_APP_ID/SECRET` dalam `.env`, set
+`PUBLIC_URL` ke URL yang boleh dicapai Meta (ngrok/cloudflared kalau di laptop), lepas tu tekan
+butang Sambung dalam tab Akaun. Token Threads ditukar jadi long-lived (~60 hari) automatik.
 
-- **Jangan host fail ni secara public dengan key di dalam.** Ini tool peribadi.
-- Sebahagian penyedia block panggilan terus dari browser (CORS). Kalau gagal, guna prompt manual
-  (jalan 100%) atau letak proxy kecil kau sendiri di depan.
+## Enjin LLM
 
-Tanpa key pun tool ni berfungsi penuh — memang direka sebagai *prompt builder* dulu.
+| Provider | Base URL | Model contoh |
+|---|---|---|
+| `local` | — | tiada; templat dalam `lib/llm.mjs` |
+| `openai` | `https://openrouter.ai/api/v1` | `nousresearch/hermes-4-405b` |
+| `openai` | `http://localhost:11434/v1` | `hermes3`, `llama3.1:8b` |
+| `anthropic` | `https://api.anthropic.com` | `claude-sonnet-5` |
 
-## Apa yang prompt tu paksa LLM buat
+Panggilan dibuat dari **server**, bukan browser — jadi tiada masalah CORS, dan key tak pernah
+dihantar ke UI (state API balas `__SET__` sahaja).
 
-- Struktur tetap per post (`HOOK / SCRIPT / CTA / CAPTION / HASHTAG / BROLL`) dalam blok
-  `=== POST === … === END ===` supaya boleh di-parse automatik.
-- Kiraan patah perkataan ikut panjang video (15s ≈ 40 patah, 30s ≈ 75, 45s ≈ 115, 60s ≈ 150).
-- 10 formula hook Malaysia (review jujur, PAS, before-after, harga shock, pecah mitos, POV,
-  listicle, storytelling, lawan keberatan, demo pantas) — setiap satu dengan struktur + contoh bunyi.
-- Peraturan keras: jangan reka fakta/spesifikasi (guna placeholder `[...]`), tiada claim
-  perubatan atau janji pendapatan, tiada superlatif tak boleh dibukti, wajib dedah link affiliate,
-  hook tak boleh mula dengan "hai semua".
-
-## Batasan yang kau patut tahu
-
-- **Link pendek** (`s.shopee.com.my`, `vt.tiktok.com`, `invol.co`) tak boleh dibuka dari browser —
-  nama produk kena isi manual. Link penuh produk baru boleh auto.
-- Harga, spesifikasi dan stok **tidak** ditarik dari marketplace (tiada backend, CORS block). Isi
-  sendiri dalam brief — dan itu sebenarnya bagus, sebab skrip jadi tepat bukan reka-reka.
-- Muat naik video ke TikTok/IG tetap melalui Metricool (atau manual), bukan dari sini.
-
-## Susunan fail
+## Struktur
 
 ```
-index.html                  tool penuh (UI + prompt builder + parser + eksport)
-scripts/metricool_push.py   penghantar API optional, stdlib sahaja, dry-run by default
+server.mjs              HTTP + API + static + boot enjin jadual
+lib/store.mjs           simpanan JSON atomik (settings, accounts, briefs, posts, logs)
+lib/platforms.mjs       had aksara, keperluan media, gaya tulisan setiap platform
+lib/llm.mjs             bina prompt, panggil LLM, parse JSON, penjana templat 'local'
+lib/publishers.mjs      adapter Threads / Facebook / Instagram / TikTok / manual + verify token
+lib/scheduler.mjs       slot masa, autopilot, tick terbit + retry backoff
+lib/oauth.mjs           OAuth Threads dan Meta (optional)
+prompts/base-prompt.md  otak gaya penulisan
+public/index.html       UI satu fail
+test/                   16 ujian (unit + API hidup, mod dry)
 ```
+
+## Batasan jujur
+
+- **Video/gambar kena ada URL awam.** IG dan TikTok tarik media melalui URL (`PULL_FROM_URL`),
+  jadi tiada upload fail dari komputer buat masa ni. Letak dalam R2/S3/Drive awam dulu.
+- **TikTok direct post perlu app diaudit.** Tanpa audit, video masuk inbox/draf dan kau tekan
+  post dalam app TikTok.
+- **Bentuk API Meta/TikTok ditulis ikut dokumentasi rasmi**, tapi domain mereka tak dapat dicapai
+  dari persekitaran tempat kod ni ditulis — jadi adapter belum diuji dengan token hidup. Jalankan
+  `node server.mjs --dry` dan butang *Semak token* dalam tab Akaun sebelum kau percaya sepenuhnya;
+  versi Graph boleh ditukar dengan `META_GRAPH_VERSION`.
+- **Instagram perlu akaun Business/Creator** yang bersambung ke Facebook Page. Akaun peribadi tak
+  boleh guna Content Publishing API.

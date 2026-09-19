@@ -1,0 +1,12 @@
+{
+  "name": "viralcool",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Penjana skrip viral + scheduler + publisher sendiri. Tiada dependency, tiada SaaS.",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

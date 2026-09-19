@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ViralCool</title>
+<style>
+  :root{--bg:#0e1013;--panel:#16191f;--panel-2:#1c2028;--line:#272c36;--ink:#e7eaf0;--dim:#9aa3b2;
+        --accent:#ffd166;--accent-ink:#2a2000;--ok:#5dd39e;--bad:#ff8f7a;--warn:#ffc98f;--r:10px}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1060px;margin:0 auto;padding:20px 16px 80px}
+  header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+  h1{font-size:20px;margin:0}h1 span{color:var(--accent)}
+  .sub{color:var(--dim);font-size:13px;margin:4px 0 16px}
+  nav{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:16px}
+  nav button{background:none;border:1px solid transparent;color:var(--dim);padding:7px 12px;border-radius:999px;cursor:pointer;font:inherit;font-size:13.5px}
+  nav button[aria-selected=true]{background:var(--panel-2);border-color:var(--line);color:var(--ink)}
+  section[hidden]{display:none}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+  .card h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 12px}
+  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .full{grid-column:1/-1}
+  label{display:block;font-size:12.5px;color:var(--dim);margin-bottom:5px}
+  input,select,textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:9px 10px;color:var(--ink);font:inherit}
+  textarea{min-height:70px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:1px solid var(--accent);border-color:var(--accent)}
+  .btn{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 13px;color:var(--ink);font:inherit;font-size:13.5px;cursor:pointer}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+  .btn.sm{padding:5px 9px;font-size:12.5px}
+  .btn.ghost{background:none}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);background:var(--panel-2);border-radius:999px;padding:6px 11px;font-size:13px;color:var(--dim);cursor:pointer}
+  .chip.on{color:var(--ink);border-color:var(--accent)}
+  .chip input{width:auto;accent-color:var(--accent)}
+  .post{border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:10px;background:var(--panel-2)}
+  .post .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;font-size:12px;color:var(--dim)}
+  .tag{border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:11px}
+  .tag.review{color:var(--warn);border-color:#6b5a33}
+  .tag.scheduled{color:var(--accent);border-color:#6b5a33}
+  .tag.published{color:var(--ok);border-color:#2f5c48}
+  .tag.failed{color:var(--bad);border-color:#6b3b33}
+  .tag.draft,.tag.publishing{color:var(--dim)}
+  .post textarea{min-height:96px;font-size:13.5px}
+  .hint{color:var(--dim);font-size:12.5px;margin:8px 0 0}
+  .bad{color:var(--bad)}.ok{color:var(--ok)}.warn{color:var(--warn)}
+  details summary{cursor:pointer;color:var(--dim);font-size:12.5px}
+  .logline{font:12px/1.5 ui-monospace,Menlo,monospace;color:var(--dim);border-bottom:1px solid var(--line);padding:5px 0}
+  .empty{color:var(--dim);font-size:13.5px;padding:8px 0}
+  footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);margin-top:24px;padding-top:12px}
+  @media(max-width:640px){.wrap{padding:14px 14px 70px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Viral<span>Cool</span></h1>
+  <div class="row">
+    <span class="tag" id="dryTag" hidden>DRY-RUN</span>
+    <span class="tag" id="clock"></span>
+    <button class="btn sm ghost" id="refresh">↻</button>
+  </div>
+</header>
+<p class="sub">Jana ayat → approve → jadual → terbit sendiri. Server kau, akaun kau, tiada SaaS di tengah.</p>
+
+<nav>
+  <button data-tab="barisan" aria-selected="true">Barisan</button>
+  <button data-tab="tulis" aria-selected="false">Tulis</button>
+  <button data-tab="autopilot" aria-selected="false">Autopilot</button>
+  <button data-tab="akaun" aria-selected="false">Akaun</button>
+  <button data-tab="otak" aria-selected="false">Otak</button>
+  <button data-tab="log" aria-selected="false">Log</button>
+</nav>
+
+<section id="tab-barisan">
+  <div class="card">
+    <h2>Barisan post</h2>
+    <div class="row" style="margin-bottom:12px">
+      <select id="filterStatus" style="width:auto">
+        <option value="aktif">Aktif (review + berjadual)</option>
+        <option value="semua">Semua</option>
+        <option value="review">Tunggu approve</option>
+        <option value="scheduled">Berjadual</option>
+        <option value="published">Dah terbit</option>
+        <option value="failed">Gagal</option>
+      </select>
+      <button class="btn sm" id="slotAll">Susun slot kosong</button>
+      <span class="hint" id="queueStat"></span>
+    </div>
+    <div id="queue"></div>
+  </div>
+</section>
+
+<section id="tab-tulis" hidden>
+  <div class="card">
+    <h2>Brief produk</h2>
+    <div class="row" style="margin-bottom:12px">
+      <select id="briefPick" style="width:auto;min-width:220px"></select>
+      <button class="btn sm" id="briefNew">Baru</button>
+      <button class="btn sm" id="briefSave">Simpan brief</button>
+      <button class="btn sm ghost" id="briefDel">Buang</button>
+    </div>
+    <div class="grid">
+      <div><label>Nama brief</label><input id="b_name" placeholder="Air Fryer — kempen Oktober"></div>
+      <div><label>Jenis</label><select id="b_mode">
+        <option value="affiliate">Affiliate</option><option value="bisnes">Bisnes sendiri</option><option value="organik">Organik</option>
+      </select></div>
+      <div><label>Nama produk/tawaran</label><input id="b_nama"></div>
+      <div><label>Harga / promo</label><input id="b_harga"></div>
+      <div><label>Link</label><input id="b_link"></div>
+      <div><label>Niche</label><input id="b_niche"></div>
+      <div class="full"><label>Kelebihan sebenar (satu per baris)</label><textarea id="b_kelebihan"></textarea></div>
+      <div class="full"><label>Masalah audience</label><textarea id="b_masalah"></textarea></div>
+      <div class="full"><label>Pengalaman peribadi</label><textarea id="b_bukti"></textarea></div>
+      <div><label>Audience</label><input id="b_audience"></div>
+      <div><label>Bahasa</label><select id="b_bahasa">
+        <option value="bm-santai">BM santai</option><option value="bm-baku">BM baku</option>
+        <option value="bm-eng">BM + English</option><option value="eng">English</option>
+      </select></div>
+      <div><label>Tone</label><input id="b_tone" placeholder="santai & jujur"></div>
+      <div><label>Panjang video (saat)</label><select id="b_durasi"><option>15</option><option selected>30</option><option>45</option><option>60</option></select></div>
+      <div><label>CTA</label><input id="b_cta"></div>
+      <div class="full"><label>Elak / jangan sebut</label><input id="b_larangan"></div>
+      <div class="full"><label>Angle</label><div class="chips" id="angleChips"></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Jana</h2>
+    <div class="row" style="margin-bottom:12px">
+      <div style="min-width:220px"><label>Platform</label><div class="chips" id="genPlatforms"></div></div>
+      <div style="width:110px"><label>Berapa post</label><input id="genCount" type="number" min="1" max="10" value="3"></div>
+      <div style="align-self:end"><button class="btn primary" id="genBtn">Jana ayat</button></div>
+      <span class="hint" id="genState"></span>
+    </div>
+    <div id="genOut"></div>
+    <div class="row" id="genActions" hidden>
+      <button class="btn primary" id="acceptSel">Masukkan barisan (auto slot)</button>
+      <button class="btn" id="acceptDraft">Simpan sebagai draf</button>
+    </div>
+  </div>
+</section>
+
+<section id="tab-autopilot" hidden>
+  <div class="card">
+    <h2>Autopilot</h2>
+    <p class="hint" style="margin:0 0 12px">Bila barisan menipis, AI jana post baru dari brief kau dan letak dalam slot seterusnya. Hidupkan <b>auto-publish</b> kalau kau nak dia terus terbit tanpa kau approve.</p>
+    <div class="grid">
+      <div><label>Status</label><select id="ap_enabled"><option value="false">Mati</option><option value="true">Hidup</option></select></div>
+      <div><label>Auto-publish tanpa approve</label><select id="ap_autoPublish"><option value="false">Tidak — tunggu aku approve</option><option value="true">Ya — terbit sendiri</option></select></div>
+      <div><label>Slot masa (pisah koma)</label><input id="ap_slots" placeholder="12:30, 20:00"></div>
+      <div><label>Simpan barisan sekurang-kurangnya</label><input id="ap_minQueue" type="number" min="1" max="50"></div>
+      <div><label>Jana berapa setiap kali</label><input id="ap_batch" type="number" min="1" max="10"></div>
+      <div><label>Jadual ke hadapan (hari)</label><input id="ap_lookaheadDays" type="number" min="1" max="30"></div>
+      <div class="full"><label>Platform</label><div class="chips" id="apPlatforms"></div></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn primary" id="apSave">Simpan</button>
+      <button class="btn" id="apRun">Jalankan sekarang</button>
+      <span class="hint" id="apState"></span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Enjin LLM</h2>
+    <div class="grid">
+      <div><label>Provider</label><select id="llm_provider">
+        <option value="local">local — templat tanpa API (default)</option>
+        <option value="openai">OpenAI-compatible (OpenRouter / Hermes / Ollama)</option>
+        <option value="anthropic">Anthropic</option>
+      </select></div>
+      <div><label>Base URL</label><input id="llm_baseUrl" placeholder="https://openrouter.ai/api/v1"></div>
+      <div><label>Model</label><input id="llm_model" placeholder="nousresearch/hermes-4-405b"></div>
+      <div><label>API key</label><input id="llm_apiKey" type="password" placeholder="kosong = kekal"></div>
+      <div><label>Temperature</label><input id="llm_temperature" type="number" step="0.1" min="0" max="2"></div>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn primary" id="llmSave">Simpan</button><span class="hint" id="llmState"></span></div>
+    <p class="hint">Key duduk dalam <code>data/db.json</code> pada mesin kau; panggilan API dibuat dari server, bukan browser — tiada masalah CORS.</p>
+  </div>
+</section>
+
+<section id="tab-akaun" hidden>
+  <div class="card">
+    <h2>Akaun bersambung</h2>
+    <div id="accounts"></div>
+    <div class="row" style="margin-top:12px">
+      <a class="btn" id="oauthThreads" href="/oauth/threads/start">Sambung Threads (OAuth)</a>
+      <a class="btn" id="oauthMeta" href="/oauth/meta/start">Sambung Facebook + Instagram (OAuth)</a>
+    </div>
+    <p class="hint" id="oauthNote"></p>
+  </div>
+  <div class="card">
+    <h2>Tambah token manual</h2>
+    <p class="hint" style="margin:0 0 12px">Cara paling pantas untuk kegunaan sendiri: ambil access token dari Graph API Explorer / Threads dev console, tampal sini.</p>
+    <div class="grid">
+      <div><label>Platform</label><select id="ac_platform">
+        <option value="threads">Threads</option><option value="facebook">Facebook Page</option>
+        <option value="instagram">Instagram</option><option value="tiktok">TikTok</option><option value="manual">Manual</option>
+      </select></div>
+      <div><label>Label</label><input id="ac_label" placeholder="@akaun_aku"></div>
+      <div class="full"><label>Access token</label><input id="ac_token" type="password"></div>
+      <div><label id="ac_idLabel">ID (ikut platform)</label><input id="ac_id" placeholder="threads user id / page id / ig user id"></div>
+      <div><label>Webhook (platform manual)</label><input id="ac_webhook" placeholder="https://ntfy.sh/topik-kau"></div>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn primary" id="acAdd">Tambah akaun</button><span class="hint" id="acState"></span></div>
+  </div>
+</section>
+
+<section id="tab-otak" hidden>
+  <div class="card">
+    <h2>Base prompt — cara AI tulis ayat</h2>
+    <p class="hint" style="margin:0 0 10px">Ini <code>prompts/base-prompt.md</code>. Server baca setiap kali jana, jadi perubahan terus berkesan. Bahagian <b>Sumber gaya tambahan</b> tempat kau tampal peraturan/contoh dari post Threads yang kau nak ikut.</p>
+    <textarea id="basePrompt" style="min-height:460px;font:12.5px/1.6 ui-monospace,Menlo,monospace"></textarea>
+    <div class="row" style="margin-top:12px"><button class="btn primary" id="saveBrain">Simpan otak</button><span class="hint" id="brainState"></span></div>
+  </div>
+</section>
+
+<section id="tab-log" hidden>
+  <div class="card"><h2>Log</h2><div id="logs"></div></div>
+</section>
+
+<footer>ViralCool · server tempatan. Dedah hubungan affiliate kau, jangan buat claim kesihatan atau janji hasil.</footer>
+</div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+let S={posts:[],accounts:[],briefs:[],platforms:{},angles:{},settings:{llm:{},autopilot:{}},logs:[]};
+let gen=[], curBrief=null;
+const TOKEN=localStorage.getItem("viralcool.token")||"";
+
+async function api(path,opts={}){
+  const r=await fetch("/api"+path,{...opts,headers:{"content-type":"application/json",...(TOKEN?{"x-viralcool-token":TOKEN}:{}),...(opts.headers||{})}});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(j.error||r.status);
+  return j;
+}
+const fmt=ts=>ts?new Date(ts).toLocaleString("ms-MY",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):"—";
+const localInput=ts=>{ if(!ts) return ""; const d=new Date(ts-new Date().getTimezoneOffset()*60000); return d.toISOString().slice(0,16); };
+
+/* ---------- render ---------- */
+function render(){
+  $("#dryTag").hidden=!S.dry;
+  $("#clock").textContent=new Date(S.now).toLocaleString("ms-MY",{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+  renderQueue(); renderAccounts(); renderLogs(); renderBriefPicker(); renderChips();
+  const ap=S.settings.autopilot;
+  $("#ap_enabled").value=String(!!ap.enabled); $("#ap_autoPublish").value=String(!!ap.autoPublish);
+  $("#ap_slots").value=(ap.slots||[]).join(", "); $("#ap_minQueue").value=ap.minQueue; $("#ap_batch").value=ap.batch;
+  $("#ap_lookaheadDays").value=ap.lookaheadDays;
+  const l=S.settings.llm;
+  $("#llm_provider").value=l.provider||"local"; $("#llm_baseUrl").value=l.baseUrl||"";
+  $("#llm_model").value=l.model||""; $("#llm_temperature").value=l.temperature??0.9;
+  $("#llm_apiKey").placeholder=l.apiKey==="__SET__"?"key tersimpan — isi untuk tukar":"kosong = tiada key";
+  $("#oauthThreads").style.opacity=S.oauth?.threads?1:.45;
+  $("#oauthMeta").style.opacity=S.oauth?.meta?1:.45;
+  $("#oauthNote").innerHTML=(S.oauth?.threads||S.oauth?.meta)?"OAuth sedia untuk: "+[S.oauth.threads?"Threads":"",S.oauth.meta?"Meta":""].filter(Boolean).join(", ")
+    :'OAuth belum dikonfigur — isi <code>THREADS_APP_ID/SECRET</code> atau <code>META_APP_ID/SECRET</code> dalam <code>.env</code>, atau guna token manual di bawah.';
+}
+function renderChips(){
+  const pf=Object.entries(S.platforms);
+  const mk=(id,sel)=>pf.map(([k,v])=>`<label class="chip${sel.includes(k)?" on":""}"><input type="checkbox" data-group="${id}" value="${k}"${sel.includes(k)?" checked":""}>${v.label}</label>`).join("");
+  if(!$("#genPlatforms").dataset.init){ $("#genPlatforms").innerHTML=mk("gen",["threads"]); $("#genPlatforms").dataset.init=1; }
+  $("#apPlatforms").innerHTML=mk("ap",S.settings.autopilot.platforms||[]);
+  if(!$("#angleChips").dataset.init){
+    $("#angleChips").innerHTML=Object.entries(S.angles).map(([k,v])=>`<label class="chip"><input type="checkbox" data-group="angle" value="${k}">${v.label}</label>`).join("");
+    $("#angleChips").dataset.init=1;
+  }
+  $$('input[data-group]').forEach(i=>i.onchange=()=>i.closest(".chip").classList.toggle("on",i.checked));
+}
+const picked=g=>$$(`input[data-group="${g}"]:checked`).map(i=>i.value);
+
+function renderQueue(){
+  const f=$("#filterStatus").value;
+  const list=S.posts.filter(p=>f==="semua"?true:f==="aktif"?["review","scheduled","publishing"].includes(p.status):p.status===f);
+  $("#queueStat").textContent=`${S.posts.filter(p=>p.status==="review").length} tunggu approve · ${S.posts.filter(p=>p.status==="scheduled").length} berjadual · ${S.posts.filter(p=>p.status==="published").length} terbit`;
+  $("#queue").innerHTML=list.length?list.map(postCard).join(""):'<p class="empty">Tiada post. Pergi tab <b>Tulis</b> atau hidupkan Autopilot.</p>';
+  list.forEach(p=>{
+    const el=$(`[data-post="${p.id}"]`); if(!el) return;
+    el.querySelector(".p-text").onchange=e=>api(`/posts/${p.id}`,{method:"PATCH",body:JSON.stringify({text:e.target.value})}).then(load);
+    el.querySelector(".p-when").onchange=e=>api(`/posts/${p.id}`,{method:"PATCH",body:JSON.stringify({scheduledAt:e.target.value?new Date(e.target.value).getTime():null})}).then(load);
+    el.querySelector(".p-platform").onchange=e=>api(`/posts/${p.id}`,{method:"PATCH",body:JSON.stringify({platform:e.target.value,accountId:null})}).then(load);
+    el.querySelector(".p-del").onclick=()=>confirm("Buang post ni?")&&api(`/posts/${p.id}`,{method:"DELETE"}).then(load);
+    const ok=el.querySelector(".p-approve"); if(ok) ok.onclick=()=>api(`/posts/${p.id}`,{method:"PATCH",body:JSON.stringify({status:"scheduled"})}).then(load);
+    const hold=el.querySelector(".p-hold"); if(hold) hold.onclick=()=>api(`/posts/${p.id}`,{method:"PATCH",body:JSON.stringify({status:"review"})}).then(load);
+    const now=el.querySelector(".p-now"); if(now) now.onclick=async()=>{ now.disabled=true; now.textContent="…"; try{ await api(`/posts/${p.id}/publish`,{method:"POST"}); } finally { load(); } };
+  });
+}
+function postCard(p){
+  const plat=S.platforms[p.platform]?.label||p.platform;
+  const acc=S.accounts.find(a=>a.id===p.accountId)||S.accounts.find(a=>a.platform===p.platform);
+  const over=(p.text||"").length>(S.platforms[p.platform]?.limit||5000);
+  return `<div class="post" data-post="${p.id}">
+    <div class="meta">
+      <span class="tag ${p.status}">${p.status}</span>
+      <select class="p-platform" style="width:auto;padding:3px 8px;font-size:12px">${Object.entries(S.platforms).map(([k,v])=>`<option value="${k}"${k===p.platform?" selected":""}>${v.label}</option>`).join("")}</select>
+      <span>${acc?esc(acc.label):'<span class="warn">tiada akaun</span>'}</span>
+      ${p.source==="ai"?'<span class="tag">AI</span>':""}
+      ${p.script?.angle?`<span>${esc(p.script.angle)}</span>`:""}
+      ${p.publishedAt?`<span class="ok">terbit ${fmt(p.publishedAt)}</span>`:""}
+      ${p.error?`<span class="bad">${esc(p.error).slice(0,120)}</span>`:""}
+    </div>
+    <textarea class="p-text">${esc(p.text)}</textarea>
+    <div class="row" style="margin-top:8px">
+      <input class="p-when" type="datetime-local" value="${localInput(p.scheduledAt)}" style="width:auto">
+      ${p.status==="review"?'<button class="btn sm primary p-approve">Approve & jadual</button>':""}
+      ${p.status==="scheduled"?'<button class="btn sm p-hold">Tahan</button>':""}
+      ${["review","scheduled","failed","draft"].includes(p.status)?'<button class="btn sm p-now">Terbit sekarang</button>':""}
+      <button class="btn sm ghost p-del">Buang</button>
+      ${over?`<span class="bad">melebihi had ${S.platforms[p.platform].limit} aksara</span>`:`<span class="hint">${(p.text||"").length} aksara</span>`}
+    </div>
+    ${p.script?`<details style="margin-top:8px"><summary>skrip rakaman</summary><div class="hint" style="white-space:pre-wrap">${esc([p.script.hook,p.script.body,p.script.cta,(p.script.broll||[]).join("; ")].filter(Boolean).join("\n\n"))}</div></details>`:""}
+  </div>`;
+}
+function renderAccounts(){
+  $("#accounts").innerHTML=S.accounts.length?S.accounts.map(a=>`<div class="post" data-acc="${a.id}">
+      <div class="meta"><span class="tag">${a.platform}</span><b style="color:var(--ink)">${esc(a.label)}</b><span>token ${esc(a.token||"—")}</span>
+      ${a.expiresAt?`<span>luput ${fmt(a.expiresAt)}</span>`:""}</div>
+      <div class="row"><button class="btn sm a-verify">Semak token</button><button class="btn sm ghost a-del">Buang</button><span class="hint a-state"></span></div>
+    </div>`).join(""):'<p class="empty">Belum ada akaun. Sambung OAuth atau tampal token manual di bawah.</p>';
+  S.accounts.forEach(a=>{
+    const el=$(`[data-acc="${a.id}"]`);
+    el.querySelector(".a-del").onclick=()=>confirm("Buang akaun ni?")&&api(`/accounts/${a.id}`,{method:"DELETE"}).then(load);
+    el.querySelector(".a-verify").onclick=async()=>{
+      const s=el.querySelector(".a-state"); s.textContent="menyemak…";
+      const r=await api(`/accounts/${a.id}/verify`,{method:"POST"});
+      s.innerHTML=r.ok?`<span class="ok">ok — ${esc(JSON.stringify(r.info)).slice(0,120)}</span>`:`<span class="bad">${esc(r.error)}</span>`;
+    };
+  });
+}
+function renderLogs(){
+  $("#logs").innerHTML=S.logs.length?S.logs.map(l=>`<div class="logline"><span class="${l.level==="error"?"bad":l.level==="warn"?"warn":""}">${new Date(l.ts).toLocaleTimeString("ms-MY")} ${esc(l.msg)}</span></div>`).join(""):'<p class="empty">Kosong.</p>';
+}
+function renderBriefPicker(){
+  const sel=$("#briefPick");
+  sel.innerHTML=S.briefs.map(b=>`<option value="${b.id}">${esc(b.name||b.nama||b.id)}</option>`).join("")||'<option value="">(tiada brief)</option>';
+  if(curBrief) sel.value=curBrief;
+}
+function briefForm(){
+  return {id:curBrief||undefined,name:$("#b_name").value,mode:$("#b_mode").value,nama:$("#b_nama").value,harga:$("#b_harga").value,
+    link:$("#b_link").value,niche:$("#b_niche").value,kelebihan:$("#b_kelebihan").value.split("\n").filter(Boolean),
+    masalah:$("#b_masalah").value,bukti:$("#b_bukti").value,audience:$("#b_audience").value,bahasa:$("#b_bahasa").value,
+    tone:$("#b_tone").value,durasi:Number($("#b_durasi").value),cta:$("#b_cta").value,larangan:$("#b_larangan").value,angles:picked("angle")};
+}
+function fillBrief(b){
+  curBrief=b?.id||null;
+  $("#b_name").value=b?.name||""; $("#b_mode").value=b?.mode||"affiliate"; $("#b_nama").value=b?.nama||"";
+  $("#b_harga").value=b?.harga||""; $("#b_link").value=b?.link||""; $("#b_niche").value=b?.niche||"";
+  $("#b_kelebihan").value=(b?.kelebihan||[]).join("\n"); $("#b_masalah").value=b?.masalah||""; $("#b_bukti").value=b?.bukti||"";
+  $("#b_audience").value=b?.audience||""; $("#b_bahasa").value=b?.bahasa||"bm-santai"; $("#b_tone").value=b?.tone||"";
+  $("#b_durasi").value=b?.durasi||30; $("#b_cta").value=b?.cta||""; $("#b_larangan").value=b?.larangan||"";
+  $$('input[data-group="angle"]').forEach(i=>{ i.checked=(b?.angles||[]).includes(i.value); i.closest(".chip").classList.toggle("on",i.checked); });
+}
+
+/* ---------- actions ---------- */
+async function load(){ S=await api("/state"); render(); }
+
+$$("nav button").forEach(b=>b.onclick=()=>{
+  $$("nav button").forEach(x=>x.setAttribute("aria-selected",String(x===b)));
+  ["barisan","tulis","autopilot","akaun","otak","log"].forEach(t=>$("#tab-"+t).hidden=t!==b.dataset.tab);
+  if(b.dataset.tab==="otak" && !$("#basePrompt").value) api("/base-prompt").then(r=>$("#basePrompt").value=r.text);
+  location.hash=b.dataset.tab;
+});
+$("#refresh").onclick=load;
+$("#filterStatus").onchange=renderQueue;
+$("#slotAll").onclick=async()=>{
+  const none=S.posts.filter(p=>["review","scheduled","draft"].includes(p.status)&&!p.scheduledAt);
+  if(!none.length) return alert("Semua post dah ada masa.");
+  const {slots}=await api("/slots",{method:"POST",body:JSON.stringify({count:none.length})});
+  for(let i=0;i<none.length;i++){
+    if(slots[i]==null) break;
+    await api(`/posts/${none[i].id}`,{method:"PATCH",body:JSON.stringify({scheduledAt:slots[i]})});
+  }
+  load();
+};
+$("#briefPick").onchange=e=>fillBrief(S.briefs.find(b=>b.id===e.target.value));
+$("#briefNew").onclick=()=>fillBrief(null);
+$("#briefSave").onclick=async()=>{ const {brief}=await api("/briefs",{method:"POST",body:JSON.stringify(briefForm())}); curBrief=brief.id; await load(); $("#briefPick").value=brief.id; };
+$("#briefDel").onclick=async()=>{ if(!curBrief||!confirm("Buang brief ni?"))return; await api(`/briefs/${curBrief}`,{method:"DELETE"}); curBrief=null; fillBrief(null); load(); };
+
+$("#genBtn").onclick=async()=>{
+  const st=$("#genState"); st.textContent="menjana…"; $("#genOut").innerHTML=""; $("#genActions").hidden=true;
+  try{
+    const r=await api("/generate",{method:"POST",body:JSON.stringify({brief:briefForm(),platforms:picked("gen"),count:Number($("#genCount").value)})});
+    gen=r.posts;
+    st.innerHTML=`<span class="ok">${gen.length} post (${r.provider})</span>`;
+    $("#genOut").innerHTML=gen.map((p,i)=>`<div class="post"><div class="meta">
+        <label class="chip on"><input type="checkbox" class="g-pick" data-i="${i}" checked>pilih</label>
+        <span class="tag">${esc(S.platforms[p.platform]?.label||p.platform)}</span><span>${esc(p.angle||"")}</span></div>
+      <textarea class="g-text" data-i="${i}">${esc(p.caption)}</textarea>
+      ${p.broll?.length?`<p class="hint">b-roll: ${esc(p.broll.join(" · "))}</p>`:""}</div>`).join("");
+    $("#genActions").hidden=false;
+  }catch(e){ st.innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+};
+async function accept(status){
+  $$(".g-text").forEach(t=>gen[t.dataset.i].caption=t.value);
+  const chosen=$$(".g-pick").filter(c=>c.checked).map(c=>gen[c.dataset.i]);
+  if(!chosen.length) return alert("Tiada post dipilih.");
+  await api("/posts",{method:"POST",body:JSON.stringify({
+    autoSlot:status==="review", posts:chosen.map(p=>({platform:p.platform,text:p.caption,status,source:"ai",briefId:curBrief,
+      script:{angle:p.angle,hook:p.hook,body:p.body,cta:p.cta,broll:p.broll}}))})});
+  $("#genOut").innerHTML=""; $("#genActions").hidden=true; $("#genState").innerHTML='<span class="ok">masuk barisan.</span>';
+  await load();
+}
+$("#acceptSel").onclick=()=>accept("review");
+$("#acceptDraft").onclick=()=>accept("draft");
+
+$("#apSave").onclick=async()=>{
+  await api("/settings",{method:"POST",body:JSON.stringify({autopilot:{
+    enabled:$("#ap_enabled").value==="true", autoPublish:$("#ap_autoPublish").value==="true",
+    slots:$("#ap_slots").value.split(",").map(s=>s.trim()).filter(Boolean),
+    minQueue:Number($("#ap_minQueue").value), batch:Number($("#ap_batch").value),
+    lookaheadDays:Number($("#ap_lookaheadDays").value), platforms:picked("ap")}})});
+  $("#apState").innerHTML='<span class="ok">disimpan.</span>'; load();
+};
+$("#apRun").onclick=async()=>{ $("#apState").textContent="menjana…"; const r=await api("/autopilot/run",{method:"POST",body:"{}"});
+  $("#apState").innerHTML=`<span class="${r.added?"ok":"warn"}">${r.added} post ditambah.</span>`; load(); };
+$("#llmSave").onclick=async()=>{
+  await api("/settings",{method:"POST",body:JSON.stringify({llm:{provider:$("#llm_provider").value,baseUrl:$("#llm_baseUrl").value,
+    model:$("#llm_model").value,temperature:Number($("#llm_temperature").value),
+    ...($("#llm_apiKey").value?{apiKey:$("#llm_apiKey").value}:{})}})});
+  $("#llm_apiKey").value=""; $("#llmState").innerHTML='<span class="ok">disimpan.</span>'; load();
+};
+$("#acAdd").onclick=async()=>{
+  const p=$("#ac_platform").value, id=$("#ac_id").value.trim();
+  const meta=p==="threads"?{userId:id}:p==="facebook"?{pageId:id}:p==="instagram"?{igUserId:id}:p==="manual"?{webhook:$("#ac_webhook").value}:{};
+  try{
+    await api("/accounts",{method:"POST",body:JSON.stringify({platform:p,label:$("#ac_label").value||p,token:$("#ac_token").value,meta})});
+    $("#ac_token").value=""; $("#ac_id").value=""; $("#acState").innerHTML='<span class="ok">ditambah.</span>'; load();
+  }catch(e){ $("#acState").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+};
+$("#ac_platform").onchange=e=>{
+  $("#ac_idLabel").textContent={threads:"Threads user id",facebook:"Facebook Page id",instagram:"Instagram business user id",tiktok:"(tiada)",manual:"(tiada)"}[e.target.value];
+};
+$("#saveBrain").onclick=async()=>{
+  try{ await api("/base-prompt",{method:"POST",body:JSON.stringify({text:$("#basePrompt").value})});
+    $("#brainState").innerHTML='<span class="ok">disimpan — terus berkesan.</span>'; }
+  catch(e){ $("#brainState").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+};
+
+if(location.hash){ const b=$(`nav button[data-tab="${location.hash.slice(1)}"]`); if(b) b.click(); }
+load().catch(e=>document.body.insertAdjacentHTML("afterbegin",`<p class="bad" style="padding:16px">Gagal sambung server: ${esc(e.message)}</p>`));
+setInterval(()=>load().catch(()=>{}),20000);
+</script>
+</body>
+</html>
