@@ -22,7 +22,7 @@ brief produk ─► base prompt (otak gaya) ─► LLM ─► post + skrip rakam
 ```bash
 node server.mjs          # buka http://localhost:8787
 node server.mjs --dry    # mod selamat: semua "terbit" jadi pura-pura
-npm test                 # 16 ujian
+npm test                 # 21 ujian
 ```
 
 ## Tab dalam UI
@@ -33,19 +33,48 @@ npm test                 # 16 ujian
 | **Tulis** | Brief produk (link, harga, kelebihan, masalah, audience, angle) → jana → pilih → masuk barisan. |
 | **Autopilot** | AI jana + jadual sendiri bila barisan menipis. Boleh auto-publish tanpa approve. Tetapan LLM juga di sini. |
 | **Akaun** | Sambung Threads / Facebook / Instagram / TikTok — OAuth atau tampal token terus. |
-| **Otak** | Editor `prompts/base-prompt.md` — cara AI menulis ayat. Simpan, terus berkesan. |
+| **Otak** | Editor base prompt + playbook setiap platform — cara AI menulis ayat. Simpan, terus berkesan. |
 | **Log** | Apa yang enjin buat: terbit, gagal, autopilot, OAuth. |
 
-## Otak: `prompts/base-prompt.md`
+## Otak: `prompts/`
 
-Fail ni yang mengajar AI menulis, dan ia fail biasa — edit dalam UI atau dalam editor kau.
-Isinya: hukum ayat (satu ayat satu idea, irama panjang-pendek, buang pengisi, konkrit kalahkan
-abstrak), hukum hook 3 saat, struktur post, larangan keras (tiada claim kesihatan, tiada superlatif
-palsu, wajib dedah affiliate), profil suara kau, dan kontrak output JSON.
+Dua lapis, kedua-duanya fail markdown biasa — edit dalam UI (tab **Otak**) atau dalam editor kau.
+Server baca setiap kali jana, jadi perubahan terus berkesan.
 
-Bahagian **§7 Sumber gaya tambahan** memang dibiar kosong: tampal di situ peraturan atau contoh
-tulisan yang kau nak AI ikut (contohnya post Threads yang kau rujuk). Satu peraturan satu baris di
-bawah `PERATURAN:`, contoh post penuh di bawah `CONTOH:` — AI tiru iramanya, bukan salin ayatnya.
+**`prompts/base-prompt.md`** — berlaku pada semua platform: hukum ayat (satu ayat satu idea, irama
+panjang-pendek, ayat pertama maksimum 12 patah, buang pengisi, konkrit kalahkan abstrak), hukum hook
+3 saat, struktur post, larangan keras (tiada claim kesihatan, tiada superlatif palsu, wajib dedah
+affiliate), konteks pasaran Malaysia, dan kontrak output JSON. Ada ruang kosong untuk kau tampal
+peraturan/contoh tulisan kau sendiri.
+
+**`prompts/platforms/<platform>.md`** — playbook khusus, ditambah automatik bila platform tu dijana,
+dan menang kalau bercanggah dengan base prompt. Yang siap sekarang: **Threads**.
+
+### Apa dalam playbook Threads
+
+Ditulis dari data platform + pasaran Malaysia, bukan agakan:
+
+- **Threads kira balasan, bukan like.** 20 like + 15 balasan diedar lebih luas daripada 200 like
+  tanpa balasan. Jadi setiap post ditulis untuk menjemput orang taip sesuatu.
+- **Nisbah 4:1** — empat post bernilai untuk satu post menjual; akaun yang bunyi macam kedai dihukum.
+- **Visual wajib dicadangkan** sebab post bergambar dapat engagement jauh lebih tinggi daripada teks kosong.
+- **Had 500 aksara**, sasar 120–320. Baris pertama = preview dalam feed, kena berdiri sendiri.
+  Hashtag 0–1 sahaja.
+- **Link duduk dalam balasan pertama**, bukan dalam post — Threads tak hukum link secara algoritma,
+  tapi pembaca berhenti bila nampak link. Setiap post Threads datang dengan medan `reply` siap ayat.
+- **7 bentuk post** yang memang jalan di Threads: hot take, "aku silap", kiraan harga, babak pendek,
+  soalan jujur, senarai pendek, thread bersiri bernombor.
+- **Suara Malaysia:** BM santai + code-switch English yang orang memang guna; bahasa Indonesia haram;
+  aku/kau/korang; harga dalam RM dengan kiraan per hari; rujukan tempatan hanya bila ia benar.
+  Elak kaum/agama/politik sebagai bahan lawak.
+- **Realiti affiliate MY:** komisen Shopee kecil dan bertutup per pesanan, TikTok Shop lebih lumayan
+  tapi jualan berlaku dalam app TikTok. Maka Threads = bina kepercayaan, bukan tempat hard-sell.
+- **Waktu Malaysia:** 9–11 malam paling kuat, 12:30–2 petang kedua, 7–9 pagi ketiga; Ramadan
+  berubah ke sebelum buka, selepas 10 malam, dan sahur 4–5.30 pagi. Slot autopilot default
+  (`12:30`, `21:00`) ikut data ni.
+
+Nak tambah platform lain? Buat `prompts/platforms/tiktok.md` — ia terus dikesan dan muncul
+dalam tab Otak, tiada kod perlu diubah.
 
 ## Autopilot — "AI act sendiri"
 
@@ -98,9 +127,10 @@ lib/llm.mjs             bina prompt, panggil LLM, parse JSON, penjana templat 'l
 lib/publishers.mjs      adapter Threads / Facebook / Instagram / TikTok / manual + verify token
 lib/scheduler.mjs       slot masa, autopilot, tick terbit + retry backoff
 lib/oauth.mjs           OAuth Threads dan Meta (optional)
-prompts/base-prompt.md  otak gaya penulisan
+prompts/base-prompt.md  otak gaya penulisan (semua platform)
+prompts/platforms/      playbook khusus platform — threads.md siap, tambah sendiri yang lain
 public/index.html       UI satu fail
-test/                   16 ujian (unit + API hidup, mod dry)
+test/                   21 ujian (unit + API hidup, mod dry)
 ```
 
 ## Batasan jujur
@@ -115,3 +145,20 @@ test/                   16 ujian (unit + API hidup, mod dry)
   versi Graph boleh ditukar dengan `META_GRAPH_VERSION`.
 - **Instagram perlu akaun Business/Creator** yang bersambung ke Facebook Page. Akaun peribadi tak
   boleh guna Content Publishing API.
+
+## Rujukan playbook Threads
+
+- [Threads algorithm 2026 — Metricool](https://metricool.com/threads-algorithm/) dan
+  [Threads strategy, 10k+ post dianalisis — Teract](https://www.teract.ai/resources/threads-content-strategy-2026):
+  balasan sebagai isyarat utama, kesan visual, kekerapan post.
+- [Threads marketing guide — Metricool](https://metricool.com/threads-marketing-guide/) dan
+  [Outfy](https://www.outfy.com/blog/threads-marketing/): bentuk hook, format thread bersiri, nada perbualan.
+- [Social Media Today — pendirian setiap platform tentang link luar](https://www.socialmediatoday.com/news/heres-each-big-social-platform-stand-external-links/733946/):
+  Mosseri kata tiada penalti algoritma untuk link di Threads.
+- [Statistik media sosial Malaysia 2026 — Zenweb](https://zenweb.my/blog/social-media-statistics-malaysia/) dan
+  [TikTok Shop Malaysia 2026 — SushiVid](https://blog.sushivid.com/tiktok-shop-malaysia-2026-numbers-every-brand-should-know):
+  jangkauan platform, kelakuan membeli, kadar komisen affiliate.
+- [Waktu terbaik post di Malaysia — BrandKraf](https://www.brandkraf.com/blog/best-time-to-post-social-media-malaysia)
+  dan [Zenweb](https://zenweb.my/blog/best-time-to-post-malaysia/): tetingkap malam, tengah hari, dan anjakan Ramadan.
+- [Copywriting untuk audience Malaysia — iPrima](https://www.iprimamedia.com/copywriting-malaysia/):
+  emosi, cerita, bahasa mudah.

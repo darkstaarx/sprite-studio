@@ -102,3 +102,34 @@ test("token akaun dimask dalam state", async () => {
 test("route tak wujud bagi 404 JSON", async () => {
   assert.equal((await api("/api/entah-apa")).status, 404);
 });
+
+test("api otak: senarai, baca, simpan, dan tolak laluan luar", async () => {
+  const list = await api("/api/prompts");
+  assert.ok(list.body.prompts.some(p => p.name === "base"));
+  assert.ok(list.body.prompts.some(p => p.name === "threads"));
+
+  const pb = await api("/api/prompts/threads");
+  assert.match(pb.body.text, /Playbook Threads/);
+
+  const before = pb.body.text;
+  const edited = before.replace("## 8. Elak sepenuhnya", "## 8. Elak sepenuhnya (diuji)");
+  assert.equal((await api("/api/prompts/threads", { method: "POST", body: JSON.stringify({ text: edited }) })).status, 200);
+  assert.match((await api("/api/prompts/threads")).body.text, /diuji/);
+  await api("/api/prompts/threads", { method: "POST", body: JSON.stringify({ text: before } ) });
+  assert.equal((await api("/api/prompts/threads")).body.text, before, "kandungan asal dipulihkan");
+
+  assert.equal((await api("/api/prompts/base", { method: "POST", body: JSON.stringify({ text: "pendek" }) })).status, 400);
+  assert.equal((await api("/api/prompts/..%2fbase-prompt")).status, 404);
+});
+
+test("post threads yang dijana bawa reply + visual ke barisan", async () => {
+  const gen = await api("/api/generate", { method: "POST", body: JSON.stringify({
+    brief: { nama: "Air Fryer", harga: "RM89", link: "https://shopee.com.my/x" }, platforms: ["threads"], count: 1 }) });
+  const p = gen.body.posts[0];
+  assert.ok(p.reply && p.visual);
+  const made = await api("/api/posts", { method: "POST", body: JSON.stringify({ posts: [{ platform: "threads", text: p.caption,
+    hook: p.hook, body: p.body, cta: p.cta, reply: p.reply, visual: p.visual }] }) });
+  assert.equal(made.body.posts[0].script.reply, p.reply);
+  assert.equal(made.body.posts[0].script.visual, p.visual);
+  await api(`/api/posts/${made.body.posts[0].id}`, { method: "DELETE" });
+});

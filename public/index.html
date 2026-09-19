@@ -208,8 +208,11 @@
 
 <section id="tab-otak" hidden>
   <div class="card">
-    <h2>Base prompt — cara AI tulis ayat</h2>
-    <p class="hint" style="margin:0 0 10px">Ini <code>prompts/base-prompt.md</code>. Server baca setiap kali jana, jadi perubahan terus berkesan. Bahagian <b>Sumber gaya tambahan</b> tempat kau tampal peraturan/contoh dari post Threads yang kau nak ikut.</p>
+    <h2>Otak — cara AI tulis ayat</h2>
+    <div class="row" style="margin-bottom:10px">
+      <select id="promptPick" style="width:auto;min-width:260px"></select>
+      <span class="hint">Base prompt guna pada semua platform; playbook ditambah bila platform tu dijana.</span>
+    </div>
     <textarea id="basePrompt" style="min-height:460px;font:12.5px/1.6 ui-monospace,Menlo,monospace"></textarea>
     <div class="row" style="margin-top:12px"><button class="btn primary" id="saveBrain">Simpan otak</button><span class="hint" id="brainState"></span></div>
   </div>
@@ -309,7 +312,7 @@ function postCard(p){
       <button class="btn sm ghost p-del">Buang</button>
       ${over?`<span class="bad">melebihi had ${S.platforms[p.platform].limit} aksara</span>`:`<span class="hint">${(p.text||"").length} aksara</span>`}
     </div>
-    ${p.script?`<details style="margin-top:8px"><summary>skrip rakaman</summary><div class="hint" style="white-space:pre-wrap">${esc([p.script.hook,p.script.body,p.script.cta,(p.script.broll||[]).join("; ")].filter(Boolean).join("\n\n"))}</div></details>`:""}
+    ${p.script?`<details style="margin-top:8px"><summary>skrip rakaman</summary><div class="hint" style="white-space:pre-wrap">${esc([p.script.hook,p.script.body,p.script.cta,p.script.reply?("balasan pertama: "+p.script.reply):"",p.script.visual?("visual: "+p.script.visual):"",(p.script.broll||[]).join("; ")].filter(Boolean).join("\n\n"))}</div></details>`:""}
   </div>`;
 }
 function renderAccounts(){
@@ -358,7 +361,7 @@ async function load(){ S=await api("/state"); render(); }
 $$("nav button").forEach(b=>b.onclick=()=>{
   $$("nav button").forEach(x=>x.setAttribute("aria-selected",String(x===b)));
   ["barisan","tulis","autopilot","akaun","otak","log"].forEach(t=>$("#tab-"+t).hidden=t!==b.dataset.tab);
-  if(b.dataset.tab==="otak" && !$("#basePrompt").value) api("/base-prompt").then(r=>$("#basePrompt").value=r.text);
+  if(b.dataset.tab==="otak" && !$("#promptPick").options.length) loadPrompts();
   location.hash=b.dataset.tab;
 });
 $("#refresh").onclick=load;
@@ -388,6 +391,8 @@ $("#genBtn").onclick=async()=>{
         <label class="chip on"><input type="checkbox" class="g-pick" data-i="${i}" checked>pilih</label>
         <span class="tag">${esc(S.platforms[p.platform]?.label||p.platform)}</span><span>${esc(p.angle||"")}</span></div>
       <textarea class="g-text" data-i="${i}">${esc(p.caption)}</textarea>
+      ${p.reply?`<p class="hint">balasan pertama: ${esc(p.reply)}</p>`:""}
+      ${p.visual?`<p class="hint">visual: ${esc(p.visual)}</p>`:""}
       ${p.broll?.length?`<p class="hint">b-roll: ${esc(p.broll.join(" · "))}</p>`:""}</div>`).join("");
     $("#genActions").hidden=false;
   }catch(e){ st.innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
@@ -398,7 +403,7 @@ async function accept(status){
   if(!chosen.length) return alert("Tiada post dipilih.");
   await api("/posts",{method:"POST",body:JSON.stringify({
     autoSlot:status==="review", posts:chosen.map(p=>({platform:p.platform,text:p.caption,status,source:"ai",briefId:curBrief,
-      script:{angle:p.angle,hook:p.hook,body:p.body,cta:p.cta,broll:p.broll}}))})});
+      script:{angle:p.angle,hook:p.hook,body:p.body,cta:p.cta,broll:p.broll,reply:p.reply,visual:p.visual}}))})});
   $("#genOut").innerHTML=""; $("#genActions").hidden=true; $("#genState").innerHTML='<span class="ok">masuk barisan.</span>';
   await load();
 }
@@ -432,8 +437,19 @@ $("#acAdd").onclick=async()=>{
 $("#ac_platform").onchange=e=>{
   $("#ac_idLabel").textContent={threads:"Threads user id",facebook:"Facebook Page id",instagram:"Instagram business user id",tiktok:"(tiada)",manual:"(tiada)"}[e.target.value];
 };
+async function loadPrompts(){
+  const {prompts}=await api("/prompts");
+  $("#promptPick").innerHTML=prompts.map(p=>`<option value="${p.name}">${esc(p.label)}</option>`).join("");
+  await openPrompt(prompts[0]?.name||"base");
+}
+async function openPrompt(name){
+  const r=await api("/prompts/"+name);
+  $("#basePrompt").value=r.text; $("#basePrompt").dataset.name=name; $("#brainState").textContent="";
+}
+$("#promptPick").onchange=e=>openPrompt(e.target.value);
 $("#saveBrain").onclick=async()=>{
-  try{ await api("/base-prompt",{method:"POST",body:JSON.stringify({text:$("#basePrompt").value})});
+  const name=$("#basePrompt").dataset.name||"base";
+  try{ await api("/prompts/"+name,{method:"POST",body:JSON.stringify({text:$("#basePrompt").value})});
     $("#brainState").innerHTML='<span class="ok">disimpan — terus berkesan.</span>'; }
   catch(e){ $("#brainState").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 };

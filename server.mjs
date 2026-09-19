@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Store, rid } from "./lib/store.mjs";
 import { PLATFORMS } from "./lib/platforms.mjs";
-import { ANGLES, generate, readBasePrompt, writeBasePrompt } from "./lib/llm.mjs";
+import { ANGLES, generate, listPrompts, readPrompt, writePrompt } from "./lib/llm.mjs";
 import * as sched from "./lib/scheduler.mjs";
 import { verify } from "./lib/publishers.mjs";
 import { startUrl, handleCallback, oauthReady } from "./lib/oauth.mjs";
@@ -76,11 +76,15 @@ const ROUTES = [
     return [200, publicState()];
   }],
 
-  ["GET", /^\/api\/base-prompt$/, async () => [200, { text: readBasePrompt() }]],
-  ["POST", /^\/api\/base-prompt$/, async (_m, body) => {
+  ["GET", /^\/api\/prompts$/, async () => [200, { prompts: listPrompts() }]],
+  ["GET", /^\/api\/prompts\/([a-z0-9-]{1,32})$/, async m => {
+    try { return [200, { name: m[1], text: readPrompt(m[1]) }]; }
+    catch (e) { return [400, { error: e.message }]; }
+  }],
+  ["POST", /^\/api\/prompts\/([a-z0-9-]{1,32})$/, async (m, body) => {
     if (typeof body.text !== "string" || body.text.length < 20) return [400, { error: "Teks terlalu pendek." }];
-    writeBasePrompt(body.text);
-    store.log("info", "Base prompt dikemas kini.");
+    try { writePrompt(m[1], body.text); } catch (e) { return [400, { error: e.message }]; }
+    store.log("info", `Otak dikemas kini: ${m[1]}`);
     return [200, { ok: true }];
   }],
 
@@ -123,7 +127,7 @@ const ROUTES = [
       scheduledAt: p.scheduledAt ?? slots[i] ?? null,
       source: p.source || "manual",
       briefId: p.briefId || null,
-      script: p.script || (p.hook ? { angle: p.angle, hook: p.hook, body: p.body, cta: p.cta, broll: p.broll } : null),
+      script: p.script || (p.hook ? { angle: p.angle, hook: p.hook, body: p.body, cta: p.cta, broll: p.broll, reply: p.reply, visual: p.visual } : null),
     }));
     return [200, { posts: made }];
   }],

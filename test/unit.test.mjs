@@ -75,3 +75,30 @@ test("tick cuba semula bila penerbit gagal", async () => {
   assert.match(after.error, /token|userId/i);
   assert.ok(after.scheduledAt > Date.now());
 });
+
+test("playbook platform ditambah pada prompt bila platform tu dijana", async () => {
+  const { readPlaybook, listPrompts } = await import("../lib/llm.mjs");
+  const pb = readPlaybook("threads");
+  assert.match(pb, /Playbook Threads/);
+  assert.match(pb, /500 aksara/);
+  assert.ok(listPrompts().some(p => p.name === "threads"));
+  assert.equal(readPlaybook("../../etc/passwd"), "", "nama tak sah tak boleh baca fail luar");
+});
+
+test("generate local untuk threads hormat had 500 aksara dan isi reply/visual", async () => {
+  const { posts } = await generate({
+    settings: { llm: { provider: "local" } },
+    brief: { nama: "Air Fryer 5L", harga: "RM89", kelebihan: ["Senang basuh"], link: "https://shopee.com.my/x" },
+    platforms: ["threads"], count: 5,
+  });
+  assert.ok(posts.every(p => p.caption.length <= 500));
+  assert.ok(posts.every(p => p.reply));
+  assert.ok(posts.every(p => p.visual));
+  assert.ok(posts.every(p => !p.hashtags.length), "threads tak guna timbunan hashtag");
+  assert.equal(new Set(posts.map(p => p.angle)).size, 5, "lima bentuk berbeza");
+});
+
+test("writePrompt tolak nama tak sah", async () => {
+  const { writePrompt } = await import("../lib/llm.mjs");
+  assert.throws(() => writePrompt("../base-prompt", "x".repeat(50)), /tak sah/);
+});
