@@ -4,11 +4,11 @@ import http from "node:http";
 import { authorizeUrl, extractCode } from "../lib/threads-setup.mjs";
 
 test("authorizeUrl bawa scope penerbitan dan tolak redirect bukan https", () => {
-  const u = new URL(authorizeUrl({ appId: "123", redirectUri: "https://localhost:8787/cb" }));
+  const u = new URL(authorizeUrl({ appId: "123", redirectUri: "https://viralcool.invalid/callback" }));
   assert.equal(u.searchParams.get("client_id"), "123");
   assert.equal(u.searchParams.get("scope"), "threads_basic,threads_content_publish");
   assert.equal(u.searchParams.get("response_type"), "code");
-  assert.throws(() => authorizeUrl({ appId: "123", redirectUri: "http://localhost:8787/cb" }), /https/);
+  assert.throws(() => authorizeUrl({ appId: "123", redirectUri: "http://contoh.my/cb" }), /https/);
   assert.throws(() => authorizeUrl({ appId: "", redirectUri: "https://x/cb" }), /App ID/);
 });
 
@@ -53,4 +53,12 @@ test("exchange tukar kod jadi token 60 hari dan baca akaun", async () => {
   assert.equal(r.username, "affie");
   assert.equal(r.shortLived, false);
   assert.ok(r.expiresAt > Date.now() + 50 * 24 * 3600e3, "luput lebih 50 hari dari sekarang");
+});
+
+test("authorizeUrl tolak localhost sebab Threads memang tak terima", () => {
+  for (const bad of ["https://localhost:8787/cb", "https://127.0.0.1:8787/cb", "https://[::1]/cb"]) {
+    assert.throws(() => authorizeUrl({ appId: "1", redirectUri: bad }), /tak terima localhost/, bad);
+  }
+  const ok = authorizeUrl({ appId: "1", redirectUri: "https://viralcool.invalid/callback" });
+  assert.match(ok, /redirect_uri=https%3A%2F%2Fviralcool\.invalid%2Fcallback/);
 });

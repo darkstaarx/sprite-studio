@@ -19,7 +19,8 @@ brief produk ─► base prompt (otak gaya) ─► LLM ─► post + skrip rakam
 
 ## Sambung Threads (tanpa server HTTPS)
 
-Meta hanya terima redirect URI berbentuk `https://`, jadi callback ke `http://localhost` ditolak.
+Meta hanya terima redirect URI berbentuk `https://`, **dan Threads menolak `localhost` sepenuhnya**
+walaupun dengan https. Jadi tiada cara untuk Meta memanggil balik server tempatan kau.
 ViralCool mengelak masalah itu: biarkan Meta redirect ke alamat https yang tak wujud, kemudian
 salin URL dari bar alamat dan tampal balik ke dalam app. Kod kebenaran ada di dalam URL itu.
 
@@ -31,8 +32,17 @@ kebenaran `threads_basic` dan `threads_content_publish`; dalam dashboard Meta pe
 **App roles → Roles → Add People → Threads Tester** dan taip username Threads kau tanpa `@`;
 kemudian dalam **app Threads**: ☰ → **Settings** → **More settings** → **Website permissions**
 → tab **Invites** → **Accept**. Akaun Threads mesti **public**, akaun private tak boleh terima
-jemputan. Akhir sekali tampal redirect URI yang ViralCool tunjukkan ke dalam
-**Redirect Callback URLs**, dan isi App ID serta App Secret dalam ViralCool.
+jemputan. Akhir sekali, dalam use case Threads → Settings, tampal redirect URI yang ViralCool tunjukkan
+(default `https://viralcool.invalid/callback` — domain yang memang tak wujud, dan itu memang
+tujuannya) ke dalam **Redirect Callback URLs**. Tiga perangkap di medan ini:
+
+1. Selepas menaip, satu cadangan muncul di bawah medan — **kau mesti klik cadangan itu**, kalau
+   tidak nilainya nampak masuk tetapi tidak tersimpan.
+2. **Deauthorize callback URL** dan **Data deletion request URL** wajib diisi sebelum butang save
+   berfungsi — tampal alamat yang sama.
+3. `localhost` dan `127.0.0.1` akan ditolak dengan ralat "URL Blocked" (kod 1349168).
+
+Kemudian isi App ID dan App Secret dalam ViralCool.
 
 **B. Bagi kebenaran** — tekan pautan yang muncul, log masuk, approve. Browser akan cuba buka
 halaman yang tak wujud. Itu memang dijangka.

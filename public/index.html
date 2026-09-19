@@ -78,7 +78,10 @@
       <li>Dalam dashboard Meta: <b>App roles → Roles → Add People → Threads Tester</b>, taip username Threads kau (tanpa @)</li>
       <li>Dalam <b>app Threads</b>: ikon ☰ → <b>Settings</b> → <b>More settings</b> (paling bawah) → <b>Website permissions</b> → tab <b>Invites</b> → <b>Accept</b>.
         <span class="warn">Akaun Threads kau mesti public — akaun private tak boleh terima jemputan.</span></li>
-      <li>Dalam <b>Redirect Callback URLs</b>, tampal alamat di bawah ni (Meta hanya terima https, sebab tu ia nampak pelik — tak apa, ia tak perlu wujud pun)</li>
+      <li>Dalam use case Threads → <b>Settings</b>, isi <b>Redirect Callback URLs</b> dengan alamat di bawah.
+        <span class="warn">Threads tak terima localhost</span> — sebab tu alamat ni guna domain yang memang tak wujud. Ia tak perlu wujud; kita cuma perlukan kod dalam bar alamat.</li>
+      <li>Bila kau taip dalam medan tu, satu <b>cadangan muncul di bawah medan — kau mesti klik cadangan tu</b>, kalau tidak ia nampak macam dah masuk tapi sebenarnya tak tersimpan.</li>
+      <li>Medan <b>Deauthorize callback URL</b> dan <b>Data deletion request URL</b> wajib diisi sebelum boleh save — tampal alamat yang sama.</li>
     </ol>
     <div style="margin-top:12px"><label>Redirect URI (salin ke Meta)</label><input id="t_redirect"></div>
     <div class="row" style="margin-top:11px">
@@ -96,8 +99,8 @@
 
   <div class="step">
     <h2><i>C</i> Salin URL dari bar alamat</h2>
-    <p class="hint" style="margin-top:0">Walaupun halaman tu error (“can’t provide a secure connection” atau “site can’t be reached”), <b>URL dalam bar alamat</b> ada kod kebenaran kau. Klik bar alamat → pilih semua → salin → tampal di sini.</p>
-    <p class="hint">Ia nampak macam ini: <code>https://localhost:8787/oauth/threads/callback?code=AQBxxxx…#_</code><br>
+    <p class="hint" style="margin-top:0">Walaupun halaman tu error (“site can’t be reached” — memang dijangka, domain tu tak wujud), <b>URL dalam bar alamat</b> ada kod kebenaran kau. Klik bar alamat → pilih semua → salin → tampal di sini.</p>
+    <p class="hint">Ia nampak macam ini: <code>https://viralcool.invalid/callback?code=AQBxxxx…#_</code><br>
     Kod ni luput dalam beberapa minit dan hanya boleh guna sekali — kalau gagal, ulang langkah B untuk dapat kod baru.</p>
     <input id="t_url" placeholder="https://localhost:8787/oauth/threads/callback?code=AQB...">
     <div class="row" style="margin-top:12px"><button class="btn primary" id="t_connect" style="width:auto">Sambung Threads</button><span class="msg" id="t_connectMsg"></span></div>
