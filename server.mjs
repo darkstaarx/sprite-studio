@@ -10,6 +10,7 @@ import { PLATFORMS } from "./lib/platforms.mjs";
 import { ANGLES, generate, listPrompts, readPrompt, writePrompt } from "./lib/llm.mjs";
 import * as sched from "./lib/scheduler.mjs";
 import { verify } from "./lib/publishers.mjs";
+import { detect } from "./lib/detect.mjs";
 import { startUrl, handleCallback, oauthReady } from "./lib/oauth.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -145,6 +146,66 @@ const ROUTES = [
     if (!p) return [404, { error: "Post tak dijumpai." }];
     const [r] = await sched.tick(store, { dry: DRY });
     return [200, { result: r, post: store.data.posts.find(x => x.id === m[1]) }];
+  }],
+
+  // Kesan produk dari link sahaja (tanpa jana apa-apa).
+  ["POST", /^\/api\/detect$/, async (_m, body) => {
+    if (!body.url) return [400, { error: "Bagi link produk." }];
+    try { return [200, await detect(String(body.url))]; }
+    catch (e) { return [502, { error: e.message }]; }
+  }],
+
+  // Aliran affiliate satu tekan: link -> kesan -> tulis ayat -> jadual.
+  ["POST", /^\/api\/quick$/, async (_m, body) => {
+    if (!body.url) return [400, { error: "Bagi link produk." }];
+    let found;
+    try { found = await detect(String(body.url)); }
+    catch (e) { return [502, { error: `Gagal kesan produk: ${e.message}` }]; }
+    if (!found.ok && !body.nama) {
+      return [422, { error: "Produk tak dapat dikesan dari link ni. Isi nama produk sendiri, lepas tu cuba lagi.", detected: found }];
+    }
+
+    const brief = {
+      id: rid(),
+      name: body.nama || found.name,
+      mode: body.mode || "affiliate",
+      nama: body.nama || found.name,
+      harga: body.harga || found.price,
+      link: found.affiliateUrl,
+      niche: body.niche || found.marketplace,
+      keterangan: found.description,
+      kelebihan: body.kelebihan || [],
+      masalah: body.masalah || "",
+      bukti: body.bukti || "",
+      audience: body.audience || "pengguna media sosial Malaysia, 25-40",
+      bahasa: body.bahasa || "bm-santai",
+      tone: body.tone || "Santai & jujur",
+      cta: body.cta || "Link dalam balasan pertama",
+      angles: body.angles?.length ? body.angles : ["review-jujur", "masalah-selesai", "harga-shock", "objection", "soalan"],
+      image: found.image,
+      lastUsedAt: Date.now(),
+    };
+    if (body.saveBrief !== false) { store.data.briefs.push(brief); store.save(); }
+
+    const platforms = body.platforms?.length ? body.platforms : ["threads"];
+    let posts;
+    try {
+      ({ posts } = await generate({ settings: store.data.settings, brief, platforms, count: body.count || 5 }));
+    } catch (e) { return [502, { error: `Gagal jana ayat: ${e.message}`, detected: found, briefId: brief.id }]; }
+
+    const slots = sched.nextSlots(store, posts.length);
+    const made = posts.map((p, i) => store.addPost({
+      platform: platforms.includes(p.platform) ? p.platform : platforms[i % platforms.length],
+      accountId: store.accountFor(p.platform)?.id || null,
+      text: p.caption,
+      status: body.status || "review",
+      scheduledAt: slots[i] ?? null,
+      source: "ai",
+      briefId: brief.id,
+      script: { angle: p.angle, hook: p.hook, body: p.body, cta: p.cta, broll: p.broll, reply: p.reply, visual: p.visual },
+    }));
+    store.log("info", `Quick: ${made.length} post dari ${found.marketplace} — ${brief.nama}`);
+    return [200, { detected: found, briefId: brief.id, posts: made }];
   }],
 
   ["POST", /^\/api\/slots$/, async (_m, body) =>

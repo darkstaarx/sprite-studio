@@ -133,3 +133,44 @@ test("post threads yang dijana bawa reply + visual ke barisan", async () => {
   assert.equal(made.body.posts[0].script.visual, p.visual);
   await api(`/api/posts/${made.body.posts[0].id}`, { method: "DELETE" });
 });
+
+test("aliran affiliate satu tekan: link -> kesan -> ayat -> jadual", async () => {
+  const http = await import("node:http");
+  const shop = http.createServer((req, res) => {
+    if (req.url.startsWith("/s/")) { res.writeHead(302, { location: `http://127.0.0.1:${shop.address().port}/Air-Fryer-5L-i.1.2` }); return res.end(); }
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end(`<html><head><title>x</title>
+      <meta property="og:title" content="Air Fryer 5L Digital">
+      <meta property="og:description" content="Basket non-stick, muat ayam sebiji.">
+      <meta property="og:image" content="https://cdn.contoh/af.jpg">
+      <meta property="product:price:amount" content="89.00">
+      <meta property="product:price:currency" content="MYR"></head><body></body></html>`);
+  });
+  await new Promise(r => shop.listen(0, "127.0.0.1", r));
+  const link = `http://127.0.0.1:${shop.address().port}/s/abc123`;
+
+  const r = await api("/api/quick", { method: "POST", body: JSON.stringify({ url: link, platforms: ["threads"], count: 3 }) });
+  assert.equal(r.status, 200);
+  assert.equal(r.body.detected.name, "Air Fryer 5L Digital");
+  assert.equal(r.body.detected.price, "RM89");
+  assert.equal(r.body.detected.affiliateUrl, link, "link affiliate asal dikekalkan");
+  assert.equal(r.body.posts.length, 3);
+  assert.ok(r.body.posts.every(p => p.scheduledAt > Date.now()), "setiap post dapat slot akan datang");
+  assert.ok(r.body.posts.every(p => p.status === "review"));
+  assert.ok(r.body.posts.every(p => p.text.length <= 500));
+
+  const state = await api("/api/state");
+  const brief = state.body.briefs.find(b => b.id === r.body.briefId);
+  assert.equal(brief.link, link);
+  assert.equal(brief.harga, "RM89");
+  assert.match(brief.keterangan, /non-stick/);
+
+  for (const p of r.body.posts) await api(`/api/posts/${p.id}`, { method: "DELETE" });
+  shop.close();
+});
+
+test("quick tolak link yang tak boleh dikesan tanpa nama manual", async () => {
+  const r = await api("/api/quick", { method: "POST", body: JSON.stringify({ url: "http://127.0.0.1:1/tiada" }) });
+  assert.equal(r.status, 422);
+  assert.match(r.body.error, /Isi nama produk sendiri/);
+});

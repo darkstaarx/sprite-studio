@@ -95,6 +95,18 @@
 </section>
 
 <section id="tab-tulis" hidden>
+  <div class="card" style="border-color:#3a3420">
+    <h2>Link produk → post siap berjadual</h2>
+    <p class="hint" style="margin:0 0 12px">Tampal link produk (link affiliate kau pun boleh — ia dikekalkan bulat-bulat untuk balasan pertama). Sistem buka link pendek, kesan nama, harga dan gambar, tulis ayat, dan letak dalam slot masa.</p>
+    <div class="row">
+      <input id="q_url" placeholder="https://s.shopee.com.my/… atau link penuh produk" style="flex:1;min-width:260px">
+      <select id="q_count" style="width:auto"><option>3</option><option selected>5</option><option>7</option><option>10</option></select>
+      <button class="btn primary" id="q_go">Kesan &amp; jana</button>
+    </div>
+    <p class="hint" id="q_state"></p>
+    <div id="q_found"></div>
+  </div>
+
   <div class="card">
     <h2>Brief produk</h2>
     <div class="row" style="margin-bottom:12px">
@@ -365,6 +377,10 @@ function fillBrief(b){
 /* ---------- actions ---------- */
 async function load(){ S=await api("/state"); render(); }
 
+function showTab(name){
+  const b=$(`nav button[data-tab="${name}"]`);
+  if(b) b.click(); 
+}
 $$("nav button").forEach(b=>b.onclick=()=>{
   $$("nav button").forEach(x=>x.setAttribute("aria-selected",String(x===b)));
   ["barisan","tulis","autopilot","akaun","otak","log"].forEach(t=>$("#tab-"+t).hidden=t!==b.dataset.tab);
@@ -388,6 +404,41 @@ $("#briefPick").onchange=e=>fillBrief(S.briefs.find(b=>b.id===e.target.value));
 $("#briefNew").onclick=()=>fillBrief(null);
 $("#briefSave").onclick=async()=>{ const {brief}=await api("/briefs",{method:"POST",body:JSON.stringify(briefForm())}); curBrief=brief.id; await load(); $("#briefPick").value=brief.id; };
 $("#briefDel").onclick=async()=>{ if(!curBrief||!confirm("Buang brief ni?"))return; await api(`/briefs/${curBrief}`,{method:"DELETE"}); curBrief=null; fillBrief(null); load(); };
+
+async function quickRun(extra){
+  const url=$("#q_url").value.trim();
+  if(!url){ $("#q_state").innerHTML='<span class="warn">Tampal link dulu.</span>'; return; }
+  $("#q_state").textContent="mengesan produk…"; $("#q_found").innerHTML="";
+  try{
+    const r=await api("/quick",{method:"POST",body:JSON.stringify({url,count:Number($("#q_count").value),platforms:["threads"],...extra})});
+    const d=r.detected;
+    $("#q_state").innerHTML=`<span class="ok">${r.posts.length} post siap dan berjadual.</span>`;
+    $("#q_found").innerHTML=foundCard(d);
+    await load(); showTab("barisan");
+  }catch(e){
+    const msg=String(e.message||e);
+    $("#q_state").innerHTML=`<span class="bad">${esc(msg)}</span>`;
+    if(/Isi nama produk/.test(msg)){
+      $("#q_found").innerHTML=`<div class="post"><div class="meta"><span class="tag">isi manual</span><span>marketplace block bacaan automatik</span></div>
+        <div class="grid"><div><label>Nama produk</label><input id="q_nama"></div><div><label>Harga</label><input id="q_harga" placeholder="RM89"></div></div>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="q_retry">Jana dengan butiran ni</button></div></div>`;
+      $("#q_retry").onclick=()=>quickRun({nama:$("#q_nama").value.trim(),harga:$("#q_harga").value.trim()});
+    }
+  }
+}
+function foundCard(d){
+  if(!d) return "";
+  return `<div class="post" style="margin-top:12px"><div class="meta">
+      <span class="tag">${esc(d.marketplace)}</span><b style="color:var(--ink)">${esc(d.name||"(nama tak dikesan)")}</b>
+      ${d.price?`<span class="ok">${esc(d.price)}</span>`:'<span class="warn">harga tak dikesan</span>'}
+      <span>sumber: ${esc(d.source)}</span></div>
+    ${d.image?`<img src="${esc(d.image)}" alt="" style="max-height:120px;border-radius:8px;border:1px solid var(--line)">`:""}
+    ${d.description?`<p class="hint">${esc(d.description).slice(0,220)}</p>`:""}
+    ${d.warnings?.length?`<p class="hint warn">${d.warnings.map(esc).join(" · ")}</p>`:""}
+    <p class="hint">Link untuk balasan pertama: <code>${esc(d.affiliateUrl)}</code></p></div>`;
+}
+$("#q_go").onclick=()=>quickRun({});
+$("#q_url").addEventListener("keydown",e=>{ if(e.key==="Enter") quickRun({}); });
 
 $("#genBtn").onclick=async()=>{
   const st=$("#genState"); st.textContent="menjana…"; $("#genOut").innerHTML=""; $("#genActions").hidden=true;

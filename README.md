@@ -17,6 +17,39 @@ brief produk ─► base prompt (otak gaya) ─► LLM ─► post + skrip rakam
   OpenRouter/Hermes/Ollama/Anthropic bila kau dah ada key.
 - **Data kau duduk di `data/db.json`.** Token pun. Tiada telemetri, tiada cloud.
 
+## Aliran affiliate — satu tampal
+
+Ini teras app ni. Tab **Tulis**, kotak paling atas:
+
+```
+tampal link produk  →  [Kesan & jana]
+```
+
+Apa yang berlaku dalam satu tekan:
+
+1. **Buka link pendek.** `s.shopee.com.my/…`, `vt.tiktok.com/…`, `invol.co/…` — semua diikut
+   sampai ke halaman produk sebenar. Link asal kau (dengan kod affiliate) **tak disentuh** dan
+   dipakai semula dalam balasan pertama setiap post.
+2. **Kesan produk.** Nama, harga, gambar dan keterangan diambil dari JSON-LD halaman produk,
+   atau dari tag Open Graph (tag yang sama yang buat link kau ada thumbnail dalam WhatsApp),
+   atau paling akhir dari slug URL.
+3. **Tulis ayat.** Butiran yang dikesan masuk terus ke dalam brief, digabung dengan base prompt
+   dan playbook Threads, dan dihantar ke LLM kau.
+4. **Jadualkan.** Setiap post dapat slot waktu puncak Malaysia dan duduk dalam barisan sebagai
+   `review` sampai kau approve.
+
+Kalau marketplace block bacaan automatik (captcha atau 403), app tak mengarut — ia bagitahu,
+dan minta kau isi nama dengan harga sahaja, lepas tu teruskan aliran yang sama.
+
+Endpoint yang sama ada untuk guna sendiri:
+
+```bash
+curl -X POST localhost:8787/api/quick -H 'content-type: application/json' \
+  -d '{"url":"https://s.shopee.com.my/ABC123","count":5}'
+```
+
+`POST /api/detect` pula cuma kesan produk tanpa jana apa-apa.
+
 ## Paling mudah sekali — ViralCool Lite (tiada pemasangan)
 
 Satu fail: **`viralcool-lite.html`**. Klik dua kali, ia terbuka dalam browser kau. Tiada Node,
@@ -91,7 +124,7 @@ kau tekan post sendiri. Itu pilihan paling selamat dan ia default atas sebab tu.
 ```bash
 node server.mjs          # buka http://localhost:8787
 node server.mjs --dry    # mod selamat: semua "terbit" jadi pura-pura
-npm test                 # 21 ujian
+npm test                 # 31 ujian
 ```
 
 ## Cara akses
@@ -256,6 +289,7 @@ lite/                   templat + skrip bina untuk fail Lite
 mula.command / mula.bat pelancar klik-dua-kali (Mac / Windows)
 server.mjs              HTTP + API + static + boot enjin jadual
 lib/store.mjs           simpanan JSON atomik (settings, accounts, briefs, posts, logs)
+lib/detect.mjs          buka link pendek, kesan nama/harga/gambar dari halaman produk
 lib/platforms.mjs       had aksara, keperluan media, gaya tulisan setiap platform
 lib/llm.mjs             bina prompt, panggil LLM, parse JSON, penjana templat 'local'
 lib/publishers.mjs      adapter Threads / Facebook / Instagram / TikTok / manual + verify token
@@ -264,11 +298,16 @@ lib/oauth.mjs           OAuth Threads dan Meta (optional)
 prompts/base-prompt.md  otak gaya penulisan (semua platform)
 prompts/platforms/      playbook khusus platform — threads.md siap, tambah sendiri yang lain
 public/index.html       UI satu fail
-test/                   21 ujian (unit + API hidup, mod dry)
+test/                   31 ujian (unit + API hidup, mod dry)
 ```
 
 ## Batasan jujur
 
+- **Pengesanan produk bergantung pada marketplace.** Shopee, Lazada dan TikTok Shop kerap block
+  pembacaan automatik. Bila tag Open Graph ada (selalunya ada, sebab itu yang jadikan thumbnail
+  dalam WhatsApp), pengesanan jalan. Bila diblock, app minta kau isi nama dan harga. Pengesanan
+  diuji dengan kedai palsu tempatan; ia belum diuji terhadap Shopee sebenar kerana domain
+  marketplace tak boleh dicapai dari persekitaran tempat kod ni ditulis.
 - **Video/gambar kena ada URL awam.** IG dan TikTok tarik media melalui URL (`PULL_FROM_URL`),
   jadi tiada upload fail dari komputer buat masa ni. Letak dalam R2/S3/Drive awam dulu.
 - **TikTok direct post perlu app diaudit.** Tanpa audit, video masuk inbox/draf dan kau tekan
