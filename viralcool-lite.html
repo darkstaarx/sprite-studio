@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ViralCool Lite</title>
+<style>
+  :root{--bg:#0e1013;--panel:#16191f;--panel-2:#1c2028;--line:#272c36;--ink:#e7eaf0;--dim:#9aa3b2;
+        --accent:#ffd166;--accent-ink:#2a2000;--ok:#5dd39e;--bad:#ff8f7a;--r:12px}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:900px;margin:0 auto;padding:22px 16px 90px}
+  header{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+  h1{font-size:22px;margin:0}h1 span{color:var(--accent)}
+  .sub{color:var(--dim);font-size:14px;margin:6px 0 18px}
+  nav{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:18px}
+  nav button{background:none;border:1px solid transparent;color:var(--dim);padding:9px 14px;border-radius:999px;cursor:pointer;font:inherit;font-size:14.5px}
+  nav button[aria-selected=true]{background:var(--panel-2);border-color:var(--line);color:var(--ink)}
+  section[hidden]{display:none}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px}
+  .card h2{font-size:15px;margin:0 0 4px;color:var(--ink)}
+  .card h2 b{color:var(--accent);font-weight:700}
+  .card .note{color:var(--dim);font-size:13.5px;margin:0 0 14px}
+  .grid{display:grid;gap:13px;grid-template-columns:repeat(auto-fit,minmax(215px,1fr))}
+  .full{grid-column:1/-1}
+  label{display:block;font-size:13px;color:var(--dim);margin-bottom:5px}
+  input,select,textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:10px 11px;color:var(--ink);font:inherit;font-size:15px}
+  textarea{min-height:76px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+  .btn{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:11px 16px;color:var(--ink);font:inherit;font-size:14.5px;cursor:pointer}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+  .btn.sm{padding:6px 11px;font-size:13px}
+  .btn.ghost{background:none}
+  .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);background:var(--panel-2);border-radius:999px;padding:7px 12px;font-size:14px;color:var(--dim);cursor:pointer}
+  .chip.on{color:var(--ink);border-color:var(--accent)}
+  .chip input{width:auto;accent-color:var(--accent)}
+  .post{border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px;background:var(--panel-2)}
+  .post .meta{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:9px;font-size:12.5px;color:var(--dim)}
+  .tag{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:11.5px}
+  .tag.tunggu{color:var(--accent);border-color:#6b5a33}
+  .tag.posted{color:var(--ok);border-color:#2f5c48}
+  .post textarea{min-height:130px;font-size:14.5px}
+  .sub2{color:var(--dim);font-size:13px;margin:9px 0 0;white-space:pre-wrap}
+  .step{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+  .step b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);
+    display:grid;place-items:center;font-size:14px}
+  .step div{flex:1}
+  .hint{color:var(--dim);font-size:13px;margin:9px 0 0}
+  .ok{color:var(--ok)}.bad{color:var(--bad)}
+  .empty{color:var(--dim);padding:10px 0}
+  details summary{cursor:pointer;color:var(--dim);font-size:13.5px}
+  footer{color:var(--dim);font-size:12.5px;border-top:1px solid var(--line);margin-top:26px;padding-top:14px}
+  @media(max-width:640px){.wrap{padding:16px 14px 70px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Viral<span>Cool</span> Lite</h1>
+  <div class="row"><span class="tag" id="count"></span><button class="btn sm ghost" id="backup">Simpan salinan</button></div>
+</header>
+<p class="sub">Satu fail. Tiada pemasangan, tiada internet perlu. Dia tulis ayat dan simpan jadual untuk kau — <b>kau yang post sendiri</b>.</p>
+
+<nav>
+  <button data-tab="tulis" aria-selected="true">1 · Tulis</button>
+  <button data-tab="barisan" aria-selected="false">2 · Barisan</button>
+  <button data-tab="tetapan" aria-selected="false">3 · Tetapan</button>
+</nav>
+
+<section id="tab-tulis">
+  <div class="card">
+    <h2>Brief produk</h2>
+    <p class="note">Isi sekali sahaja untuk setiap produk. Ia diingat dalam browser ni.</p>
+    <div class="row" style="margin-bottom:14px">
+      <select id="briefPick" style="width:auto;min-width:230px"></select>
+      <button class="btn sm" id="briefNew">Brief baru</button>
+      <button class="btn sm" id="briefSave">Simpan</button>
+      <button class="btn sm ghost" id="briefDel">Buang</button>
+    </div>
+    <div class="grid">
+      <div><label>Nama brief</label><input id="b_name" placeholder="Pahlawan Angka"></div>
+      <div><label>Jenis</label><select id="b_mode">
+        <option value="bisnes">Bisnes sendiri</option><option value="affiliate">Affiliate</option><option value="organik">Organik</option>
+      </select></div>
+      <div><label>Nama produk</label><input id="b_nama"></div>
+      <div><label>Harga</label><input id="b_harga" placeholder="RM29 sebulan"></div>
+      <div class="full"><label>Link (untuk balasan pertama)</label><input id="b_link"></div>
+      <div class="full"><label>Kelebihan sebenar — satu per baris</label><textarea id="b_kelebihan"></textarea></div>
+      <div class="full"><label>Masalah yang ia selesaikan</label><textarea id="b_masalah"></textarea></div>
+      <div class="full"><label>Pengalaman peribadi kau</label><textarea id="b_bukti"></textarea></div>
+      <div><label>Audience</label><input id="b_audience" placeholder="Mak ayah bekerja, anak Darjah 1-6"></div>
+      <div><label>Berapa post</label><select id="b_count"><option>3</option><option selected>5</option><option>7</option><option>10</option></select></div>
+      <div class="full"><label>Angle (pilih 3-5)</label><div class="chips" id="angleChips"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Cara jana ayat — pilih <b>A</b> atau <b>B</b></h2>
+
+    <div class="step"><b>A</b><div>
+      <div style="font-weight:600;margin-bottom:4px">Guna AI yang kau dah ada (hasil paling bagus)</div>
+      <div class="hint" style="margin:0 0 10px">Tekan butang ni, buka ChatGPT atau Claude, paste, hantar. Lepas tu copy semua jawapan dia dan paste dalam kotak bawah.</div>
+      <div class="row">
+        <button class="btn primary" id="copyPrompt">Copy arahan untuk AI</button>
+        <a class="btn" href="https://claude.ai/new" target="_blank" rel="noopener">Buka Claude</a>
+        <a class="btn" href="https://chatgpt.com/" target="_blank" rel="noopener">Buka ChatGPT</a>
+        <span class="hint" id="promptState"></span>
+      </div>
+      <label style="margin-top:12px">Paste jawapan AI di sini</label>
+      <textarea id="raw" placeholder="Tampal semua jawapan AI di sini, lepas tu tekan butang bawah"></textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" id="parseRaw">Masukkan ke barisan →</button>
+        <span class="hint" id="parseState"></span>
+      </div>
+    </div></div>
+
+    <div class="step"><b>B</b><div>
+      <div style="font-weight:600;margin-bottom:4px">Tanpa AI langsung</div>
+      <div class="hint" style="margin:0 0 10px">Jana rangka post dari brief kau. Lebih kaku, tapi siap dalam satu klik dan kau boleh edit sendiri.</div>
+      <button class="btn" id="genLocal">Jana rangka post</button>
+      <span class="hint" id="localState"></span>
+    </div></div>
+  </div>
+</section>
+
+<section id="tab-barisan" hidden>
+  <div class="card">
+    <h2>Barisan post kau</h2>
+    <p class="note">Tekan <b>Copy</b>, buka Threads, paste. Lepas post, tekan “Dah post” supaya kau tak keliru.</p>
+    <div class="row" style="margin-bottom:14px">
+      <div><label>Mula</label><input id="startDate" type="date" style="width:auto"></div>
+      <div><label>Waktu</label><input id="slots" value="12:30, 21:00" style="width:auto;min-width:150px"></div>
+      <button class="btn sm" id="reslot" style="align-self:end">Susun semula jadual</button>
+      <button class="btn sm ghost" id="clearDone" style="align-self:end">Buang yang dah post</button>
+    </div>
+    <div id="queue"></div>
+  </div>
+</section>
+
+<section id="tab-tetapan" hidden>
+  <div class="card">
+    <h2>Otak — cara AI tulis ayat</h2>
+    <p class="note">Arahan gaya yang dihantar bersama setiap permintaan. Kau boleh edit; ia disimpan dalam browser ni.</p>
+    <div class="row" style="margin-bottom:10px">
+      <select id="brainPick" style="width:auto;min-width:250px">
+        <option value="base">Base prompt (hukum ayat)</option>
+        <option value="threads">Playbook Threads (Malaysia)</option>
+      </select>
+      <button class="btn sm ghost" id="brainReset">Pulihkan asal</button>
+      <span class="hint" id="brainState"></span>
+    </div>
+    <textarea id="brain" style="min-height:420px;font:13px/1.6 ui-monospace,Menlo,monospace"></textarea>
+    <div class="row" style="margin-top:12px"><button class="btn primary" id="brainSave">Simpan otak</button></div>
+  </div>
+  <div class="card">
+    <h2>Data</h2>
+    <p class="note">Semua brief dan post duduk dalam browser ni sahaja. Kalau kau tukar komputer atau clear browser data, ia hilang — jadi simpan salinan sekali-sekala.</p>
+    <div class="row">
+      <button class="btn" id="backup2">Simpan salinan (fail)</button>
+      <label class="btn" style="margin:0">Muat salinan<input id="restore" type="file" accept=".json" hidden></label>
+      <button class="btn ghost" id="reset">Padam semua</button>
+    </div>
+  </div>
+</section>
+
+<footer>ViralCool Lite · tiada server, tiada akaun, tiada auto-post. Dedah hubungan affiliate kau (#ad) dan jangan buat claim hasil yang tak boleh dibuktikan.</footer>
+</div>
+
+<script>
+"use strict";
+const BASE_PROMPT_DEFAULT = "# Base prompt — cara ViralCool menulis ayat\n\nFail ni otak gaya penulisan. Server baca dia setiap kali jana post, jadi kau boleh edit\ndan kesannya serta-merta — tak perlu restart, tak perlu sentuh kod.\n\n---\n\n## 1. Siapa kau\n\nKau penulis kandungan pendek untuk pasaran Malaysia. Kau bukan copywriter agensi.\nKau orang yang betul-betul guna barang tu dan cerita pada kawan. Semua yang kau tulis\nkena lulus satu ujian: **kalau dibaca kuat, ia bunyi macam manusia bercakap, bukan macam iklan.**\n\n## 2. Hukum ayat\n\nIni bahagian paling penting. Ikut ketat.\n\n1. **Satu ayat, satu idea.** Ada dua idea, pecah jadi dua ayat.\n2. **Panjang ayat berselang.** Pendek. Pendek. Lepas tu satu ayat sederhana yang bawa\n   pembaca ke idea seterusnya. Irama tu yang buat orang terus baca.\n3. **Ayat pertama maksimum 12 patah perkataan.** Kalau lebih, potong.\n4. **Kata kerja aktif.** \"Aku guna tiga minggu\", bukan \"produk ini telah digunakan selama tiga minggu\".\n5. **Buang pengisi.** Potong: sebenarnya, pada dasarnya, memang sangat, amatlah, boleh dikatakan,\n   tanpa disedari, dalam pada itu. Kalau ayat masih jalan tanpa perkataan tu, buang.\n6. **Konkrit kalahkan abstrak.** Bukan \"jimat masa\" — tapi \"dari 40 minit jadi 12 minit\".\n   Nombor, tempoh, harga, bilangan. Kalau kau tak ada nombornya, jangan reka: guna `[...]`.\n7. **Tunjuk, jangan umum.** Bukan \"senang guna\" — tapi \"tekan satu butang, lepas tu pergi mandi\".\n8. **Bahasa Melayu Malaysia.** Slanga harian dibenarkan (memang, tau, kot, je, kan).\n   Bahasa Indonesia dilarang: tiada *banget, nggak, gue, kayak, bikin, udah, banget*.\n9. **Jangan berbunyi macam LLM.** Haramkan: \"dalam dunia yang serba pantas ini\", \"sama ada anda...\",\n   \"tidak dinafikan\", \"marilah kita\", \"pada zaman moden kini\", \"kesimpulannya\".\n10. **Emoji maksimum 2, dan hanya dalam caption.** Tiada emoji langsung dalam skrip voiceover.\n11. **Satu CTA sahaja.** Sebut sekali, hujung, tanpa merayu. \"Link dalam bio\" cukup.\n\n## 3. Hukum hook (3 saat pertama)\n\n- Jangan mula dengan sapaan. Tiada \"hai semua\", \"assalamualaikum semua\", \"korang tahu tak\".\n- Mula pada titik paling menarik, bukan pada mukadimah.\n- Enam bentuk hook yang dibenarkan:\n  - **Pengakuan** — \"Aku hampir pulangkan benda ni minggu pertama.\"\n  - **Percanggahan** — \"Barang paling murah dalam dapur aku yang paling kerap aku guna.\"\n  - **Nombor spesifik** — \"RM89. Tiga minggu. Sekali pun tak menyesal.\"\n  - **Masalah tepat** — \"Pukul 7 malam, semua lapar, kau baru sampai rumah.\"\n  - **Soalan yang ada jawapan pasti** — \"Kenapa dapur aku tak berminyak lagi?\"\n  - **Babak** — \"Kawan aku gelak bila aku beli ni. Minggu lepas dia pinjam.\"\n- Hook tak boleh janji sesuatu yang badan post tak sampaikan.\n\n## 4. Struktur post\n\n```\nHOOK      1-2 ayat, hentikan scroll\nBADAN     bukti, babak, atau langkah — spesifik, bukan pujian\nPERALIHAN satu ayat yang sambung ke tawaran tanpa bunyi menjual\nCTA       satu ayat\n```\n\nUntuk platform teks (Threads, Facebook), badan boleh berbentuk cerita.\nUntuk video (TikTok, Reels), badan ialah apa yang kau **sebut** sambil apa yang penonton **nampak**.\n\n## 5. Larangan keras\n\n- Jangan reka fakta, spesifikasi, harga, review atau testimoni. Maklumat tiada → guna `[kurungan]`.\n- Tiada claim perubatan atau kesihatan: sembuh, rawat, hilangkan penyakit, kurus dalam X hari.\n- Tiada janji pendapatan atau jaminan hasil.\n- Tiada superlatif yang tak boleh dibukti: \"terbaik di dunia\", \"nombor 1\", \"paling murah di Malaysia\".\n- Kandungan affiliate mesti ada pendedahan ringkas dalam caption (`#ad` atau \"link affiliate\").\n- Jangan sebut atau perlekeh jenama pesaing.\n\n## 6. Suara aku\n\n> Edit bahagian ni jadi suara kau sendiri — ia yang paling banyak mengubah hasil.\n\n- Panggil diri: **aku**. Panggil pembaca: **kau** / **korang**.\n- Nada: santai, jujur, sedikit sinis pada hype.\n- Aku akui kelemahan produk sebelum puji dia. Itu yang buat orang percaya bahagian pujian.\n- Aku tak guna tanda seru melainkan aku betul-betul terkejut.\n\n## 7. Konteks pasaran Malaysia\n\nYang ni berlaku pada semua platform. Peraturan khusus setiap platform duduk dalam\n`prompts/platforms/<platform>.md` dan ditambah automatik bila platform tu dijana —\nplaybook menang kalau ia bercanggah dengan fail ni.\n\n- Harga dalam RM, dan sebut nombor sebenar. Pembaca Malaysia sangat harga-sedar: kiraan\n  per hari atau per guna lebih meyakinkan daripada perkataan \"berbaloi\".\n- Rujukan tempatan hanya bila ia memang benar untuk brief: gaji hujung bulan, jem balik kerja,\n  cuaca panas, anak sekolah, beli di Shopee atau TikTok Shop, pos laju. Jangan paksa masuk.\n- Jangan sentuh kaum, agama dan politik sebagai bahan lawak. Elak perbandingan babi, arak dan judi.\n  Jangan guna tragedi semasa untuk jual barang.\n- Musim (Ramadan, raya, back-to-school, gaji) mengubah irama pembaca. Kalau brief sebut musim,\n  rujuk waktu sebenar — sahur, sebelum buka, malam raya — bukan ucapan generik.\n- Pendedahan affiliate wajib: `#ad` atau \"link affiliate\", dalam post atau dalam balasan\n  yang membawa link.\n\n### Sumber gaya tambahan (kau isi sendiri)\n\n> Tampal peraturan atau contoh tulisan kau sendiri di sini. Satu peraturan satu baris.\n> Contoh post penuh letak bawah `CONTOH:` — AI tiru iramanya, bukan salin ayatnya.\n\nPERATURAN:\n- (kosong)\n\nCONTOH:\n- (kosong)\n\n## 8. Kontrak output\n\nBalas **JSON sahaja**, tiada teks lain, tiada pagar kod:\n\n```json\n{\n  \"posts\": [\n    {\n      \"platform\": \"threads\",\n      \"angle\": \"nama angle\",\n      \"hook\": \"1-2 ayat\",\n      \"body\": \"badan post atau skrip voiceover\",\n      \"cta\": \"satu ayat\",\n      \"caption\": \"teks siap post — inilah yang akan diterbitkan\",\n      \"hashtags\": [\"#contoh\"],\n      \"broll\": [\"shot 1\", \"shot 2\", \"shot 3\"],\n      \"reply\": \"balasan pertama (contohnya ayat yang bawa link) — kalau playbook platform minta\",\n      \"visual\": \"satu cadangan gambar/video ringkas — kalau playbook platform minta\"\n    }\n  ]\n}\n```\n\n- `caption` mesti lengkap dan sedia terbit (hook + badan + CTA digabung ikut gaya platform).\n- `broll` hanya untuk platform video; platform teks bagi array kosong.\n- `reply` dan `visual` optional: isi bila playbook platform memintanya (Threads minta kedua-duanya).\n- Hormati had aksara setiap platform yang diberi dalam brief.\n";
+const THREADS_PLAYBOOK_DEFAULT = "# Playbook Threads — pasaran Malaysia\n\nFail ni ditambah pada base prompt setiap kali ada post Threads dijana.\nIa menang atas peraturan am kalau berlaku percanggahan.\n\n## 1. Apa sebenarnya Threads ganjarkan\n\nThreads bukan papan iklan. Ia ruang perbualan, dan algoritmanya kira **balasan**, bukan like.\nAkaun dengan 20 like dan 15 balasan diedar lebih luas daripada akaun dengan 200 like tanpa balasan,\ndan balasan daripada orang yang pernah berbalas dengan kau dikira lebih berat.\n\nMaka setiap post kena ditulis dengan satu soalan di kepala: **apa yang orang nak taip selepas baca ni?**\n\n- Pandangan, cerita dan tips kalahkan promosi dengan jauh.\n- Post yang ada gambar/video dapat engagement jauh lebih tinggi daripada teks kosong —\n  jadi setiap post Threads kena datang dengan satu cadangan visual, walaupun visual tu\n  cuma screenshot resit atau gambar barang atas meja dapur.\n- 1–3 post sehari untuk akaun peribadi. Lagi penting: balas komen dalam 30–60 minit pertama.\n  Post yang kau tinggal tanpa balasan mati awal.\n\n## 2. Nisbah kandungan\n\nEmpat post bernilai untuk satu post menjual. Kalau minggu ni kau dah tolak tiga produk,\nminggu ni kau kena bayar balik dengan pandangan, kegagalan sendiri, atau tips percuma.\nThreads hukum akaun yang bunyi macam kedai.\n\n## 3. Bentuk post yang jalan di Threads\n\n| Bentuk | Bunyi dia |\n|---|---|\n| **Hot take** | \"Barang paling berguna dalam dapur aku harga bawah RM100. Bukan yang mahal tu.\" |\n| **Aku silap** | \"Aku beli yang mahal dulu. Buang duit. Ni apa yang aku patut beli awal-awal.\" |\n| **Kiraan** | \"RM89 ÷ 90 hari = RM0.99 sehari. Aku belanja lebih pada teh ais.\" |\n| **Babak pendek** | \"Pukul 7.40 malam. Anak lapar. Aku baru sampai rumah. Ni yang selamatkan aku.\" |\n| **Soalan jujur** | \"Korang yang dah guna [produk] — memang tahan lama ke, atau aku je bernasib baik?\" |\n| **Senarai pendek** | \"3 benda aku sesal tak beli awal: 1) … 2) … 3) …\" |\n| **Thread bersiri** | 5–10 post bernombor, satu idea satu post, hujung sekali baru ada CTA. |\n\nKalau brief minta beberapa variasi, jangan bagi tujuh hot take. Campur bentuk.\n\n## 4. Peraturan teknikal\n\n- **500 aksara had keras.** Sasar 120–320 aksara. Post pendek lagi laju dibaca dan dibalas.\n- **Baris pertama ialah preview dalam feed.** Ia kena berdiri sendiri, tanpa konteks, tanpa emoji.\n- Perenggan 1–2 ayat, ada baris kosong antaranya. Dinding teks mati.\n- **Hashtag: 0 atau 1 sahaja.** Threads hanya endah satu topik tag; timbunan hashtag bunyi spam.\n- **Link:** Threads tak hukum link secara algoritma, tapi orang berhenti membaca bila nampak link.\n  Jadi tulis post supaya ia **lengkap tanpa link**, dan letak link dalam **balasan pertama**\n  atau bio. Isi medan `reply` dengan ayat balasan tu.\n- Emoji: sifar dalam baris pertama, maksimum satu dalam seluruh post.\n- Jangan salin bulat-bulat caption TikTok ke Threads. Bahasa TikTok terlalu laju dan terlalu menjual.\n\n## 5. Suara untuk pasaran Malaysia\n\n- BM santai, code-switch English yang orang memang guna: *worth it, tahan lama, memang, tau, je, kot*.\n  **Bahasa Indonesia haram** — tiada *banget, nggak, gue, kayak, bikin, udah*.\n- Panggil diri **aku**, panggil pembaca **kau** atau **korang**. Tiada \"anda\" melainkan brief minta nada baku.\n- Harga dalam RM, dan sebut nombor sebenar. Orang Malaysia sangat harga-sedar; kiraan per hari,\n  per guna, atau \"sama harga dengan dua kopi\" lebih kuat daripada kata \"berbaloi\".\n- Konteks tempatan yang boleh disentuh bila ia memang benar untuk brief: gaji hujung bulan,\n  jem balik kerja, cuaca panas, anak sekolah, beli di Shopee vs TikTok Shop, hantar guna pos laju.\n  Jangan paksa masuk kalau tak kena.\n- Sensitiviti: elak babi/arak/judi sebagai perbandingan, jangan sentuh kaum, agama dan politik\n  sebagai bahan lawak, dan jangan guna isu semasa yang menyedihkan untuk jual barang.\n- Bulan Ramadan dan musim perayaan mengubah irama hidup pembaca. Kalau brief sebut musim,\n  rujuk waktu sebenar (sahur, sebelum buka, malam raya), bukan ucapan generik.\n\n## 6. Realiti affiliate Malaysia (sebab ia ubah cara kau tulis)\n\nKomisen Shopee Malaysia rendah dan bertutup setiap pesanan; TikTok Shop lebih lumayan tapi\njualannya berlaku dalam app TikTok sendiri. Maka **Threads bukan tempat tutup jualan** —\nia tempat bina kepercayaan supaya orang cari kau di tempat lain.\n\nImplikasi pada ayat:\n- Jangan hard-sell. Satu ajakan lembut sudah cukup: \"kalau nak link, cakap je\" lebih sesuai\n  daripada \"klik sekarang sebelum habis\".\n- Bercerita pasal pengalaman guna, bukan pasal diskaun.\n- Pendedahan affiliate tetap wajib: `#ad` atau \"link affiliate\" dalam post atau balasan yang ada link.\n\n## 7. Waktu terbaik (Asia/Kuala_Lumpur)\n\n- **9–11 malam** paling kuat: orang dah settle, tengah scroll atas katil.\n- **12:30–2 petang** waktu makan tengah hari.\n- **7–9 pagi** sebelum kerja, sesuai untuk post pendek dan hot take.\n- Ramadan: sejam sebelum buka puasa, lepas 10 malam, dan tetingkap sahur 4–5.30 pagi.\n\n## 8. Elak sepenuhnya\n\n- Engagement bait murah: \"like kalau setuju\", \"tag kawan yang macam ni\".\n- Baris pembuka bunyi iklan: \"Pernahkah anda mengalami…\", \"Jom kita lihat…\", \"Tanpa disedari…\".\n- Bunyi LLM: \"dalam dunia yang serba pantas ini\", \"kesimpulannya\", \"sama ada anda…\".\n- Salam pembuka (\"hai semua\", \"assalamualaikum semua\") sebagai baris pertama.\n- Claim kesihatan, janji pendapatan, superlatif tak boleh dibukti — sama seperti base prompt.\n\n## 9. Medan tambahan untuk platform ni\n\nUntuk setiap post Threads, isi juga:\n\n- `reply` — satu ayat balasan pertama yang membawa link affiliate (termasuk pendedahan).\n- `visual` — satu cadangan gambar/video ringkas yang kau sendiri boleh rakam dalam dua minit.\n\nKalau post tu memang tiada link, `reply` boleh diisi dengan soalan susulan yang membuka perbualan.\n";
+const ANGLES = {
+  "review-jujur":{label:"Review jujur",shape:"Pengakuan jujur → apa yang aku suka → satu kelemahan kecil → siapa patut beli"},
+  "masalah-selesai":{label:"Masalah → selesai",shape:"Sebut masalah tepat → besarkan sedikit → tunjuk penyelesaian → CTA"},
+  "aku-silap":{label:"Aku silap",shape:"Apa aku silap dulu → apa aku belajar → apa aku buat sekarang"},
+  "harga-shock":{label:"Kiraan harga",shape:"Teka harga → dedah harga → pecah kos per hari → CTA"},
+  "myth":{label:"Pecah mitos",shape:"Mitos biasa → kenapa salah → apa yang betul → CTA"},
+  "pov":{label:"POV relatable",shape:"POV pendek → babak harian → produk masuk semula jadi → CTA"},
+  "listicle":{label:"Senarai pendek",shape:"Janji nombor → item laju → item terakhir paling kuat → CTA"},
+  "cerita":{label:"Cerita pembina",shape:"Babak pembuka → konflik kecil → penyelesaian → pelajaran + CTA"},
+  "objection":{label:"Lawan keberatan",shape:"Sebut keberatan pembeli → jawab dengan pengalaman → CTA lembut"},
+  "soalan":{label:"Soalan jujur",shape:"Soalan yang kau memang nak tahu jawapannya → konteks ringkas → jemput orang balas"},
+};
+const KEY = "viralcool.lite.v1";
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const rid = () => Math.random().toString(36).slice(2,9);
+
+let db = { briefs: [], posts: [], brain: {}, current: null };
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){ alert("Browser tak benarkan simpan data."); } }
+function load(){ try{ const d = JSON.parse(localStorage.getItem(KEY)||"null"); if(d) db = {...db, ...d}; }catch(e){} }
+const brainText = n => db.brain?.[n] ?? (n==="base"?BASE_PROMPT_DEFAULT:THREADS_PLAYBOOK_DEFAULT);
+
+/* ---------- brief ---------- */
+function briefForm(){
+  return { id: db.current || rid(), name:$("#b_name").value, mode:$("#b_mode").value, nama:$("#b_nama").value,
+    harga:$("#b_harga").value, link:$("#b_link").value,
+    kelebihan:$("#b_kelebihan").value.split("\n").map(s=>s.trim()).filter(Boolean),
+    masalah:$("#b_masalah").value, bukti:$("#b_bukti").value, audience:$("#b_audience").value,
+    count:Number($("#b_count").value), angles:$$('#angleChips input:checked').map(i=>i.value) };
+}
+function fillBrief(b){
+  db.current = b?.id || null;
+  $("#b_name").value=b?.name||""; $("#b_mode").value=b?.mode||"bisnes"; $("#b_nama").value=b?.nama||"";
+  $("#b_harga").value=b?.harga||""; $("#b_link").value=b?.link||"";
+  $("#b_kelebihan").value=(b?.kelebihan||[]).join("\n"); $("#b_masalah").value=b?.masalah||"";
+  $("#b_bukti").value=b?.bukti||""; $("#b_audience").value=b?.audience||""; $("#b_count").value=b?.count||5;
+  $$('#angleChips input').forEach(i=>{ i.checked=(b?.angles||[]).includes(i.value); i.closest(".chip").classList.toggle("on",i.checked); });
+}
+function renderBriefs(){
+  $("#briefPick").innerHTML = db.briefs.length
+    ? db.briefs.map(b=>`<option value="${b.id}">${esc(b.name||b.nama||"(tanpa nama)")}</option>`).join("")
+    : '<option value="">(belum ada brief)</option>';
+  if(db.current) $("#briefPick").value = db.current;
+}
+
+/* ---------- prompt ---------- */
+function buildPrompt(){
+  const b = briefForm();
+  const n = b.count || 5;
+  const L = [];
+  L.push("## Brief");
+  L.push(b.mode==="affiliate" ? "Jenis: affiliate — produk orang lain, kau dapat komisen."
+       : b.mode==="bisnes" ? "Jenis: bisnes sendiri — tulis dengan suara pemilik."
+       : "Jenis: organik — bina audience, tawaran disebut ringan sahaja.");
+  L.push("Nama: " + (b.nama || "[NAMA PRODUK]"));
+  if(b.harga) L.push("Harga: " + b.harga);
+  if(b.link) L.push("Link: " + b.link);
+  if(b.kelebihan.length) L.push("Kelebihan sebenar:\n" + b.kelebihan.map(k=>"- "+k).join("\n"));
+  if(b.masalah) L.push("Masalah audience: " + b.masalah);
+  if(b.bukti) L.push("Pengalaman peribadi aku: " + b.bukti);
+  if(b.audience) L.push("Audience: " + b.audience);
+  const ang = b.angles.filter(a=>ANGLES[a]);
+  if(ang.length){
+    L.push("", "## Angle yang diminta (jangan ulang hook sama)");
+    ang.forEach(a=>L.push(`- ${ANGLES[a].label}: ${ANGLES[a].shape}`));
+  }
+  L.push("", "## Tugas", `Hasilkan ${n} post untuk Threads (had 500 aksara setiap satu).`,
+    "Balas JSON sahaja mengikut kontrak output dalam arahan gaya. Jangan tulis apa-apa selain JSON.");
+  return [brainText("base"), brainText("threads"), L.join("\n")].join("\n\n---\n\n");
+}
+
+/* ---------- parse ---------- */
+function parseAny(text){
+  if(!text || !text.trim()) return [];
+  const tries = [];
+  const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if(fence) tries.push(fence[1]);
+  const a = text.indexOf("{"), z = text.lastIndexOf("}");
+  if(a>=0 && z>a) tries.push(text.slice(a,z+1));
+  tries.push(text);
+  for(const t of tries){
+    try{
+      const o = JSON.parse(t);
+      const arr = Array.isArray(o) ? o : o.posts;
+      if(Array.isArray(arr) && arr.length) return arr.map(norm).filter(p=>p.text);
+    }catch(e){}
+  }
+  // sandaran: format === POST ===
+  const blocks = text.split(/^={2,}\s*POST\s*={2,}\s*$/mi).slice(1);
+  if(blocks.length){
+    return blocks.map(bl=>{
+      const get = k => (bl.match(new RegExp("^\\s*"+k+"\\s*:\\s*([\\s\\S]*?)(?=^\\s*(?:PLATFORM|ANGLE|HOOK|SCRIPT|BODY|CTA|CAPTION|HASHTAG|BROLL|REPLY|VISUAL)\\s*:|$(?![\\s\\S]))","mi"))||[])[1]?.trim()||"";
+      return norm({ angle:get("ANGLE"), hook:get("HOOK"), body:get("BODY")||get("SCRIPT"), cta:get("CTA"),
+                    caption:get("CAPTION"), reply:get("REPLY"), visual:get("VISUAL") });
+    }).filter(p=>p.text);
+  }
+  return [];
+}
+function norm(p={}){
+  const tags = Array.isArray(p.hashtags) ? p.hashtags : String(p.hashtags||"").split(/\s+/).filter(Boolean);
+  let text = String(p.caption || [p.hook,p.body,p.cta].filter(Boolean).join("\n\n") || "").trim();
+  const extra = tags.filter(t=>t && !text.toLowerCase().includes(String(t).toLowerCase()));
+  if(extra.length) text += "\n\n" + extra.join(" ");
+  return { id:rid(), text, angle:p.angle||"", reply:String(p.reply||"").trim(),
+           visual:String(p.visual||"").trim(), status:"tunggu", when:null };
+}
+
+/* ---------- rangka tanpa AI ---------- */
+function localDraft(){
+  const b = briefForm();
+  const nama = b.nama || "[NAMA PRODUK]", harga = b.harga || "[HARGA]";
+  const k = b.kelebihan, masalah = b.masalah || "[MASALAH]";
+  const link = b.link || "[LINK]";
+  const shapes = [
+    {angle:"Masalah → selesai", text:`${masalah}.\n\nItu keadaan sebelum ni.\n\n${nama}: ${k[0]||"[KELEBIHAN 1]"}.\n${k[1]||"[KELEBIHAN 2]"}.`, reply:`Link: ${link}`},
+    {angle:"Kiraan harga", text:`${harga}.\n\nKira balik, ia jadi [KOS] sehari.\n\nYang aku nak korang banding bukan harga app lain — tapi [PERBANDINGAN SEBENAR KAU].`, reply:`Link kalau nak tengok: ${link}`},
+    {angle:"Aku silap", text:`Aku silap pasal [ANDAIAN AWAL AKU].\n\n${k[0]||"[KELEBIHAN 1]"} yang tukar fikiran aku.\n\nSekarang [APA YANG BERUBAH].`, reply:`Link: ${link}`},
+    {angle:"Soalan jujur", text:`[SOALAN YANG KAU MEMANG NAK TAHU] ?\n\nAku tanya sebab ${masalah.toLowerCase()}.\n\nAku bina ${nama} sekitar masalah tu.`, reply:`Korang macam mana? Aku baca semua balasan.`},
+    {angle:"Lawan keberatan", text:`"[KEBERATAN BIASA]". Aku faham.\n\n${k[0]||"[KELEBIHAN 1]"}.\n\nItu je bezanya. Tapi beza tu yang penting bila ${masalah.toLowerCase()}.`, reply:`Link: ${link}`},
+    {angle:"Cerita pembina", text:`[BABAK PEMBUKA — apa kau buat minggu ni].\n\nBukan bahagian yang orang nampak. Tapi itu bahagian yang penting.\n\n${nama}, ${harga}.`, reply:`Link: ${link}`},
+    {angle:"Senarai pendek", text:`3 benda dalam ${nama} yang orang selalu terlepas pandang:\n\n1. ${k[0]||"[KELEBIHAN 1]"}\n2. ${k[1]||"[KELEBIHAN 2]"}\n3. ${k[2]||"[KELEBIHAN 3]"}`, reply:`Link: ${link}`},
+  ];
+  const n = Math.min(b.count||5, shapes.length);
+  return shapes.slice(0,n).map(s=>({id:rid(),text:s.text.slice(0,500),angle:s.angle,reply:s.reply,
+    visual:"satu gambar atau video 8 saat yang tunjuk benda ni betul-betul",status:"tunggu",when:null}));
+}
+
+/* ---------- jadual ---------- */
+function slotTimes(count){
+  const d0 = $("#startDate").value || new Date().toISOString().slice(0,10);
+  const times = ($("#slots").value||"21:00").split(",").map(s=>s.trim()).filter(Boolean).sort();
+  const out = []; let day = 0;
+  const taken = new Set(db.posts.filter(p=>p.when).map(p=>p.when));
+  while(out.length < count && day < 60){
+    for(const t of times){
+      const [h,m] = t.split(":").map(Number);
+      const dt = new Date(d0 + "T00:00:00"); dt.setDate(dt.getDate()+day); dt.setHours(h||0, m||0, 0, 0);
+      const ts = dt.getTime();
+      if(ts > Date.now() && !taken.has(ts)){ taken.add(ts); out.push(ts); }
+      if(out.length >= count) break;
+    }
+    day++;
+  }
+  return out;
+}
+function addPosts(list){
+  const slots = slotTimes(list.length);
+  list.forEach((p,i)=>{ p.when = p.when ?? slots[i] ?? null; db.posts.push(p); });
+  save(); renderQueue(); showTab("barisan");
+}
+
+/* ---------- render ---------- */
+const fmt = ts => ts ? new Date(ts).toLocaleString("ms-MY",{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}) : "tiada masa";
+const localInput = ts => ts ? new Date(ts - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16) : "";
+function renderQueue(){
+  const list = db.posts.slice().sort((a,b)=>(a.when||0)-(b.when||0));
+  $("#count").textContent = `${db.posts.filter(p=>p.status==="tunggu").length} belum post`;
+  $("#queue").innerHTML = list.length ? list.map(p=>`
+    <div class="post" data-id="${p.id}">
+      <div class="meta">
+        <span class="tag ${p.status}">${p.status==="tunggu"?"belum post":"dah post"}</span>
+        <span>${fmt(p.when)}</span>${p.angle?`<span>· ${esc(p.angle)}</span>`:""}
+        <span>· ${p.text.length} aksara</span>${p.text.length>500?'<span class="bad">· melebihi had Threads</span>':""}
+      </div>
+      <textarea class="q-text">${esc(p.text)}</textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="btn sm primary q-copy">Copy post</button>
+        ${p.reply?'<button class="btn sm q-copyreply">Copy balasan</button>':""}
+        <a class="btn sm" href="https://www.threads.net/" target="_blank" rel="noopener">Buka Threads</a>
+        <input class="q-when" type="datetime-local" value="${localInput(p.when)}" style="width:auto">
+        <button class="btn sm ghost q-done">${p.status==="tunggu"?"Dah post ✓":"Belum lagi"}</button>
+        <button class="btn sm ghost q-del">Buang</button>
+      </div>
+      ${(p.reply||p.visual)?`<div class="sub2">${p.reply?"Balasan pertama (letak link di sini): "+esc(p.reply):""}${p.visual?"\nVisual: "+esc(p.visual):""}</div>`:""}
+    </div>`).join("") : '<p class="empty">Barisan kosong. Pergi tab <b>Tulis</b>.</p>';
+
+  list.forEach(p=>{
+    const el = $(`[data-id="${p.id}"]`); if(!el) return;
+    el.querySelector(".q-text").onchange = e => { p.text = e.target.value; save(); renderQueue(); };
+    el.querySelector(".q-when").onchange = e => { p.when = e.target.value ? new Date(e.target.value).getTime() : null; save(); renderQueue(); };
+    el.querySelector(".q-copy").onclick = e => copy(p.text, e.target);
+    const cr = el.querySelector(".q-copyreply"); if(cr) cr.onclick = e => copy(p.reply, e.target);
+    el.querySelector(".q-done").onclick = () => { p.status = p.status==="tunggu" ? "posted" : "tunggu"; save(); renderQueue(); };
+    el.querySelector(".q-del").onclick = () => { if(confirm("Buang post ni?")){ db.posts = db.posts.filter(x=>x.id!==p.id); save(); renderQueue(); } };
+  });
+}
+async function copy(text, btn){
+  try{ await navigator.clipboard.writeText(text); }
+  catch(e){ const t=document.createElement("textarea"); t.value=text; document.body.append(t); t.select(); document.execCommand("copy"); t.remove(); }
+  if(btn){ const o=btn.textContent; btn.textContent="✓ dah copy"; setTimeout(()=>btn.textContent=o,1300); }
+}
+function showTab(name){
+  $$("nav button").forEach(b=>b.setAttribute("aria-selected", String(b.dataset.tab===name)));
+  ["tulis","barisan","tetapan"].forEach(t=>$("#tab-"+t).hidden = t!==name);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function download(name, text){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([text],{type:"application/json"}));
+  a.download=name; a.click(); URL.revokeObjectURL(a.href);
+}
+
+/* ---------- wiring ---------- */
+load();
+$("#angleChips").innerHTML = Object.entries(ANGLES).map(([k,v])=>
+  `<label class="chip"><input type="checkbox" value="${k}">${v.label}</label>`).join("");
+$$('#angleChips input').forEach(i=>i.onchange=()=>i.closest(".chip").classList.toggle("on",i.checked));
+renderBriefs();
+fillBrief(db.briefs.find(b=>b.id===db.current) || db.briefs[0]);
+if(!$("#startDate").value) $("#startDate").value = new Date().toISOString().slice(0,10);
+renderQueue();
+
+$$("nav button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+$("#briefPick").onchange = e => fillBrief(db.briefs.find(b=>b.id===e.target.value));
+$("#briefNew").onclick = () => { fillBrief(null); $("#b_name").focus(); };
+$("#briefSave").onclick = () => {
+  const b = briefForm();
+  const i = db.briefs.findIndex(x=>x.id===b.id);
+  if(i>=0) db.briefs[i]=b; else db.briefs.push(b);
+  db.current = b.id; save(); renderBriefs(); $("#briefPick").value = b.id;
+};
+$("#briefDel").onclick = () => {
+  if(!db.current || !confirm("Buang brief ni?")) return;
+  db.briefs = db.briefs.filter(b=>b.id!==db.current); db.current=null; save(); renderBriefs(); fillBrief(db.briefs[0]);
+};
+$("#copyPrompt").onclick = e => {
+  if(!$("#b_nama").value.trim()){ $("#promptState").innerHTML='<span class="bad">Isi nama produk dulu.</span>'; return; }
+  const p = buildPrompt();
+  copy(p, e.target);
+  $("#promptState").innerHTML = `<span class="ok">${p.length.toLocaleString()} aksara arahan dah dicopy — paste dalam AI.</span>`;
+};
+$("#parseRaw").onclick = () => {
+  const items = parseAny($("#raw").value);
+  if(!items.length){ $("#parseState").innerHTML='<span class="bad">Tak jumpa post. Pastikan kau copy SEMUA jawapan AI tu.</span>'; return; }
+  addPosts(items);
+  $("#raw").value=""; $("#parseState").innerHTML=`<span class="ok">${items.length} post masuk barisan.</span>`;
+};
+$("#genLocal").onclick = () => {
+  if(!$("#b_nama").value.trim()){ $("#localState").innerHTML='<span class="bad">Isi nama produk dulu.</span>'; return; }
+  const items = localDraft();
+  addPosts(items);
+  $("#localState").innerHTML=`<span class="ok">${items.length} rangka masuk barisan — isi bahagian [kurungan] sendiri.</span>`;
+};
+$("#reslot").onclick = () => {
+  const pending = db.posts.filter(p=>p.status==="tunggu");
+  pending.forEach(p=>p.when=null);
+  const slots = slotTimes(pending.length);
+  pending.forEach((p,i)=>p.when=slots[i]??null);
+  save(); renderQueue();
+};
+$("#clearDone").onclick = () => { if(confirm("Buang semua yang dah post?")){ db.posts=db.posts.filter(p=>p.status!=="posted"); save(); renderQueue(); } };
+$("#brainPick").onchange = e => { $("#brain").value = brainText(e.target.value); $("#brainState").textContent=""; };
+$("#brain").value = brainText("base");
+$("#brainSave").onclick = () => { db.brain[$("#brainPick").value] = $("#brain").value; save(); $("#brainState").innerHTML='<span class="ok">disimpan.</span>'; };
+$("#brainReset").onclick = () => {
+  const n=$("#brainPick").value; delete db.brain[n]; save();
+  $("#brain").value = brainText(n); $("#brainState").innerHTML='<span class="ok">dipulihkan.</span>';
+};
+const doBackup = () => download("viralcool-backup.json", JSON.stringify(db,null,2));
+$("#backup").onclick = doBackup; $("#backup2").onclick = doBackup;
+$("#restore").onchange = async e => {
+  const f = e.target.files[0]; if(!f) return;
+  try{ db = {...db, ...JSON.parse(await f.text())}; save(); location.reload(); }
+  catch(err){ alert("Fail tak boleh dibaca."); }
+};
+$("#reset").onclick = () => { if(confirm("Padam semua brief dan post?")){ localStorage.removeItem(KEY); location.reload(); } };
+</script>
+</body>
+</html>

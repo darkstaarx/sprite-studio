@@ -17,7 +17,22 @@ brief produk ─► base prompt (otak gaya) ─► LLM ─► post + skrip rakam
   OpenRouter/Hermes/Ollama/Anthropic bila kau dah ada key.
 - **Data kau duduk di `data/db.json`.** Token pun. Tiada telemetri, tiada cloud.
 
-## Paling mudah (kalau kau tak teknikal)
+## Paling mudah sekali — ViralCool Lite (tiada pemasangan)
+
+Satu fail: **`viralcool-lite.html`**. Klik dua kali, ia terbuka dalam browser kau. Tiada Node,
+tiada pemasangan, tiada kotak hitam, tak perlu internet pun.
+
+Apa dia buat: brief produk → arahan penuh untuk AI (base prompt + playbook Threads, ~12,600 aksara)
+→ tampal balik jawapan AI → barisan post dengan slot masa, butang copy, dan penanda "dah post".
+Boleh juga jana rangka post tanpa AI langsung.
+
+Apa dia **tak** buat: tiada auto-post. Kau copy dan post sendiri. Untuk auto-post, guna versi penuh
+di bawah.
+
+Fail ni dibina dari `prompts/` — kalau kau edit playbook, jalankan `node lite/build.mjs` untuk
+bina semula.
+
+## Versi penuh — kalau kau nak auto-post
 
 Tiga langkah, satu kali setup, tiada terminal:
 
@@ -236,6 +251,8 @@ dihantar ke UI (state API balas `__SET__` sahaja).
 ## Struktur
 
 ```
+viralcool-lite.html     versi tanpa pemasangan (dibina dari lite/build.mjs)
+lite/                   templat + skrip bina untuk fail Lite
 mula.command / mula.bat pelancar klik-dua-kali (Mac / Windows)
 server.mjs              HTTP + API + static + boot enjin jadual
 lib/store.mjs           simpanan JSON atomik (settings, accounts, briefs, posts, logs)
