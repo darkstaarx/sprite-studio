@@ -389,9 +389,9 @@ const ROUTES = [
       bahasa: "bm-santai", tone: "Santai & jujur", cta: "Link dalam balasan pertama",
       angles: [STYLES[style].angle], image: product.image, lastUsedAt: Date.now(),
     };
-    let posts;
+    let posts, lint = [];
     try {
-      ({ posts } = await generate({ settings: store.data.settings, brief, platforms: ["threads"], count: body.count || 3 }));
+      ({ posts, lint = [] } = await generate({ settings: store.data.settings, brief, platforms: ["threads"], count: body.count || 3 }));
     } catch (e) { return [502, { error: `Gagal tulis ayat: ${e.message}` }]; }
 
     const slots = sched.customSlots(store, posts.length, body.times, body.startDate);
@@ -401,6 +401,7 @@ const ROUTES = [
       text: p.caption, status: body.status === "scheduled" ? "scheduled" : "review",
       scheduledAt: slots[i] ?? null, source: "ai", briefId: brief.id,
       script: { angle: p.angle || STYLES[style].label, hook: p.hook, body: p.body, cta: p.cta, reply: p.reply, visual: p.visual },
+      lint: (lint[i] || []).map(x => x.pesan),
     }));
     const notes = [];
     if (store.data.settings.llm.provider === "local") {

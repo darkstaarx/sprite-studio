@@ -401,6 +401,7 @@ function postCard(p){
     <textarea data-text="${p.id}">${esc(p.text)}</textarea>
     ${p.script?.reply?`<p class="sub">↳ ${esc(p.script.reply)}</p>`:""}
     ${p.script?.visual?`<p class="sub">📷 ${esc(p.script.visual)}</p>`:""}
+    ${(p.lint||[]).length?`<p class="sub" style="color:var(--bad)">⚠ ${p.lint.map(esc).join(" · ")}</p>`:""}
   </div>`;
 }
 function showOut(posts,notes){

@@ -172,6 +172,44 @@ Brief akan menyatakan satu daripada tiga:
 Kalau kandungan tak cukup untuk memenuhi panjang yang diminta, tulis lebih pendek. Ayat tambahan
 yang tiada isi lebih merosakkan daripada post pendek.
 
+## 3g. Contoh irama
+
+Ini bukan ayat untuk disalin. Ini irama untuk ditiru: ayat tak sama panjang, butiran kecil yang
+tak penting, satu pengakuan, dan tiada harga.
+
+**Cerita lawak, pendek:**
+
+> Anak aku sorok benda ni dalam beg sekolah. Cikgu jumpa masa kelas Sains.
+>
+> Sekarang satu kelas dah ada. Cikgu pun ada satu atas meja dia.
+>
+> Aku tak pasti aku patut bangga atau minta maaf.
+
+**Story circle, sederhana:**
+
+> Meja kerja aku ada satu laci yang aku tak pernah buka sebab semua barang rosak masuk situ.
+>
+> Bulan lepas aku beli satu benda kecil untuk atas meja. Niat aku nak letak seminggu je, tengok
+> kalau berguna.
+>
+> Tiga hari pertama aku lupa ia ada. Hari keempat aku perasan aku dah tak ketuk-ketuk pen masa call.
+>
+> Yang tak best: bunyi dia kuat sikit bila senyap. Kalau kau duduk open office, orang sebelah
+> akan pandang.
+>
+> Laci tu masih penuh. Benda ni tak masuk situ.
+
+**Hot take, pendek:**
+
+> Barang paling berguna atas meja aku tahun ni bukan gadget. Ia benda yang orang ingat mainan
+> budak.
+>
+> Aku dah guna tiap hari sejak Ogos. Gadget RM400 aku tu berhabuk.
+
+Perhatikan: tiada satu pun sebut harga, tiada satu pun tutup dengan "link dalam bio", dan setiap
+satu ada satu butiran yang tak memajukan jualan — laci penuh, cikgu jumpa, gadget berhabuk. Butiran
+itu yang buat ia bunyi benar.
+
 ## 4. Peraturan teknikal
 
 - **500 aksara had keras.** Sasar 120–320 aksara. Post pendek lagi laju dibaca dan dibalas.
