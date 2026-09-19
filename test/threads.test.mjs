@@ -65,3 +65,16 @@ test("authorizeUrl tolak localhost sebab Threads memang tak terima", () => {
   const ok = authorizeUrl({ appId: "1", redirectUri: "https://viralcool.invalid/callback" });
   assert.match(ok, /redirect_uri=https%3A%2F%2Fviralcool\.invalid%2Fcallback/);
 });
+
+test("ralat umum Meta (kod 1) diterjemah jadi senarai semakan", () => {
+  assert.throws(
+    () => extractCode("https://www.threads.com/oauth/authorize/error.json?error_message=An+unknown+error+has+occurred.&error_code=1"),
+    e => {
+      assert.match(e.message, /kod 1/);
+      assert.match(e.message, /Threads Tester/);
+      assert.match(e.message, /bukan public/);
+      assert.match(e.message, /log masuk Threads/);
+      assert.match(e.message, /cuba lagi/);
+      return true;
+    });
+});
