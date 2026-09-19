@@ -12,6 +12,7 @@ import * as sched from "./lib/scheduler.mjs";
 import { verify } from "./lib/publishers.mjs";
 import { detect } from "./lib/detect.mjs";
 import { testLLM } from "./lib/llm-test.mjs";
+import { parseCurl } from "./lib/curl-parse.mjs";
 import { startUrl, handleCallback, oauthReady } from "./lib/oauth.mjs";
 import { authorizeUrl, extractCode, exchange } from "./lib/threads-setup.mjs";
 
@@ -144,6 +145,11 @@ const ROUTES = [
       store.log("info", `Enjin ayat diuji dan disimpan: ${cfg.provider} ${cfg.model}`);
     }
     return [r.ok ? 200 : 502, { ...r, provider: cfg.provider, model: cfg.model }];
+  }],
+
+  ["POST", /^\/api\/llm\/from-curl$/, async (_m, body) => {
+    const r = parseCurl(body.text);
+    return [r.ok ? 200 : 400, r];
   }],
 
   ["GET", /^\/api\/prompts$/, async () => [200, { prompts: listPrompts() }]],

@@ -201,6 +201,10 @@
     <button class="btn sm" id="engineToggle">Tukar enjin</button>
     <div id="engineBox" hidden style="margin-top:12px">
       <div class="scroll" id="presets"></div>
+      <label style="margin-top:12px">Tampal contoh curl dari Docs pembekal kau</label>
+      <textarea id="curlBox" style="min-height:70px" placeholder="curl https://… -H &quot;Authorization: Bearer …&quot; -d '{&quot;model&quot;:&quot;…&quot;}'"></textarea>
+      <button class="btn wide" id="curlFill" style="margin-top:8px">Isi automatik dari curl</button>
+      <p class="msg" id="curlMsg"></p>
       <div class="pair" style="margin-top:10px">
         <div><label>Jenis API</label><select id="llm_provider">
           <option value="openai">OpenAI-compatible</option>
@@ -433,6 +437,19 @@ $("#libAdd").onclick=async()=>{
   }catch(e){ $("#libMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 };
 $("#engineToggle").onclick=()=>{ const b=$("#engineBox"); b.hidden=!b.hidden; if(!b.hidden) renderPresets(); };
+$("#curlFill").onclick=async()=>{
+  $("#curlMsg").textContent="membaca…";
+  try{
+    const r=await api("/llm/from-curl",{method:"POST",body:JSON.stringify({text:$("#curlBox").value})});
+    $("#llm_provider").value=r.provider; llmProvider=r.provider;
+    $("#llm_base").value=r.baseUrl;
+    if(r.model) $("#llm_model").value=r.model;
+    if(r.apiKey) $("#llm_key").value=r.apiKey;
+    $("#curlMsg").innerHTML='<span class="ok">Dah isi.</span>'
+      + (r.model?"":' <span class="warn">Model tiada dalam contoh — isi sendiri dari tab Models.</span>')
+      + (r.keyLooksPlaceholder?' <span class="warn">Key dalam contoh cuma placeholder — tampal key sebenar kau.</span>':"");
+  }catch(e){ $("#curlMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+};
 $("#llm_save").onclick=async()=>{
   const base=$("#llm_base").value.trim(), model=$("#llm_model").value.trim();
   if(!base||!model) return $("#llm_msg").innerHTML='<span class="bad">Base URL dan model wajib diisi.</span>';

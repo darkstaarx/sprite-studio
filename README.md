@@ -377,6 +377,11 @@ Muka depan ada kad **Enjin ayat** dengan preset Nous Portal, Hermes 4 405B, Herm
 OpenRouter, Anthropic dan Ollama — pilih satu, tampal key, simpan. Model penaakulan yang mengeluarkan jejak `<think>`
 (Hermes 4 antaranya) dikendalikan: jejak itu dibuang sebelum JSON dibaca.
 
+Cara paling pantas mengisi kad itu: buka halaman **Docs** pembekal kau, salin contoh `curl`,
+tampal dalam kotak **Tampal contoh curl** dan tekan **Isi automatik**. App membaca alamat, jenis API
+(header `x-api-key` bermakna Anthropic), model dari badan JSON, dan kunci jika contoh itu membawa
+kunci sebenar — placeholder seperti `YOUR_API_KEY` atau `$ANTHROPIC_API_KEY` diabaikan dan disebut.
+
 Butang dalam kad itu ialah **Uji & simpan**: ia menghantar satu panggilan kecil ke pembekal kau
 sebelum menyimpan. Kalau kunci salah, mesej sebenar pembekal dipaparkan (contoh `401 — Invalid API
 key provided`). Kalau base URL tertinggal `/v1`, app mencuba variasi itu sendiri dan menyimpan yang
