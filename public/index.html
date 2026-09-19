@@ -105,6 +105,12 @@
 
 <!-- ================= SETUP ================= -->
 <div id="setup" hidden>
+  <div class="card" id="accList" hidden>
+    <div class="head"><span class="n">✓</span><span class="title">Akaun bersambung</span></div>
+    <div id="accRows"></div>
+    <p class="hint" style="margin-top:10px">Nak tambah akaun lain? Ikut langkah di bawah — tapi buka pautan kebenaran tu dalam <b>tetingkap Incognito</b>, kalau tidak Meta akan guna akaun yang sedang log masuk sekarang.</p>
+  </div>
+
   <div class="card">
     <div class="head"><span class="n">A</span><span class="title">App Threads di Meta</span>
       <button class="i" data-note="nA" aria-expanded="false">i</button></div>
@@ -130,7 +136,7 @@
   <div class="card">
     <div class="head"><span class="n">B</span><span class="title">Approve</span>
       <button class="i" data-note="nB" aria-expanded="false">i</button></div>
-    <div class="note" id="nB">Lepas approve, browser akan papar <b>“site can’t be reached”</b>. Itu betul — domain tu sengaja tak wujud. Yang kita perlukan cuma URL dalam bar alamat.</div>
+    <div class="note" id="nB">Lepas approve, browser akan papar <b>“site can’t be reached”</b>. Itu betul — domain tu sengaja tak wujud. Yang kita perlukan cuma URL dalam bar alamat.<br><br><b>Untuk akaun kedua:</b> buka pautan ni dalam tetingkap <b>Incognito</b> (Ctrl+Shift+N), log masuk sebagai akaun kedua, baru approve. Kalau tidak, Meta akan sambung akaun yang sama semula.</div>
     <a class="btn wide" id="t_open" target="_blank" rel="noopener" href="#" style="display:block;text-align:center;text-decoration:none">Buka halaman kebenaran</a>
   </div>
 
@@ -366,6 +372,16 @@ async function load(){
     if(pilih.mix){ $("#mixJual").value=pilih.mix.jual; $("#mixTips").value=pilih.mix.tips; }
   }
   $("#acctText").textContent=threads.length?(threads.length>1?`${threads.length} akaun`:threads[0].label):"Sambung Threads";
+  $("#accList").hidden=!threads.length;
+  $("#accRows").innerHTML=threads.map(a=>`
+    <div class="post" style="padding:10px"><div class="prod">
+      <div style="flex:1"><div class="nm">${esc(a.label)}</div>
+        <div class="sub" style="margin:2px 0 0">${esc(a.niche||"niche belum diisi")}${a.expiresAt?` · token luput ${fmt(a.expiresAt)}`:""}</div></div>
+      <button class="btn sm" data-accdel="${a.id}">✕</button></div></div>`).join("");
+  $$("[data-accdel]").forEach(b=>b.onclick=async()=>{
+    if(!confirm("Buang akaun ni dari ViralCool? Post berjadual untuk akaun ni tak akan keluar.")) return;
+    await api("/accounts/"+b.dataset.accdel,{method:"DELETE"}); load();
+  });
   const tunggu=S.posts.filter(p=>p.status==="review").length, jad=S.posts.filter(p=>p.status==="scheduled").length;
   $("#queueLine").textContent=`${tunggu} tunggu · ${jad} berjadual · ${S.posts.filter(p=>p.status==="published").length} keluar`;
   $$(".card").forEach(c=>c.classList.remove("filled"));
