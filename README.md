@@ -27,10 +27,12 @@ Tekan **Sambung Threads** di muka depan, lepas tu ikut tiga langkah:
 
 **A. Buat app di Meta (sekali sahaja)** — [developers.facebook.com/apps](https://developers.facebook.com/apps)
 → Create app → use case **"Access the Threads API"**. Dalam app itu:
-kebenaran `threads_basic` dan `threads_content_publish`; tambah akaun Threads kau sebagai
-**Threads Tester** dan **terima jemputan** dalam app Threads (Settings → Website permissions);
-tampal redirect URI yang ViralCool tunjukkan ke dalam **Redirect Callback URLs**.
-Isi App ID dan App Secret dalam ViralCool, tekan simpan.
+kebenaran `threads_basic` dan `threads_content_publish`; dalam dashboard Meta pergi
+**App roles → Roles → Add People → Threads Tester** dan taip username Threads kau tanpa `@`;
+kemudian dalam **app Threads**: ☰ → **Settings** → **More settings** → **Website permissions**
+→ tab **Invites** → **Accept**. Akaun Threads mesti **public**, akaun private tak boleh terima
+jemputan. Akhir sekali tampal redirect URI yang ViralCool tunjukkan ke dalam
+**Redirect Callback URLs**, dan isi App ID serta App Secret dalam ViralCool.
 
 **B. Bagi kebenaran** — tekan pautan yang muncul, log masuk, approve. Browser akan cuba buka
 halaman yang tak wujud. Itu memang dijangka.

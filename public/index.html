@@ -75,7 +75,9 @@
     <p class="hint" style="margin-top:0">Buka <a href="https://developers.facebook.com/apps" target="_blank" rel="noopener">developers.facebook.com/apps</a> → <b>Create app</b> → pilih use case <b>“Access the Threads API”</b>. Dalam app tu:</p>
     <ol class="hint" style="margin:8px 0 0;padding-left:20px;line-height:1.8">
       <li>Tambah kebenaran <code>threads_basic</code> dan <code>threads_content_publish</code></li>
-      <li>Tambah akaun Threads kau sebagai <b>Threads Tester</b>, lepas tu <b>terima jemputan</b> dalam app Threads → Settings → Website permissions</li>
+      <li>Dalam dashboard Meta: <b>App roles → Roles → Add People → Threads Tester</b>, taip username Threads kau (tanpa @)</li>
+      <li>Dalam <b>app Threads</b>: ikon ☰ → <b>Settings</b> → <b>More settings</b> (paling bawah) → <b>Website permissions</b> → tab <b>Invites</b> → <b>Accept</b>.
+        <span class="warn">Akaun Threads kau mesti public — akaun private tak boleh terima jemputan.</span></li>
       <li>Dalam <b>Redirect Callback URLs</b>, tampal alamat di bawah ni (Meta hanya terima https, sebab tu ia nampak pelik — tak apa, ia tak perlu wujud pun)</li>
     </ol>
     <div style="margin-top:12px"><label>Redirect URI (salin ke Meta)</label><input id="t_redirect"></div>
