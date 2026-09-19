@@ -17,7 +17,61 @@ brief produk ─► base prompt (otak gaya) ─► LLM ─► post + skrip rakam
   OpenRouter/Hermes/Ollama/Anthropic bila kau dah ada key.
 - **Data kau duduk di `data/db.json`.** Token pun. Tiada telemetri, tiada cloud.
 
-## Mula
+## Paling mudah (kalau kau tak teknikal)
+
+Tiga langkah, satu kali setup, tiada terminal:
+
+1. **Pasang Node sekali sahaja.** Pergi [nodejs.org](https://nodejs.org), muat turun versi **LTS**,
+   buka fail yang dimuat turun, tekan Next sampai habis. Ini enjin yang jalankan ViralCool.
+2. **Muat turun ViralCool.** Di halaman repo GitHub, tekan butang hijau **Code** →
+   **Download ZIP**. Unzip. Letak folder tu di mana kau senang jumpa (contoh: Desktop).
+3. **Klik dua kali fail `mula`:**
+   - Mac: `mula.command` — kali pertama sahaja, **klik kanan → Open → Open** (macOS tanya sekali
+     sebab fail ni bukan dari App Store).
+   - Windows: `mula.bat`.
+
+   Satu tetingkap hitam terbuka dan browser kau terbuka sendiri di `http://localhost:8787`.
+   **Jangan tutup tetingkap hitam tu** selagi kau guna ViralCool — itu "enjin" dia.
+   Nak berhenti: tutup tetingkap tu.
+
+Guna balik esok? Klik dua kali `mula` sekali lagi. Itu sahaja.
+
+### Mod paling selamat untuk mula
+
+Biar Autopilot **mati** dan jangan sambung akaun dulu:
+
+1. Tab **Tulis** → isi brief produk → **Jana ayat**.
+2. Copy caption, buka app Threads/TikTok sendiri, post macam biasa.
+
+Dalam mod ni ViralCool cuma penulis ayat + tempat simpan barisan. Tiada apa-apa yang menyentuh
+akaun kau, jadi tiada langsung risiko akaun. Bila kau dah selesa, baru sambung satu akaun dan
+biar dia hantar sendiri.
+
+## Elak kena ban
+
+Yang penting difahami: **ViralCool guna API rasmi Meta dan TikTok** — cara yang platform sendiri
+sediakan untuk posting berjadual, sama macam Metricool, Buffer atau Later. Menjadual post melalui
+API rasmi bukan sebab orang kena ban.
+
+Yang buat akaun kena ban atau dihukum jangkauan:
+
+| Jangan | Sebab |
+|---|---|
+| Tools yang minta username + password akaun kau | Itu login palsu/bot, melanggar terma. ViralCool tak pernah minta password — hanya token rasmi. |
+| Banyak post sehari | Kekal 1–3 post sehari per akaun. Playbook Threads memang tetapkan begitu. |
+| Teks sama diulang atau disalin ke banyak akaun | Platform kesan kandungan pendua. Setiap variasi kena lain betul-betul. |
+| Link affiliate tanpa pendedahan | Risiko dari platform dan juga pihak berkuasa pengguna. Guna `#ad` atau "link affiliate". |
+| Engagement bait dan timbunan hashtag | "Like kalau setuju", 20 hashtag — kedua-duanya isyarat spam. |
+| Auto-reply komen | Balas komen sendiri. Itu juga yang naikkan jangkauan kau. |
+
+Cadangan aku untuk minggu pertama: `autoPublish` mati (kau approve setiap post), satu akaun sahaja,
+dua post sehari. Kalau kau nak cuba tanpa apa-apa keluar langsung, jalankan dalam mod dry — tukar
+baris `node server.mjs` dalam fail `mula` kepada `node server.mjs --dry`.
+
+Untuk TikTok, tetapan default memang hantar ke **draf** dalam app TikTok, bukan terus terbit —
+kau tekan post sendiri. Itu pilihan paling selamat dan ia default atas sebab tu.
+
+## Mula (kalau kau selesa dengan terminal)
 
 ```bash
 node server.mjs          # buka http://localhost:8787
@@ -182,6 +236,7 @@ dihantar ke UI (state API balas `__SET__` sahaja).
 ## Struktur
 
 ```
+mula.command / mula.bat pelancar klik-dua-kali (Mac / Windows)
 server.mjs              HTTP + API + static + boot enjin jadual
 lib/store.mjs           simpanan JSON atomik (settings, accounts, briefs, posts, logs)
 lib/platforms.mjs       had aksara, keperluan media, gaya tulisan setiap platform
