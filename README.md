@@ -38,6 +38,19 @@ Apa yang berlaku dalam satu tekan:
 4. **Jadualkan.** Setiap post dapat slot waktu puncak Malaysia dan duduk dalam barisan sebagai
    `review` sampai kau approve.
 
+Butang **Uji link sahaja** di sebelahnya cuma mengesan tanpa jana apa-apa, dan membuka laporan
+teknikal (rantaian redirect, status HTTP, tag yang dijumpai, petikan halaman) dengan butang
+**Copy laporan** — berguna bila sesuatu marketplace block bacaan dan kau nak tunjuk buktinya.
+
+Setiap pengesanan datang dengan tahap keyakinan:
+
+| Keyakinan | Maksud |
+|---|---|
+| tinggi | dibaca dari JSON-LD halaman produk |
+| sederhana | dibaca dari tag Open Graph |
+| rendah | nama diteka dari URL sahaja — sahkan sendiri |
+| tiada | langsung tak dapat; isi nama dan harga manual |
+
 Kalau marketplace block bacaan automatik (captcha atau 403), app tak mengarut — ia bagitahu,
 dan minta kau isi nama dengan harga sahaja, lepas tu teruskan aliran yang sama.
 
@@ -124,7 +137,7 @@ kau tekan post sendiri. Itu pilihan paling selamat dan ia default atas sebab tu.
 ```bash
 node server.mjs          # buka http://localhost:8787
 node server.mjs --dry    # mod selamat: semua "terbit" jadi pura-pura
-npm test                 # 31 ujian
+npm test                 # 32 ujian
 ```
 
 ## Cara akses
@@ -298,7 +311,7 @@ lib/oauth.mjs           OAuth Threads dan Meta (optional)
 prompts/base-prompt.md  otak gaya penulisan (semua platform)
 prompts/platforms/      playbook khusus platform — threads.md siap, tambah sendiri yang lain
 public/index.html       UI satu fail
-test/                   31 ujian (unit + API hidup, mod dry)
+test/                   32 ujian (unit + API hidup, mod dry)
 ```
 
 ## Batasan jujur

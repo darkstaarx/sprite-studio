@@ -72,6 +72,7 @@ test("detect ikut link pendek dan tarik nama, harga, gambar", async () => {
   assert.equal(r.price, "RM89");
   assert.equal(r.image, "https://cdn.contoh/air-fryer-1.jpg");
   assert.equal(r.source, "json-ld");
+  assert.equal(r.confidence, "tinggi");
   assert.match(r.resolvedUrl, /Air-Fryer-5L-Digital-Rangup-i\.123\.456$/);
   assert.equal(r.affiliateUrl, `${base}/hop/xyz`, "link affiliate asal mesti kekal");
   assert.deepEqual(r.warnings, []);
@@ -86,6 +87,10 @@ test("detect bagi amaran bila marketplace block", async () => {
 test("detect jatuh balik ke nama dari slug bila halaman kosong", async () => {
   const r = await detect(`${base}/kosong/Air-Fryer-5L-Digital-i.9.9`);
   assert.equal(r.source, "slug-url");
+  assert.equal(r.ok, false, "nama dari slug sahaja bukan pengesanan yang sah");
+  assert.equal(r.hasName, true);
+  assert.equal(r.confidence, "rendah");
+  assert.ok(r.warnings.some(w => /dari URL sahaja/.test(w)));
   assert.equal(r.name, "Air Fryer 5L Digital", "ambil segmen terakhir, bukan seluruh laluan");
   assert.equal(r.price, "");
   assert.ok(r.warnings.some(w => /Harga tak dapat dikesan/.test(w)));
@@ -93,4 +98,21 @@ test("detect jatuh balik ke nama dari slug bila halaman kosong", async () => {
 
 test("detect tolak link tak sah tanpa melempar", async () => {
   assert.equal((await detect("bukan-link")).ok, false);
+});
+
+test("mod debug pulangkan bukti, bukan tekaan", async () => {
+  const r = await detect(`${base}/hop/xyz`, { debug: true });
+  assert.equal(r.debug.hops, 2, "dua redirect diikut");
+  assert.equal(r.debug.status, 200);
+  assert.ok(r.debug.htmlBytes > 100);
+  assert.ok(r.debug.metaKeys.includes("og:title"));
+  assert.equal(r.debug.hasJsonLd, true);
+  assert.equal(r.debug.looksBlocked, false);
+  assert.match(r.debug.title, /Air Fryer/);
+
+  const blocked = await detect(`${base}/blocked/x-i.1.2`, { debug: true });
+  assert.equal(blocked.debug.status, 403);
+  assert.equal(blocked.debug.looksBlocked, true);
+  assert.equal(blocked.debug.hasJsonLd, false);
+  assert.ok(blocked.debug.snippet.length <= 300);
 });

@@ -102,6 +102,7 @@
       <input id="q_url" placeholder="https://s.shopee.com.my/… atau link penuh produk" style="flex:1;min-width:260px">
       <select id="q_count" style="width:auto"><option>3</option><option selected>5</option><option>7</option><option>10</option></select>
       <button class="btn primary" id="q_go">Kesan &amp; jana</button>
+      <button class="btn" id="q_test">Uji link sahaja</button>
     </div>
     <p class="hint" id="q_state"></p>
     <div id="q_found"></div>
@@ -430,6 +431,7 @@ function foundCard(d){
   if(!d) return "";
   return `<div class="post" style="margin-top:12px"><div class="meta">
       <span class="tag">${esc(d.marketplace)}</span><b style="color:var(--ink)">${esc(d.name||"(nama tak dikesan)")}</b>
+      ${d.confidence?`<span class="tag">keyakinan: ${esc(d.confidence)}</span>`:""}
       ${d.price?`<span class="ok">${esc(d.price)}</span>`:'<span class="warn">harga tak dikesan</span>'}
       <span>sumber: ${esc(d.source)}</span></div>
     ${d.image?`<img src="${esc(d.image)}" alt="" style="max-height:120px;border-radius:8px;border:1px solid var(--line)">`:""}
@@ -438,6 +440,28 @@ function foundCard(d){
     <p class="hint">Link untuk balasan pertama: <code>${esc(d.affiliateUrl)}</code></p></div>`;
 }
 $("#q_go").onclick=()=>quickRun({});
+$("#q_test").onclick=async()=>{
+  const url=$("#q_url").value.trim();
+  if(!url){ $("#q_state").innerHTML='<span class="warn">Tampal link dulu.</span>'; return; }
+  $("#q_state").textContent="menguji link…"; $("#q_found").innerHTML="";
+  try{
+    const d=await api("/detect",{method:"POST",body:JSON.stringify({url,debug:true})});
+    $("#q_state").innerHTML = d.ok
+      ? `<span class="ok">Produk dibaca dari halaman (keyakinan ${esc(d.confidence)}). Tekan "Kesan &amp; jana".</span>`
+      : d.hasName
+        ? '<span class="warn">Separa sahaja — nama dari URL, halaman tak dapat dibaca. Sahkan nama dan harga dulu.</span>'
+        : '<span class="bad">Tak dapat dikesan langsung — laporan di bawah.</span>';
+    $("#q_found").innerHTML=foundCard(d)+
+      `<details class="post" style="margin-top:10px"><summary>Laporan teknikal (hantar pada Claude kalau tak jadi)</summary>
+        <pre class="out" style="white-space:pre-wrap;font:12px/1.5 ui-monospace,Menlo,monospace;max-height:280px;overflow:auto">${esc(JSON.stringify(d.debug,null,2))}</pre>
+        <div class="row" style="margin-top:8px"><button class="btn sm" id="q_copyreport">Copy laporan</button></div></details>`;
+    $("#q_copyreport").onclick=async e=>{
+      const txt="Laporan ViralCool detect\n"+JSON.stringify({url,ok:d.ok,name:d.name,price:d.price,source:d.source,warnings:d.warnings,debug:d.debug},null,2);
+      try{ await navigator.clipboard.writeText(txt); }catch(_){ }
+      e.target.textContent="✓ dah copy";
+    };
+  }catch(e){ $("#q_state").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
+};
 $("#q_url").addEventListener("keydown",e=>{ if(e.key==="Enter") quickRun({}); });
 
 $("#genBtn").onclick=async()=>{

@@ -151,7 +151,7 @@ const ROUTES = [
   // Kesan produk dari link sahaja (tanpa jana apa-apa).
   ["POST", /^\/api\/detect$/, async (_m, body) => {
     if (!body.url) return [400, { error: "Bagi link produk." }];
-    try { return [200, await detect(String(body.url))]; }
+    try { return [200, await detect(String(body.url), { debug: body.debug === true })]; }
     catch (e) { return [502, { error: e.message }]; }
   }],
 
@@ -161,7 +161,7 @@ const ROUTES = [
     let found;
     try { found = await detect(String(body.url)); }
     catch (e) { return [502, { error: `Gagal kesan produk: ${e.message}` }]; }
-    if (!found.ok && !body.nama) {
+    if (!found.hasName && !body.nama) {
       return [422, { error: "Produk tak dapat dikesan dari link ni. Isi nama produk sendiri, lepas tu cuba lagi.", detected: found }];
     }
 
