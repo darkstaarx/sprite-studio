@@ -197,7 +197,7 @@
   <div class="card" id="cEngine">
     <div class="head"><span class="n">AI</span><span class="title" id="engineNow">Enjin ayat</span>
       <button class="i" data-note="nE" aria-expanded="false">i</button></div>
-    <div class="note" id="nE">Tanpa AI, yang keluar cuma rangka ayat. Ada tiga jalan: pasang key (Nous Portal / OpenRouter), guna Ollama tempatan, atau <b>tanpa key langsung</b> — copy arahan, jalankan dalam Hermes Agent atau ChatGPT, tampal jawapan balik.</div>
+    <div class="note" id="nE"><b>Model</b> mesti ditulis tepat seperti <i>id</i> dalam senarai pembekal kau (selalunya huruf kecil berselang sengkang), bukan nama paparan. <b>Base URL</b> ambil dari halaman Docs pembekal — biasanya berakhir dengan <code>/v1</code>. Tanpa AI, yang keluar cuma rangka ayat. Ada tiga jalan: pasang key (Nous Portal / OpenRouter), guna Ollama tempatan, atau <b>tanpa key langsung</b> — copy arahan, jalankan dalam Hermes Agent atau ChatGPT, tampal jawapan balik.</div>
     <button class="btn sm" id="engineToggle">Tukar enjin</button>
     <div id="engineBox" hidden style="margin-top:12px">
       <div class="scroll" id="presets"></div>
@@ -436,7 +436,7 @@ $("#engineToggle").onclick=()=>{ const b=$("#engineBox"); b.hidden=!b.hidden; if
 $("#llm_save").onclick=async()=>{
   const base=$("#llm_base").value.trim(), model=$("#llm_model").value.trim();
   if(!base||!model) return $("#llm_msg").innerHTML='<span class="bad">Base URL dan model wajib diisi.</span>';
-  $("#llm_msg").textContent="menguji sambungan…";
+  $("#llm_msg").textContent="menguji sambungan… (gateway perlahan boleh ambil sehingga seminit)";
   const b={provider:$("#llm_provider").value,baseUrl:base,model};
   if($("#llm_key").value.trim()) b.apiKey=$("#llm_key").value.trim();
   try{
