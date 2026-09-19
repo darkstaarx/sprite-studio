@@ -94,6 +94,10 @@
 <body>
 <div class="wrap">
 
+<div id="deadBar" hidden style="background:#3a1f1c;border:1px solid #6b3b33;border-radius:12px;padding:12px;margin-bottom:12px;font-size:13.5px">
+  <b>Server tak menjawab.</b> Tetingkap hitam <code>mula.bat</code> mungkin dah tertutup. Buka semula, lepas tu refresh halaman ni.
+</div>
+
 <div class="top">
   <div class="brand">Viral<span>Cool</span></div>
   <button class="acct" id="acct"><span class="dot" id="dot"></span><span id="acctText">…</span></button>
@@ -259,11 +263,23 @@ let S={products:[],posts:[],accounts:[],styles:{},settings:{llm:{}}};
 let style="cerita", times=["07:00","13:00","19:00"], picked=[], made=[], llmProvider=null;
 
 async function api(path,opts={},retry=true){
-  const r=await fetch("/api"+path,{...opts,headers:{"content-type":"application/json",...(TOKEN?{"x-viralcool-token":TOKEN}:{}),...(opts.headers||{})}});
+  let r;
+  try{
+    r=await fetch("/api"+path,{...opts,headers:{"content-type":"application/json",...(TOKEN?{"x-viralcool-token":TOKEN}:{}),...(opts.headers||{})}});
+  }catch(_){
+    // "Failed to fetch" bermakna server tempatan tak menjawab — bukan masalah pembekal AI.
+    serverMati(true);
+    throw new Error("Server ViralCool tak menjawab. Tetingkap hitam (mula.bat) mungkin dah tertutup — buka semula, lepas tu refresh halaman ni.");
+  }
+  serverMati(false);
   const j=await r.json().catch(()=>({}));
   if(r.status===401&&retry){ const t=prompt("Kunci server:",TOKEN||""); if(t!==null){ TOKEN=t.trim(); localStorage.setItem("viralcool.token",TOKEN); return api(path,opts,false);} }
   if(!r.ok) throw new Error(j.error||("ralat "+r.status));
   return j;
+}
+function serverMati(on){
+  const bar=$("#deadBar"); if(!bar) return;
+  bar.hidden=!on;
 }
 const fmt=ts=>ts?new Date(ts).toLocaleString("ms-MY",{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):"—";
 async function copyText(t){
@@ -498,7 +514,7 @@ $("#t_connect").onclick=async()=>{
 };
 $("#startDate").value=new Date().toISOString().slice(0,10);
 renderTimes(); mode("produk");
-load().catch(e=>{ $("#acctText").textContent="server tak hidup"; });
+load().catch(()=>{ $("#acctText").textContent="server tak hidup"; serverMati(true); });
 </script>
 </body>
 </html>
