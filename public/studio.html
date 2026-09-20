@@ -2,55 +2,59 @@
 <html lang="ms">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
 <title>ViralCool</title>
 <style>
-  :root{--bg:#0e1013;--panel:#16191f;--panel-2:#1c2028;--line:#272c36;--ink:#e7eaf0;--dim:#9aa3b2;
-        --accent:#ffd166;--accent-ink:#2a2000;--ok:#5dd39e;--bad:#ff8f7a;--warn:#ffc98f;--r:10px}
+  :root{--bg:#f0f2f5;--panel:#ffffff;--panel-2:#f0f2f5;--soft-2:#e4e6eb;--line:#dadde1;--ink:#050505;--dim:#65676b;
+        --accent:#1877f2;--accent-ink:#ffffff;--accent-soft:#e7f3ff;--ok:#31a24c;--bad:#e41e3f;--warn:#c77700;
+        --shadow:0 1px 2px rgba(0,0,0,.10);--r:12px}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
   .wrap{max-width:1060px;margin:0 auto;padding:20px 16px 80px}
   header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
-  h1{font-size:20px;margin:0}h1 span{color:var(--accent)}
+  h1{font-size:20px;margin:0;color:var(--accent)}h1 span{color:var(--ink)}
   .sub{color:var(--dim);font-size:13px;margin:4px 0 16px}
   nav{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:16px}
   nav button{background:none;border:1px solid transparent;color:var(--dim);padding:7px 12px;border-radius:999px;cursor:pointer;font:inherit;font-size:13.5px}
-  nav button[aria-selected=true]{background:var(--panel-2);border-color:var(--line);color:var(--ink)}
+  nav button[aria-selected=true]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
   section[hidden]{display:none}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+  .card{background:var(--panel);border:0;border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
   .card h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 12px}
   .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
   .full{grid-column:1/-1}
   label{display:block;font-size:12.5px;color:var(--dim);margin-bottom:5px}
-  input,select,textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:9px 10px;color:var(--ink);font:inherit}
+  input,select,textarea{width:100%;background:#fff;border:1px solid var(--line);border-radius:9px;padding:11px 11px;color:var(--ink);font:inherit;font-size:16px}
+  input::placeholder,textarea::placeholder{color:#8a8d91}
+  input[type=checkbox]{accent-color:var(--accent)}
   textarea{min-height:70px;resize:vertical}
-  input:focus,select:focus,textarea:focus{outline:1px solid var(--accent);border-color:var(--accent)}
-  .btn{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 13px;color:var(--ink);font:inherit;font-size:13.5px;cursor:pointer}
-  .btn:hover{border-color:var(--accent)}
-  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
-  .btn.sm{padding:5px 9px;font-size:12.5px}
-  .btn.ghost{background:none}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .btn{background:var(--soft-2);border:0;border-radius:9px;padding:10px 14px;color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+  .btn:hover{filter:brightness(.97)}
+  .btn.primary{background:var(--accent);color:var(--accent-ink);font-weight:700}
+  .btn.sm{padding:7px 11px;font-size:13px}
+  .btn.ghost{background:none;color:var(--accent)}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .chips{display:flex;gap:8px;flex-wrap:wrap}
-  .chip{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);background:var(--panel-2);border-radius:999px;padding:6px 11px;font-size:13px;color:var(--dim);cursor:pointer}
-  .chip.on{color:var(--ink);border-color:var(--accent)}
+  .chip{display:inline-flex;gap:6px;align-items:center;border:1.5px solid var(--panel-2);background:var(--panel-2);border-radius:999px;padding:8px 13px;font-size:13.5px;font-weight:600;color:var(--dim);cursor:pointer}
+  .chip.on{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
   .chip input{width:auto;accent-color:var(--accent)}
-  .post{border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:10px;background:var(--panel-2)}
+  .post{border:0;border-radius:var(--r);padding:12px;margin-bottom:10px;background:var(--panel-2)}
   .post .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;font-size:12px;color:var(--dim)}
-  .tag{border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:11px}
-  .tag.review{color:var(--warn);border-color:#6b5a33}
-  .tag.scheduled{color:var(--accent);border-color:#6b5a33}
-  .tag.published{color:var(--ok);border-color:#2f5c48}
-  .tag.failed{color:var(--bad);border-color:#6b3b33}
+  .tag{border:1px solid var(--line);background:#fff;border-radius:999px;padding:3px 9px;font-size:11px}
+  .tag.review{color:var(--warn);border-color:#f0c67a;background:#fff7e6}
+  .tag.scheduled{color:var(--accent);border-color:#a8cdfb;background:var(--accent-soft)}
+  .tag.published{color:var(--ok);border-color:#a5d8b3;background:#eaf7ee}
+  .tag.failed{color:var(--bad);border-color:#f0b3ae;background:#ffebe8}
   .tag.draft,.tag.publishing{color:var(--dim)}
-  .post textarea{min-height:96px;font-size:13.5px}
+  .post textarea{min-height:96px;font-size:15px}
   .hint{color:var(--dim);font-size:12.5px;margin:8px 0 0}
   .bad{color:var(--bad)}.ok{color:var(--ok)}.warn{color:var(--warn)}
   details summary{cursor:pointer;color:var(--dim);font-size:12.5px}
-  .logline{font:12px/1.5 ui-monospace,Menlo,monospace;color:var(--dim);border-bottom:1px solid var(--line);padding:5px 0}
+  .logline{font:12px/1.5 ui-monospace,Menlo,monospace;color:var(--dim);border-bottom:1px solid var(--line);padding:5px 0;word-break:break-word}
   .empty{color:var(--dim);font-size:13.5px;padding:8px 0}
   footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);margin-top:24px;padding-top:12px}
-  @media(max-width:640px){.wrap{padding:14px 14px 70px}}
+  @media(max-width:640px){.wrap{padding:14px 14px 70px}nav{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}nav::-webkit-scrollbar{display:none}nav button{flex:none}.grid{grid-template-columns:1fr}.row>.btn{flex:1}}
 </style>
 </head>
 <body>
@@ -95,7 +99,7 @@
 </section>
 
 <section id="tab-tulis" hidden>
-  <div class="card" style="border-color:#3a3420">
+  <div class="card" style="box-shadow:0 0 0 1.5px var(--accent),var(--shadow)">
     <h2>Link produk → post siap berjadual</h2>
     <p class="hint" style="margin:0 0 12px">Tampal link produk (link affiliate kau pun boleh — ia dikekalkan bulat-bulat untuk balasan pertama). Sistem buka link pendek, kesan nama, harga dan gambar, tulis ayat, dan letak dalam slot masa.</p>
     <div class="row">
