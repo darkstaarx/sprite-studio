@@ -643,7 +643,22 @@ $("#mMasalah").onclick=()=>mode("masalah");
 function setup(on){ $("#setup").hidden=!on; $("#main").hidden=on; $("#bar").hidden=on; window.scrollTo(0,0); }
 $("#acct").onclick=()=>setup(true);
 $("#t_close").onclick=()=>setup(false);
+// Semakan sama macam server, tapi di browser — supaya ia tetap menangkap
+// walaupun server yang sedang berjalan masih versi lama (fail dah diganti,
+// tetingkap hitam belum dibuka semula).
+function semakAppIdUI(){
+  const id=$("#t_appid").value.trim();
+  if(!id) return "App ID belum diisi.";
+  if(/^\d+$/.test(id)) return "";
+  if(/^https?:\/\//i.test(id)||id.includes("/"))
+    return `"${id}" ialah alamat web, bukan App ID. Base URL pembekal AI masuk dalam kad "Enjin ayat" di halaman utama, bukan kad Threads ni.`;
+  if(/^(sk-|asai_|hf_|or-|Bearer)/i.test(id))
+    return `"${id.slice(0,12)}…" nampak macam API key AI, bukan App ID. Key tu masuk dalam kad "Enjin ayat" di halaman utama.`;
+  return `App ID Meta ialah nombor sahaja (lebih kurang 15-16 digit) — "${id}" ada aksara bukan nombor.`;
+}
 $("#t_save").onclick=async()=>{
+  const salah=semakAppIdUI();
+  if(salah){ $("#t_saveMsg").innerHTML=`<span class="bad">${esc(salah)} App ID betul ada di developers.facebook.com/apps → pilih app kau → App settings → Basic → App ID.</span>`; return; }
   $("#t_saveMsg").textContent="…";
   try{
     const r=await api("/threads/setup",{method:"POST",body:JSON.stringify({appId:$("#t_appid").value.trim(),appSecret:$("#t_secret").value.trim(),redirectUri:$("#t_redirect").value.trim()})});
@@ -654,6 +669,8 @@ $("#t_save").onclick=async()=>{
   }catch(e){ $("#t_saveMsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`; }
 };
 $("#t_connect").onclick=async()=>{
+  const salahId=semakAppIdUI();
+  if(salahId){ $("#t_connectMsg").innerHTML=`<span class="bad">Betulkan App ID dalam kad A dulu — ${esc(salahId)}</span>`; return; }
   $("#t_connectMsg").textContent="menyambung…";
   try{
     const r=await api("/threads/connect",{method:"POST",body:JSON.stringify({redirectUrl:$("#t_url").value.trim()})});
