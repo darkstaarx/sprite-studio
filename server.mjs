@@ -14,7 +14,7 @@ import { detect } from "./lib/detect.mjs";
 import { testLLM } from "./lib/llm-test.mjs";
 import { parseCurl } from "./lib/curl-parse.mjs";
 import { startUrl, handleCallback, oauthReady } from "./lib/oauth.mjs";
-import { authorizeUrl, extractCode, exchange } from "./lib/threads-setup.mjs";
+import { authorizeUrl, extractCode, exchange, validateAppId } from "./lib/threads-setup.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 loadEnv(path.join(HERE, ".env"));
@@ -295,6 +295,11 @@ const ROUTES = [
   // --- Sambung Threads tanpa server HTTPS (salin URL dari bar alamat).
   ["POST", /^\/api\/threads\/setup$/, async (_m, body) => {
     const t = store.data.settings.threads;
+    // Sahkan dulu sebelum simpan — jangan biar nilai salah duduk dalam fail
+    // dan gagal senyap nanti masa exchange.
+    if (typeof body.appId === "string" && body.appId.trim()) {
+      try { validateAppId(body.appId); } catch (e) { return [400, { error: e.message }]; }
+    }
     if (typeof body.appId === "string") t.appId = body.appId.trim();
     if (typeof body.appSecret === "string" && body.appSecret !== "__SET__") t.appSecret = body.appSecret.trim();
     if (typeof body.redirectUri === "string" && body.redirectUri.trim()) t.redirectUri = body.redirectUri.trim();

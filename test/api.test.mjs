@@ -292,3 +292,14 @@ test("senarai gaya ringkas dan tiada yang bertindih", async () => {
     assert.match(p.body.prompt, /HARGA/, "beat harga diminta");
   } finally { shop.close(); }
 });
+
+test("setup Threads tolak App ID salah dan tak simpan nilai tu", async () => {
+  const buruk = await api("/api/threads/setup", { method: "POST", body: JSON.stringify({ appId: "https://serveras.click/v1" }) });
+  assert.equal(buruk.status, 400);
+  assert.match(buruk.body.error, /Enjin ayat/);
+  assert.equal((await api("/api/state")).body.settings.threads.appId, "", "nilai salah tak masuk simpanan");
+
+  const elok = await api("/api/threads/setup", { method: "POST", body: JSON.stringify({ appId: "1234567890123456" }) });
+  assert.equal(elok.status, 200);
+  assert.match(elok.body.authorizeUrl, /client_id=1234567890123456/);
+});

@@ -78,3 +78,23 @@ test("ralat umum Meta (kod 1) diterjemah jadi senarai semakan", () => {
       return true;
     });
 });
+
+test("App ID yang sebenarnya base URL atau key AI ditolak sebelum sampai Meta", () => {
+  // Meta hanya balas "Invalid client_id: <nilai>" tanpa beritahu medan mana yang salah.
+  assert.throws(
+    () => authorizeUrl({ appId: "https://serveras.click/v1", redirectUri: "https://viralcool.invalid/callback" }),
+    e => {
+      assert.match(e.message, /alamat web/);
+      assert.match(e.message, /Enjin ayat/, "tunjuk medan yang betul untuk base URL");
+      return true;
+    });
+  assert.throws(
+    () => authorizeUrl({ appId: "asai_sk_abcdef123456", redirectUri: "https://viralcool.invalid/callback" }),
+    /API key AI/);
+  assert.throws(
+    () => authorizeUrl({ appId: "my-app-name", redirectUri: "https://viralcool.invalid/callback" }),
+    /nombor sahaja/);
+  // Nombor tulen tetap lulus.
+  assert.match(authorizeUrl({ appId: "1234567890123456", redirectUri: "https://viralcool.invalid/callback" }),
+    /client_id=1234567890123456/);
+});
