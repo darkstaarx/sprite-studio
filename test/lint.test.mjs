@@ -70,3 +70,30 @@ Picit dua tiga kali, terus rasa nak sambung kerja balik.
 Korang usya la dulu sebelum stress tu jadi darah tinggi.`;
   assert.deepEqual(lintPost({ caption: rilek }, { panjang: "sederhana" }), []);
 });
+
+test("post lawak gaya mesin ditangkap: pepatah, jenaka diterangkan, tiada watak", () => {
+  const mentega = [
+    "Kalau mentega atas meja kau tak cair, jangan terus cari roti.",
+    "",
+    "Itu squishy bentuk butter. Rupanya cukup meyakinkan untuk buat orang berhenti dua saat, "
+      + "lepas tu kau boleh picit, tarik dan gelek bila tangan sibuk nak kacau benda.",
+    "",
+    "Cuma tolong jauhkan dari toaster. Link dalam balasan pertama.",
+  ].join("\n");
+  const kod = lintPost({ caption: mentega, angle: "lawak" }, { panjang: "sederhana" }).map(i => i.kod);
+  for (const perlu of ["pepatah", "terang-jenaka", "tiada-aku", "ayat-iklan", "senarai-tiga", "ayat-app"]) {
+    assert.ok(kod.includes(perlu), `patut tangkap ${perlu} — dapat ${kod.join(", ")}`);
+  }
+});
+
+test("babak sebenar dengan watak lulus tanpa aduan gaya", () => {
+  const elok = [
+    "Mak aku angkat benda ni nak masuk peti ais. Aku biar je dia jalan sampai dapur.",
+    "",
+    "Sekarang dia dah tau ia mainan, tapi tiap kali lalu meja tu dia picit sekali. Memang tak boleh tahan.",
+  ].join("\n");
+  const kod = lintPost({ caption: elok, angle: "lawak" }, { panjang: "sederhana" }).map(i => i.kod);
+  for (const jangan of ["pepatah", "terang-jenaka", "tiada-aku", "ayat-iklan", "senarai-tiga", "ayat-app"]) {
+    assert.ok(!kod.includes(jangan), `tak patut adu ${jangan} — dapat ${kod.join(", ")}`);
+  }
+});

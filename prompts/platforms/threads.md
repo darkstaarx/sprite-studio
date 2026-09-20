@@ -221,6 +221,50 @@ tiada harga, dan hujungnya ajakan santai bukan CTA.
 Ayat penutup yang sesuai: *korang usya la*, *pergi tengok sendiri*, *jangan kata aku tak bagitau*,
 *aku letak link bawah ni*. Bukan: *jangan lepaskan peluang*, *dapatkan sekarang*, *stok terhad*.
 
+## 3i. Gaya lawak — apa yang mematikan jenaka
+
+Lawak di Threads datang daripada **babak yang betul-betul berlaku**, bukan daripada ayat pandai.
+Yang kelakar ialah keadaannya, dan kau yang kena jadi bahan.
+
+Contoh yang gagal — jangan tulis macam ni:
+
+> Kalau mentega atas meja kau tak cair, jangan terus cari roti.
+>
+> Itu squishy bentuk butter. Rupanya cukup meyakinkan untuk buat orang berhenti dua saat, lepas tu
+> kau boleh picit, tarik dan gelek bila tangan sibuk nak kacau benda.
+>
+> Cuma tolong jauhkan dari toaster. Link dalam balasan pertama.
+
+Lima kesalahan dalam tiga baris tu:
+
+1. **Pepatah reka** sebagai pembuka. Tiada manusia taip pepatah untuk jual mainan.
+2. **Teka-teki, lepas tu jawapan.** Baris kedua terangkan jenaka baris pertama. Jenaka yang
+   diterangkan dah tak jadi jenaka.
+3. **Tiada sesiapa dalam post tu.** Tiada "aku", tiada siapa-siapa. Cuma "orang" dan "kau" yang umum.
+4. **Ayat katalog** — "cukup meyakinkan untuk buat orang berhenti dua saat", "picit, tarik dan gelek".
+   Itu penerangan produk, bukan cerita.
+5. **Punchline generik.** Lawak toaster ialah lawak pertama yang sesiapa pun terfikir pasal mentega.
+   Dan "Link dalam balasan pertama" ialah arahan sistem, bukan ayat manusia.
+
+Cara betul: satu babak, satu mangsa (kau), satu akibat yang masih berlaku.
+
+> Mak aku angkat benda ni nak masuk peti ais. Aku biar je dia jalan sampai dapur.
+>
+> Sekarang dia dah tau ia mainan, tapi tiap kali dia lalu meja tu dia picit sekali. Memang tak boleh
+> tahan.
+
+> Aku letak atas meja ofis ingat orang takkan perasan. Dalam tiga hari benda tu dah pindah meja
+> empat kali.
+>
+> Sekarang aku kena tanya satu bilik siapa pegang terakhir. Weh, penat.
+
+> Anak buah aku datang rumah, terus capai benda ni ingat mentega betul.
+>
+> Muka dia masa sedar tu — aku takkan lupa. Dia picit sampai balik.
+
+Perhatikan: tiada penerangan produk langsung. Pembaca faham benda tu daripada babak. Hujungnya
+bukan punchline pandai, tapi akibat kecil yang masih berjalan.
+
 ## 4. Peraturan teknikal
 
 - **500 aksara had keras.** Sasar 120–320 aksara. Post pendek lagi laju dibaca dan dibalas.

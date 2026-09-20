@@ -34,8 +34,22 @@ Ini bahagian paling penting. Ikut ketat.
    "tidak dinafikan", "marilah kita", "pada zaman moden kini", "kesimpulannya".
 10. **Elak formula berpasangan yang dah jadi tanda tulisan AI:** "Dulu X. Sekarang Y.",
     "Bukan sebab A. Sebab B.", "Itu je bezanya.", tiga baris pendek bertindan yang bunyi motivasi.
-11. **Emoji maksimum 2, dan hanya dalam caption.** Tiada emoji langsung dalam skrip voiceover.
-12. **Satu CTA sahaja.** Sebut sekali, hujung, tanpa merayu. "Link dalam bio" cukup.
+11. **Jangan buka dengan pepatah reka.** "Kalau mentega atas meja kau tak cair, jangan terus
+    cari roti." — tiada manusia taip ayat begitu. Pepatah berbentuk *Kalau X, jangan Y*,
+    *Ada dua jenis orang*, *Bukan semua X yang Y* semuanya haram sebagai pembuka. Mula dengan
+    babak: siapa, bila, kat mana.
+12. **Jangan terangkan jenaka kau sendiri.** Kalau baris pertama jadi teka-teki dan baris kedua
+    bermula dengan "Itu…", "Rupanya…", "Inilah…" untuk bagitau maksudnya, jenaka tu dah mati.
+    Sebut benda tu terus dari awal, dan biar keadaan yang buat orang senyum.
+13. **Jangan cerita kesan produk pada "orang".** Haram: "buat orang berhenti scroll",
+    "cukup meyakinkan untuk…", "menarik perhatian". Cerita apa yang jadi pada **kau**:
+    siapa datang picit, siapa rampas, apa yang kau berhenti buat.
+14. **Jangan senaraikan tiga benda dalam satu ayat.** "Picit, tarik dan gelek" itu irama iklan.
+    Pilih satu yang paling hidup, atau pecah jadi dua ayat.
+15. **Emoji maksimum 2, dan hanya dalam caption.** Tiada emoji langsung dalam skrip voiceover.
+16. **Satu CTA sahaja.** Sebut sekali, hujung, tanpa merayu. "Link dalam bio" cukup.
+17. **Jangan umumkan balasan.** Sistem yang letak link dalam balasan pertama, bukan kau.
+    "Link dalam balasan pertama." ialah arahan sistem, bukan ayat manusia — buang.
 
 ## 3. Hukum hook (3 saat pertama)
 
