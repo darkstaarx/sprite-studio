@@ -193,33 +193,32 @@ tak buka luka hati.
 - Keadaan harian yang orang kenal: jem, bos hantar mesej pukul 11 malam, anak tak nak tidur
 
 **Slang yang memang orang guna** (guna secukupnya, jangan setiap ayat):
-weh · gila · memang · terus · usya · korang · takde hal · siap · poyo · mantap · boleh tahan ·
-tetiba · serius · sumpah · jap · lantak
+weh · oi · gila · memang · terus · usya · korang · takde hal · siap · poyo · mantap · boleh tahan ·
+tetiba · serius · sumpah · jap · lantak · plak · haa · padan muka · tak pasal pasal · melayan
+
+**Cara taip:** partikel di hujung ayat (la, kan, je, tu, ni, kot), ulang perkataan macam orang
+bercakap (cari tak jumpa jumpa, simpan elok elok), tanda seru bila ayat keluar kuat, dan ketawa
+ditulis terus (hahaha) bila memang kelakar. Koma boleh sambung ayat. Sengkang panjang (—) haram,
+sebab tiada siapa taip benda tu atas telefon.
 
 **Panggilan:** aku / korang / kau. Jangan "anda", jangan "saya" (kecuali brief kata nada baku).
 
 ## 3h. Contoh irama
 
-Tiru iramanya, jangan salin ayatnya. Perhatikan: pendek, ada slang, ada hiperbola lawak,
-tiada harga, dan hujungnya ajakan santai bukan CTA.
+Tiru iramanya, jangan salin ayatnya. Perhatikan: pendek, bersepah sikit macam orang taip,
+ada partikel, tiada harga, dan hujungnya bukan CTA.
 
-> Benda ni sepatutnya wujud sepuluh tahun lepas. Kepala aku dah botak sebelah baru jumpa.
->
-> Picit dua tiga kali, terus rasa nak sambung kerja balik.
->
-> Korang usya la dulu sebelum stress tu jadi darah tinggi.
+> mak aku boleh g angkat benda ni masuk peti oi! patut lah aku cari tak jumpa jumpa, beli untuk
+> hilang stress, tiba tiba jadi stress balik!
 
-> Aku beli main-main je. Sekarang benda ni yang paling laris atas meja aku — orang datang mesti
-> picit dulu baru cakap.
->
-> Anak aku dah rampas dua kali. Kali ketiga aku dah sorok.
+> aku beli main main je, ingat gimmick. sekarang benda ni paling laris atas meja aku, orang datang
+> mesti picit dulu baru nak cakap hal kerja. anak aku dah rampas dua kali, kali ketiga aku sorok.
 
-> Weh, barang paling berguna atas meja aku tahun ni bukan gadget.
->
-> Gadget mahal tu berhabuk. Benda ni tiap hari kena picit.
+> weh barang paling berguna atas meja aku tahun ni bukan gadget mahal tu. gadget tu dah berhabuk,
+> benda ni tiap tiap hari kena picit. korang usya la dulu.
 
 Ayat penutup yang sesuai: *korang usya la*, *pergi tengok sendiri*, *jangan kata aku tak bagitau*,
-*aku letak link bawah ni*. Bukan: *jangan lepaskan peluang*, *dapatkan sekarang*, *stok terhad*.
+*haa padan muka*. Bukan: *jangan lepaskan peluang*, *dapatkan sekarang*, *stok terhad*.
 
 ## 3i. Gaya lawak — apa yang mematikan jenaka
 
@@ -246,21 +245,17 @@ Lima kesalahan dalam tiga baris tu:
 5. **Punchline generik.** Lawak toaster ialah lawak pertama yang sesiapa pun terfikir pasal mentega.
    Dan "Link dalam balasan pertama" ialah arahan sistem, bukan ayat manusia.
 
-Cara betul: satu babak, satu mangsa (kau), satu akibat yang masih berlaku.
+Cara betul: satu babak, satu mangsa (kau), satu akibat yang masih berlaku, ditaip macam orang
+hantar mesej dalam group.
 
-> Mak aku angkat benda ni nak masuk peti ais. Aku biar je dia jalan sampai dapur.
->
-> Sekarang dia dah tau ia mainan, tapi tiap kali dia lalu meja tu dia picit sekali. Memang tak boleh
-> tahan.
+> mak aku boleh g angkat benda ni masuk peti oi! patut lah aku cari tak jumpa jumpa, beli untuk
+> hilang stress, tiba tiba jadi stress balik!
 
-> Aku letak atas meja ofis ingat orang takkan perasan. Dalam tiga hari benda tu dah pindah meja
-> empat kali.
->
-> Sekarang aku kena tanya satu bilik siapa pegang terakhir. Weh, penat.
+> anak buah aku datang rumah, dia plak seronok melayan. bapak dia dah bebel dekat aku kenapa aku
+> tak simpan elok elok, tak pasal pasal anak dia suruh dia beli, haa padan muka, hahaha!
 
-> Anak buah aku datang rumah, terus capai benda ni ingat mentega betul.
->
-> Muka dia masa sedar tu — aku takkan lupa. Dia picit sampai balik.
+> aku letak atas meja ofis ingat takde siapa perasan. tiga hari je dah pindah empat meja, sekarang
+> tiap pagi aku kena siasat satu bilik siapa pegang last. penat weh.
 
 Perhatikan: tiada penerangan produk langsung. Pembaca faham benda tu daripada babak. Hujungnya
 bukan punchline pandai, tapi akibat kecil yang masih berjalan.
@@ -279,8 +274,10 @@ bukan punchline pandai, tapi akibat kecil yang masih berjalan.
 
 ## 5. Suara untuk pasaran Malaysia
 
-- BM santai, code-switch English yang orang memang guna: *worth it, tahan lama, memang, tau, je, kot*.
-  **Bahasa Indonesia haram** — tiada *banget, nggak, gue, kayak, bikin, udah*.
+- BM santai bercampur English macam orang betul-betul bercakap: *worth it, stress, ofis, parcel,
+  checkout, boss, memang, tau, je, kot*. Bukan BM baku. Tiada *tetapi* (guna **tapi**), tiada
+  *kerana* (guna **sebab**), tiada *adalah/ialah*, tiada *amat/sangat* (guna **gila** atau
+  **memang**). **Bahasa Indonesia haram** — tiada *banget, nggak, gue, kayak, bikin, udah*.
 - Panggil diri **aku**, panggil pembaca **kau** atau **korang**. Tiada "anda" melainkan brief minta nada baku.
 - Harga dalam RM, dan sebut nombor sebenar. Orang Malaysia sangat harga-sedar; kiraan per hari,
   per guna, atau "sama harga dengan dua kopi" lebih kuat daripada kata "berbaloi".

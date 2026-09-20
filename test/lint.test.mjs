@@ -97,3 +97,24 @@ test("babak sebenar dengan watak lulus tanpa aduan gaya", () => {
     assert.ok(!kod.includes(jangan), `tak patut adu ${jangan} — dapat ${kod.join(", ")}`);
   }
 });
+
+test("Manglish yang orang betul-betul taip lulus tanpa aduan", () => {
+  // Dua contoh ni datang terus daripada pengguna — inilah nada sasaran.
+  const contoh = [
+    "mak aku boleh g angkat benda ni masuk peti oi! patut lah aku cari tak jumpa jumpa, "
+      + "beli untuk hilang stress, tiba tiba jadi stress balik!",
+    "anak buah aku datang rumah, dia plak seronok melayan. bapak dia dah bebel dekat aku kenapa "
+      + "aku tak simpan elok elok, tak pasal pasal anak dia suruh dia beli, haa padan muka, hahaha!",
+  ];
+  for (const teks of contoh) {
+    assert.deepEqual(lintPost({ caption: teks, angle: "lawak" }, { panjang: "pendek" }), [],
+      `patut lulus bersih: ${teks.slice(0, 40)}…`);
+  }
+});
+
+test("bahasa baku dan sengkang panjang ditangkap", () => {
+  const baku = "Produk ini adalah sangat berguna kerana ia menjimatkan masa anda — tetapi aku suka.";
+  const kod = lintPost({ caption: baku, angle: "review" }, { panjang: "pendek" }).map(i => i.kod);
+  assert.ok(kod.includes("bahasa-baku"), "patut tangkap perkataan baku");
+  assert.ok(kod.includes("sengkang"), "patut tangkap sengkang panjang");
+});
